@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/assets/welcome.css">
+    <title>HAKEDİS Bilgileri</title>
+</head>
+<script>
+  function downloadPDF() {
+    window.location.href = '/generate-pdf';
+  }
+</script>
+
+<body>
+  <div class="form-container">
+    <h2>Sözleşme Bilgileri</h2>
+    <form action="/welcome" method="post">
+      <label for="no">No:</label>
+      <input type="text" id="no" name="no" required>
+
+      <label for="tarih">Tarih:</label>
+      <input type="text" id="tarih" name="tarih" required>
+
+      <label for="uygulama_yili">İşin Adı:</label>
+      <input type="text" id="uygulama_yili" name="uygulama_yili" required>
+
+      <label for="is_adi">Yapılan işin / Hizmetin Adı :</label>
+      <input type="text" id="is_adi" name="is_adi" required>
+
+      <label for="proje_no">Proje No:</label>
+      <input type="text" id="proje_no" name="proje_no" required>
+
+      <label for="yuklenici_adi">Yüklenicinin Adı / Ticari Ünvan :</label>
+      <input type="text" id="yuklenici_adi" name="yuklenici_adi" required>
+
+      <label for="sozlesme_bedeli">Sözleşme Bedeli:</label>
+      <input type="number" id="sozlesme_bedeli" name="sozlesme_bedeli" required>
+
+      <label for="ihale_tarihi">İhale Tarihi :</label>
+      <input type="text" id="ihale_tarihi" name="ihale_tarihi" required> 
+
+      <label for="kayit_no">Kayıt No :</label>
+      <input type="text" id="kayit_no" name="kayit_no" required>
+
+      <label for="sozlesme_tarih">Sözleşme Tarihi:</label>
+      <input type="text" id="sozlesme_tarih" name="sozlesme_tarih" required>
+
+      <label for="isyeri_teslim_tarihi">İşyeri Teslim Tarihi :</label>
+      <input type="text" id="isyeri_teslim_tarihi" name="isyeri_teslim_tarihi" required>
+
+      <label for="isin_suresi">Sözleşmeye Göre İşin Süresi :</label>
+      <input type="text" id="isin_suresi" name="isin_suresi" required>
+
+      <label for="is_bitim_tarihi">Sözleşmeye Göre İşin Bitim Süresi</label>
+
+      <input type="text" id="is_bitim_tarihi" name="is_bitim_tarihi" required>
+
+      <button type="submit" value="LOGIN">KAYDET</button>
+      <button onclick="downloadPDF()">PDF'i İndir</button>
+
+    </form>
+  </div>
+</head>
+
+</body>
+</html>
