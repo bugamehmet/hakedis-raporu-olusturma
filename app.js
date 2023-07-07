@@ -6,6 +6,7 @@ const PDFDocument = require('pdfkit');
 const app = express();
 app.use("/assets", express.static("assets"));
 
+//Veri tabanına bağlanmak için bir bağlantı nesnesi oluşturmak
 const connection = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -13,17 +14,32 @@ const connection = mysql.createConnection({
     database: "userDB"
 });
 
+//Sunucuya bağlanmak
 connection.connect(function(error){
     if (error) throw error;
     else console.log("bağlanıldı!");
 });
-
+// body-parser yerine kullandığımız middleware
+// HTML form verilerini veri tabanına yollamdan önce işlemek için
 app.use(express.urlencoded({ extended: true }));
 
+// anadizine girildğinde index.html i tarayıcıya gönderir "GET"
 app.get("/",function(req,res){
     res.sendFile(__dirname + "/index.html");
 });
 
+//welcome a GET isteğini yönlendirmek için
+app.get("/welcome",function(req,res){
+  res.sendFile(__dirname + "/welcome.html");
+});
+
+// Register a Get isteğini yönlendirme
+app.get("/register", function(req, res) {
+  res.sendFile(__dirname + "/register.html");
+});
+
+//POST isteğini aldığımızda kullanıcı bilgilerini kontrol ederek 
+// kullanıcıyı sayfaya yönlendiririz
 app.post("/", function(req,res){
     var username = req.body.username;
     var password = req.body.password;
@@ -38,16 +54,7 @@ app.post("/", function(req,res){
     });
 });
 
-// bağlantı başarılıysa yönlendirme
-app.get("/welcome",function(req,res){
-    res.sendFile(__dirname + "/welcome.html");
-});
-
-// KAYIT YAPMA
-app.get("/register.html", function(req, res) {
-    res.sendFile(__dirname + "/register.html");
-});
-
+//VERİTABANINA KULLANICIYI KAYDETME
 app.post("/register", function(req, res) {
     var username = req.body.username;
     var password = req.body.password;
@@ -64,10 +71,7 @@ app.post("/register", function(req, res) {
     });
 });
 
-app.get("/welcome.html", function(req, res) {
-    res.sendFile(__dirname + "/welcome.html");
-});
-
+//RAPOR BİLGİLERİNİ VERİTABANINA KAYDETME
 app.post("/welcome", function(req, res) {
     var no = req.body.no;
     var uygulama_yili = req.body.uygulama_yili;
@@ -87,6 +91,7 @@ app.post("/welcome", function(req, res) {
     connection.query("INSERT INTO hakedis_raporu (no, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [no, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi], function(error, results, fields) {
         if (error) {
             console.log("Belge Kaydedilemedi");
+            console.log(error);
             res.redirect("/welcome");
         } else {
             res.redirect("/welcome");
@@ -151,7 +156,7 @@ connection.query('SELECT * FROM hakedis_raporu ', (error, results) => {
 
 app.get('/generate-pdf', (req, res) => {
     // PDF oluşturma işlemleri
-    const doc = new PDFDocument();
+    const doc = new PDFDocument({size : 'A4'});
   
     // PDF dosyasına yazdırma işlemi
     // Veritabanından verileri çekme
@@ -164,23 +169,20 @@ app.get('/generate-pdf', (req, res) => {
       const logoLeft = 'assets/gorseller/logo_left.png'; // Sol taraftaki logo resmi
       const logoRight = 'assets/gorseller/logo_right.png'; // Sağ taraftaki logo resmi
      
-      // Sol taraftaki logo resmini ekleyelim
-      doc.image(logoLeft, 20, 50, { width: 40, height: 60 });
+      // Sol taraftaki logo resmi
+      doc.image(logoLeft, 20, 50, { width: 60, height: 80 });
 
-      // Sağ taraftaki logo resmini ekleyelim
-      doc.image(logoRight, 550, 50, { width: 40, height: 60 });
+      // Sağ taraftaki logo resmi
+      doc.image(logoRight, 550, 50, { width: 60, height: 80,});
      // "T.C" yazısını ekleyelim
       doc.font('arial.ttf').fontSize(12).text('T.C', 100, 30, { align: 'center' });
       doc.font('arial.ttf').fontSize(12).text('SAMSUN BÜYÜK ŞEHİR BELEDİYESİ', 100, 50, { align: 'center' });
 
-      // "SAMSUN SU VE KANALİZASYON GENEL MÜDÜRLÜĞÜ" yazısını ekleyelim
+      // "SAMSUN SU VE KANALİZASYON GENEL MÜDÜRLÜĞÜ"
       doc.font('arial.ttf').fontSize(12).text('SAMSUN SU VE KANALİZASYON GENEL MÜDÜRLÜĞÜ', 100, 70, { align: 'center' });
 
-      // "BİLGİ İŞLEM DAİRESİ BAŞKANLIĞI" yazısını ekleyelim
+      // "BİLGİ İŞLEM DAİRESİ BAŞKANLIĞI"
       doc.font('arial.ttf').fontSize(12).text('BİLGİ İŞLEM DAİRESİ BAŞKANLIĞI', 100, 90, { align: 'center' });
-
-
-
 
         // Hakediş raporu başlığı
         doc.font('arial.ttf').fontSize(16).text('Hakediş Raporu', 100, 150, { align: 'center' });
@@ -189,30 +191,32 @@ app.get('/generate-pdf', (req, res) => {
       // Verileri PDF'e yazdırma
       results.forEach((row) => {
         doc.font('arial.ttf').fontSize(12)
-          .text(`Tarihi: ${row.tarih}`, {align:'center'})
+          .text(`Tarihi: ${row.tarih}`,100,180, {align:'center'})
           .text(`No su: ${row.no}`, {align:'center'})
           .text(`Uygulama Yılı: ${row.uygulama_yili}`,{align:'center'})
 
-          .text('Yapılan işin / Hizmetin Adı:', 20,300,{continued: true })
-          .text(` ${row.is_adi}`,90,300)
+          .text('Yapılan işin / Hizmetin Adı:', 35,300,{continued: true })
+          .text(` ${row.is_adi}`,150,300, { align: 'center' } )
 
-          .text(`Yapılan İsin / Hizmetin Etüd / Proje No su: ${row.proje_no}`, 20, 320)
+          .text('Yapılan İsin / Hizmetin Etüd / Proje No su:', 35, 320,{continued:true})
+          .text(`${row.proje_no}`,200,320, { align: 'center' })
 
-          .text(`Yüklenicinin Adi / Ticari Unvanı: ${row.yuklenici_adi}`,20, 340)
+          .text('Yüklenicinin Adi / Ticari Unvanı:',35, 340, {continued:true})
+          .text(`${row.yuklenici_adi}`,300,340, { align: 'center' })
 
-          .text(`Sözleşme Bedeli: ${row.sozlesme_bedeli}`,20, 360)
+          .text(`Sözleşme Bedeli: ${row.sozlesme_bedeli}`,35, 360)
 
-          .text(`İhale Tarihi: ${row.ihale_tarihi}`,20, 380)
+          .text(`İhale Tarihi: ${row.ihale_tarihi}`,35, 380)
 
-          .text(`Kayıt no: ${row.kayit_no}`,20, 400)
+          .text(`Kayıt no: ${row.kayit_no}`,35, 400)
 
-          .text(`Sözleşme Tarihi: ${row.sozlesme_tarihi}`,20, 420)
+          .text(`Sözleşme Tarihi: ${row.sozlesme_tarihi}`,35, 420)
 
-          .text(`İşyeri Teslim Tarihi: ${row.isyeri_teslim_tarihi}`,20, 440)
+          .text(`İşyeri Teslim Tarihi: ${row.isyeri_teslim_tarihi}`,35, 440)
 
-          .text(`Sözleşmeye Göre İşin Süresi: ${row.isin_suresi}`,20, 460)
+          .text(`Sözleşmeye Göre İşin Süresi: ${row.isin_suresi}`,35, 460)
 
-          .text(`Sözleşmeye Göre İş Bitim Tarihi: ${row.is_bitim_tarihi}`,20, 480);
+          .text(`Sözleşmeye Göre İş Bitim Tarihi: ${row.is_bitim_tarihi}`,35, 480);
 
         doc.moveDown();
       });
@@ -221,7 +225,7 @@ app.get('/generate-pdf', (req, res) => {
       doc.end();
   
       // PDF dosyasının oluşturulduğunu bildir
-      console.log('Hakediş raporu başarıyla ouşturuldu');
+      console.log('Hakediş raporu başarıyla oluşturuldu');
   
       // PDF dosyasını indirme
       res.setHeader('Content-Type', 'application/pdf');
