@@ -195,15 +195,25 @@ app.get('/generate-pdf', (req, res) => {
 
           .text('Yapılan işin / Hizmetin Adı:', 20,300,{continued: true })
           .text(` ${row.is_adi}`,90,300)
-          .text(`Yapılan İsin / Hizmetin Etüd / Proje No su: ${row.proje_no}`)
-          .text(`Yüklenicinin Adi / Ticari Unvanı: ${row.yuklenici_adi}`)
-          .text(`Sözleşme Bedeli: ${row.sozlesme_bedeli}`)
-          .text(`İhale Tarihi: ${row.ihale_tarihi}`)
-          .text(`Kayıt no: ${row.kayit_no}`)
-          .text(`Sözleşme Tarihi: ${row.sozlesme_tarihi}`)
-          .text(`İşyeri Teslim Tarihi: ${row.isyeri_teslim_tarihi}`)
-          .text(`Sözleşmeye Göre İşin Süresi: ${row.isin_suresi}`)
-          .text(`Sözleşmeye Göre İş Bitim Tarihi: ${row.is_bitim_tarihi}`);
+
+          .text(`Yapılan İsin / Hizmetin Etüd / Proje No su: ${row.proje_no}`, 20, 320)
+
+          .text(`Yüklenicinin Adi / Ticari Unvanı: ${row.yuklenici_adi}`,20, 340)
+
+          .text(`Sözleşme Bedeli: ${row.sozlesme_bedeli}`,20, 360)
+
+          .text(`İhale Tarihi: ${row.ihale_tarihi}`,20, 380)
+
+          .text(`Kayıt no: ${row.kayit_no}`,20, 400)
+
+          .text(`Sözleşme Tarihi: ${row.sozlesme_tarihi}`,20, 420)
+
+          .text(`İşyeri Teslim Tarihi: ${row.isyeri_teslim_tarihi}`,20, 440)
+
+          .text(`Sözleşmeye Göre İşin Süresi: ${row.isin_suresi}`,20, 460)
+
+          .text(`Sözleşmeye Göre İş Bitim Tarihi: ${row.is_bitim_tarihi}`,20, 480);
+
         doc.moveDown();
       });
   
