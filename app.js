@@ -13,7 +13,6 @@ const connection = mysql.createConnection({
 	password: '12345678',
 	database: 'userDB',
 });
-
 //Sunucuya bağlanmak
 connection.connect(function (error) {
 	if (error) throw error;
@@ -210,49 +209,55 @@ app.get('/generate-pdf', (req, res) => {
 	// Veritabanından verileri çekme
 	connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (error, results) => {
 		if (error) {
-			console.error('MySQL query failed: ', error);
+			console.error('MySQL sorgu hatası: ', error);
 			return;
 		}
 		// Verileri PDF'e yazdırma
 		results.forEach((row) => {
-			doc
-				.font('arial.ttf')
-				.fontSize(12)
-				.text(`Tarihi: ${row.tarih}`, 100, 180, { align: 'center' })
-				.text(`No su: ${row.no}`, { align: 'center' })
-				.text(`Uygulama Yılı: ${row.uygulama_yili}`, { align: 'center' })
+			
+	doc
+  .font('arial.ttf')
+  .fontSize(12)
+  .text(`Tarihi: ${row.tarih}`, 100, 180, { align: 'center' })
+  .text(`No su: ${row.no}`, 100, 200, { align: 'center' })
+  .text(`Uygulama Yılı: ${row.uygulama_yili}`, 100, 220, { align: 'center' })
 
-				.text('Yapılan işin / Hizmetin Adı :', 35, 270, { continued: true })
-				.text(` ${row.is_adi}`, 150, 265, { align: 'center' })
+  const startY = 270; // Başlangıç y koordinatı
+	const startX = 35;  // Başlangıç x kordinatı
 
-				.text('Yapılan İsin / Hizmetin Etüd / Proje No su :', 35, 320, { continued: true })
-				.text(`${row.proje_no}`, 200, 320, { align: 'center' })
+doc
+  .text('Yapılan işin / Hizmetin Adı :', startX, startY)
+  .text(`${row.is_adi}`, startX+250, startY, { align: 'left' })
 
-				.text('Yüklenicinin Adi / Ticari Unvanı :', 35, 340, { continued: true })
-				.text(`${row.yuklenici_adi}`, 170, 340, { align: 'center' })
+  .text('Yapılan İsin / Hizmetin Etüd / Proje No su :', startX, startY + 60)
+  .text(`${row.proje_no}`, startX+250, startY + 60, { align: 'left' })
 
-				.text(`Sözleşme Bedeli :`, 35, 360, { continued: true })
-				.text(`${row.sozlesme_bedeli}`, 170, 360, { align: 'center' })
+  .text('Yüklenicinin Adi / Ticari Unvanı :', startX, startY + 100)
+  .text(`${row.yuklenici_adi}`, startX+250, startY + 100, { align: 'left' })
 
-				.text(`İhale Tarihi :`, 35, 380, { continued: true })
-				.text(`${row.ihale_tarihi}`, 170, 380, { align: 'center' })
+  .text('Sözleşme Bedeli :', startX, startY + 150)
+  .text(`${row.sozlesme_bedeli}`, startX+250, startY + 150, { align: 'left' })
 
-				.text(`Kayıt no :`, 35, 400, { continued: true })
-				.text(`${row.kayit_no}`, 170, 400, { align: 'center' })
+  .text('İhale Tarihi :', startX, startY + 170)
+  .text(`${row.ihale_tarihi}`, startX+250, startY + 170, { align: 'left' })
 
-				.text(`Sözleşme Tarihi :`, 35, 420, { continued: true })
-				.text(`${row.sozlesme_tarih}`, 170, 420)
+  .text('Kayıt no :', startX, startY + 190)
+  .text(`${row.kayit_no}`, startX+250, startY + 190, { align: 'left' })
 
-				.text(`İşyeri Teslim Tarihi :`, 35, 440, { continued: true })
-				.text(`${row.isyeri_teslim_tarihi}`, 170, 440)
+  .text('Sözleşme Tarihi :', startX, startY + 210)
+  .text(`${row.sozlesme_tarih}`, startX+250, startY + 210, { align: 'left' })
 
-				.text(`Sözleşmeye Göre İşin Süresi :`, 35, 460, { continued: true })
-				.text(`${row.isin_suresi}`, 170, 460)
+  .text('İşyeri Teslim Tarihi :', startX, startY + 230)
+  .text(`${row.isyeri_teslim_tarihi}`, startX+250, startY + 230, { align: 'left' })
 
-				.text(`Sözleşmeye Göre İş Bitim Tarihi :`, 35, 480, { continued: true })
-				.text(`${row.is_bitim_tarihi}`, 170, 480, { align: 'center' });
+  .text('Sözleşmeye Göre İşin Süresi :', startX, startY + 250)
+  .text(`${row.isin_suresi}`, startX+250, startY + 250, { align: 'left' })
 
-			doc.moveDown();
+  .text('Sözleşmeye Göre İş Bitim Tarihi :', startX, startY + 270)
+  .text(`${row.is_bitim_tarihi}`, startX+250, startY + 270, { align: 'left' });
+
+doc.moveDown();
+
 		});
 
 		// PDF dosyasına yazdırma işlemini tamamla
