@@ -2,6 +2,7 @@ const mysql = require('mysql');
 const express = require('express');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
+const { table } = require('console');
 
 const app = express();
 app.use('/assets', express.static('assets'));
@@ -179,9 +180,32 @@ connection.query('SELECT * FROM hakedis_raporu ', (error, results) => {
 
 app.get('/generate-pdf', (req, res) => {
 	// PDF oluşturma işlemleri
-	const doc = new PDFDocument({ size: 'A4' });
+	const doc = new PDFDocument({ size: 'A4', margin:30});
 
+	const startY = 270; // Başlangıç y koordinatı
+	const startX = 35;  // Başlangıç x kordinatı
+
+	cerceve();
 	generateHeader(doc);
+	generateFooter(doc);
+
+	function cerceve(){
+		const frameX = 15; // Çerçevenin sol kenarının X koordinatı
+		const frameY = 30; // Çerçevenin üst kenarının Y koordinatı
+		const frameWidth = 570; // Çerçevenin genişliği
+		const frameHeight = 750; // Çerçevenin yüksekliği
+		const frameThickness = 2; // Çerçevenin kalınlığı piksel cinsinden
+		
+		doc.rect(frameX, frameY, frameWidth, frameThickness) // Üst çerçeve
+			 .fill('#000000');
+		doc.rect(frameX, frameY + frameHeight - frameThickness, frameWidth, frameThickness) // Alt çerçeve
+			 .fill('#000000');
+		doc.rect(frameX, frameY + frameThickness, frameThickness, frameHeight - 2 * frameThickness) // Sol çerçeve
+			 .fill('#000000');
+		doc.rect(frameX + frameWidth - frameThickness, frameY + frameThickness, frameThickness, frameHeight - 2 * frameThickness) // Sağ çerçeve
+			 .fill('#000000');
+		
+		}
 
 	function generateHeader(doc) {
 		const logoLeft = 'assets/gorseller/logo_left.png';
@@ -205,6 +229,35 @@ app.get('/generate-pdf', (req, res) => {
 		doc.font('arial.ttf').fontSize(16).text('Hakediş Raporu', 100, 150, { align: 'center' });
 		doc.moveDown();
 	}
+
+	function generateFooter(doc){
+		
+
+
+
+
+		
+	}
+
+	function row1(doc, heigth) {
+		doc.lineJoin('miter')
+			.rect(30, heigth, 550, 85)
+			.stroke()
+		return doc;
+	}
+
+	function textInRow1First(doc, text,  heigth) {
+		doc.y = heigth;
+		doc.x =30;
+		doc.fillColor('black')
+		doc.text(text, {
+			paragraphGap: 5,
+			indent: 5,
+			align: 'justify',
+			columns: 1,
+		});
+		return doc;
+	}
 	// PDF dosyasına yazdırma işlemi
 	// Veritabanından verileri çekme
 	connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (error, results) => {
@@ -215,51 +268,104 @@ app.get('/generate-pdf', (req, res) => {
 		// Verileri PDF'e yazdırma
 		results.forEach((row) => {
 			
+		doc
+		.font('arial.ttf')
+		.fontSize(12)
+		.text(`Tarihi: ${row.tarih}`, 100, 180, { align: 'center' })
+		.text(`No su: ${row.no}`, 100, 200, { align: 'center' })
+		.text(`Uygulama Yılı: ${row.uygulama_yili}`, 100, 220, { align: 'center' })
+
 	doc
-  .font('arial.ttf')
-  .fontSize(12)
-  .text(`Tarihi: ${row.tarih}`, 100, 180, { align: 'center' })
-  .text(`No su: ${row.no}`, 100, 200, { align: 'center' })
-  .text(`Uygulama Yılı: ${row.uygulama_yili}`, 100, 220, { align: 'center' })
+		.text('Yapılan işin / Hizmetin Adı :', startX, startY)
+		.text(`${row.is_adi}`, startX+250, startY, { align: 'left' })
 
-  const startY = 270; // Başlangıç y koordinatı
-	const startX = 35;  // Başlangıç x kordinatı
+		.text('Yapılan İsin / Hizmetin Etüd / Proje No su :', startX, startY + 60)
+		.text(`${row.proje_no}`, startX+250, startY + 60, { align: 'left' })
 
-doc
-  .text('Yapılan işin / Hizmetin Adı :', startX, startY)
-  .text(`${row.is_adi}`, startX+250, startY, { align: 'left' })
+		.text('Yüklenicinin Adi / Ticari Unvanı :', startX, startY + 100)
+		.text(`${row.yuklenici_adi}`, startX+250, startY + 100, { align: 'left' })
 
-  .text('Yapılan İsin / Hizmetin Etüd / Proje No su :', startX, startY + 60)
-  .text(`${row.proje_no}`, startX+250, startY + 60, { align: 'left' })
+		.text('Sözleşme Bedeli :', startX, startY + 150)
+		.text(`${row.sozlesme_bedeli}`, startX+250, startY + 150, { align: 'left' })
 
-  .text('Yüklenicinin Adi / Ticari Unvanı :', startX, startY + 100)
-  .text(`${row.yuklenici_adi}`, startX+250, startY + 100, { align: 'left' })
+		.text('İhale Tarihi :', startX, startY + 170)
+		.text(`${row.ihale_tarihi}`, startX+250, startY + 170, { align: 'left' })
 
-  .text('Sözleşme Bedeli :', startX, startY + 150)
-  .text(`${row.sozlesme_bedeli}`, startX+250, startY + 150, { align: 'left' })
+		.text('Kayıt no :', startX, startY + 190)
+		.text(`${row.kayit_no}`, startX+250, startY + 190, { align: 'left' })
 
-  .text('İhale Tarihi :', startX, startY + 170)
-  .text(`${row.ihale_tarihi}`, startX+250, startY + 170, { align: 'left' })
+		.text('Sözleşme Tarihi :', startX, startY + 210)
+		.text(`${row.sozlesme_tarih}`, startX+250, startY + 210, { align: 'left' })
 
-  .text('Kayıt no :', startX, startY + 190)
-  .text(`${row.kayit_no}`, startX+250, startY + 190, { align: 'left' })
+		.text('İşyeri Teslim Tarihi :', startX, startY + 230)
+		.text(`${row.isyeri_teslim_tarihi}`, startX+250, startY + 230, { align: 'left' })
 
-  .text('Sözleşme Tarihi :', startX, startY + 210)
-  .text(`${row.sozlesme_tarih}`, startX+250, startY + 210, { align: 'left' })
+		.text('Sözleşmeye Göre İşin Süresi :', startX, startY + 250)
+		.text(`${row.isin_suresi}`, startX+250, startY + 250, { align: 'left' })
 
-  .text('İşyeri Teslim Tarihi :', startX, startY + 230)
-  .text(`${row.isyeri_teslim_tarihi}`, startX+250, startY + 230, { align: 'left' })
+		.text('Sözleşmeye Göre İş Bitim Tarihi :', startX, startY + 270)
+		.text(`${row.is_bitim_tarihi}`, startX+250, startY + 270, { align: 'left' });
 
-  .text('Sözleşmeye Göre İşin Süresi :', startX, startY + 250)
-  .text(`${row.isin_suresi}`, startX+250, startY + 250, { align: 'left' })
+		doc.moveDown();
 
-  .text('Sözleşmeye Göre İş Bitim Tarihi :', startX, startY + 270)
-  .text(`${row.is_bitim_tarihi}`, startX+250, startY + 270, { align: 'left' });
 
-doc.moveDown();
+	// --------------TABLLLOOOOOO---------45----
+	doc
+			.lineCap('butt')
+			.moveTo(startX+100, startY + 310)
+			.lineTo(startX+100, startY + 395)
+			.stroke()
+			.lineCap('butt')
+			.moveTo(startX+250, startY + 310)
+			.lineTo(startX+250, startY + 395)
+			.stroke()
+			.lineCap('butt')
+			.moveTo(startX+370, startY + 310)
+			.lineTo(startX+370, startY + 395)
+			.stroke()
+			.lineCap('butt')
+			.moveTo(startX-5, startY+345)
+			.lineTo(startX+545, startY+345)
+			.stroke()
+
+			row1(doc, startY + 310);
+			
+			doc
+			.text('Sözleşme Bedeli', startX,startY+320)
+			.text(`${row.sozlesme_bedeli}`, startX+15, startY + 360, { align: 'left' })
+			.text('Sözleşme Artış', startX+140,startY+310)
+			.text('Onayının Tarihi / No su', startX+120,startY+322)
+			.text('Ek Sözleşme Bedeli', startX+260,startY+320)
+			.text('Toplam Sözleşme Bedeli', startX+400,startY+310)
+			.text(`${row.sozlesme_bedeli}`, startX+405, startY + 360, { align: 'left' })
+/*----------------------------------------------*/
+			doc
+			.lineCap('butt')
+			.moveTo(startX+140, startY + 400)
+			.lineTo(startX+140, startY + 485)
+			.stroke()
+			.lineCap('butt')
+			.moveTo(startX+250, startY + 400)
+			.lineTo(startX+250, startY + 485)
+			.stroke()
+			.lineCap('butt')
+			.moveTo(startX+350, startY + 400)
+			.lineTo(startX+350, startY + 485)
+			.stroke()
+			.lineCap('butt')
+			.moveTo(startX-5, startY + 430)
+			.lineTo(startX+545, startY + 430)
+			.stroke()
+
+			row1(doc, startY + 400);
+
+			doc
+			.text('Süre uzatım kararı Tarih', startX,startY+405)
+			.text('Sayı', startX+170,startY+405)
+			.text('Verilen Süre', startX+270, startY+405)
+			.text('İş Bitim Tarihi',startX+400, startY+405)
 
 		});
-
 		// PDF dosyasına yazdırma işlemini tamamla
 		doc.end();
 
@@ -272,6 +378,7 @@ doc.moveDown();
 		doc.pipe(res);
 	});
 });
+
 // MySQL bağlantısını kapat
 // connection.end();
 app.listen(5001);
