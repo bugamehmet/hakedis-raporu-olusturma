@@ -20,7 +20,7 @@ connection.connect(function (error) {
 	else console.log('bağlanıldı!');
 });
 // body-parser yerine kullandığımız middleware
-// HTML form verilerini veri tabanına yollamdan önce işlemek için
+// HTML form verilerini veri tabanına yollamadan önce işlemek için
 app.use(express.urlencoded({ extended: true }));
 
 // anadizine girildğinde index.html i tarayıcıya gönderir "GET"
@@ -125,57 +125,6 @@ app.post('/welcome', function (req, res) {
 	);
 });
 
-// -----------------PDF OLUŞTURMA---------------------
-/*//const doc = new PDFDocument();
-// PDF dosyasına yazdırma işlemi
-//const outputStream = fs.createWriteStream('hakedis_raporu.pdf');
-//doc.pipe(outputStream);
-
-// Veritabanından verileri çekme
-connection.query('SELECT * FROM hakedis_raporu ', (error, results) => {
-  if (error) {
-    console.error('MySQL query failed: ', error);
-    return;
-  }
-
-  // Hakediş raporu başlığı
-  doc.font('arial.ttf').fontSize(16).text('Hakediş Raporu', { align: 'center' });
-  doc.moveDown();
-
-  // Verileri PDF'e yazdırma
-  results.forEach((row) => {
-    doc.font('arial.ttf').fontSize(12)
-      .text(`Tarihi: ${row.tarih}`)
-      .text(`No su: ${row.no}`)
-      .text(`Uygulama Yılı: ${row.uygulama_yili}`)
-      .text(`Yapılan işin / Hizmetin Adı: ${row.is_adi}`)
-      .text(`Yapılan İsin / Hizmetin Etüd / Proje No su: ${row.proje_no}`)
-      .text(`Yüklenicinin Adi / Ticari Unvanı: ${row.yuklenici_adi}`)
-      .text(`Sözleşme Bedeli: ${row.sozlesme_bedeli}`)
-      .text(`İhale Tarihi: ${row.ihale_tarihi}`)
-      .text(`Kayıt no: ${row.kayit_no}`)
-      .text(`Sözleşme Tarihi: ${row.sozlesme_tarihi}`)
-      .text(`İşyeri Teslim Tarihi: ${row.isyeri_teslim_tarihi}`)
-      .text(`Sözleşmeye Göre İşin Süresi: ${row.isin_suresi}`)
-      .text(`Sözleşmeye Göre İş Bitim Tarihi: ${row.is_bitim_tarihi}`);
-    doc.moveDown();
-  });
-
-  // PDF dosyasına yazdırma işlemini tamamla
-  doc.end();
-
-  // PDF dosyasının oluşturulduğunu bildir
-  outputStream.on('finish', () => {
-    console.log('Hakediş raporu başarıyla oluşturuldu.');
-  });
-
-  // Hata durumunda işlemi bildir
-  outputStream.on('error', (error) => {
-    console.error('Hata oluştu:', error);
-  });
-});
-*/
-
 //--------------İNDİRME İNŞALLAH-------------//
 
 app.get('/generate-pdf', (req, res) => {
@@ -187,7 +136,6 @@ app.get('/generate-pdf', (req, res) => {
 
 	cerceve();
 	generateHeader(doc);
-	generateFooter(doc);
 
 	function cerceve(){
 		const frameX = 15; // Çerçevenin sol kenarının X koordinatı
@@ -230,15 +178,6 @@ app.get('/generate-pdf', (req, res) => {
 		doc.moveDown();
 	}
 
-	function generateFooter(doc){
-		
-
-
-
-
-		
-	}
-
 	function row1(doc, heigth) {
 		doc.lineJoin('miter')
 			.rect(30, heigth, 550, 85)
@@ -246,17 +185,34 @@ app.get('/generate-pdf', (req, res) => {
 		return doc;
 	}
 
-	function textInRow1First(doc, text,  heigth) {
-		doc.y = heigth;
-		doc.x =30;
-		doc.fillColor('black')
-		doc.text(text, {
-			paragraphGap: 5,
-			indent: 5,
-			align: 'justify',
-			columns: 1,
-		});
-		return doc;
+
+	Number.prototype.para = function (fractionDigits, decimal, separator) {
+		fractionDigits = isNaN(fractionDigits = Math.abs(fractionDigits)) ? 2 : fractionDigits;
+		
+		decimal = typeof (decimal) === "undefined" ? "." : decimal;
+		
+		separator = typeof (separator) === "undefined" ? "," : separator;
+		
+		var number = this;
+		
+		var neg = number < 0 ? "-" : "";
+		
+		var wholePart = parseInt(number = Math.abs(+number || 0).toFixed(fractionDigits)) + "";
+		
+		var separtorIndex = (separtorIndex = wholePart.length) > 3 ? separtorIndex % 3 : 0;
+		
+		return neg +
+		
+		(separtorIndex ? wholePart.substr(0, separtorIndex) + separator : "") +
+		
+		wholePart.substr(separtorIndex).replace(/(\d{3})(?=\d)/g, "$1" + separator) +
+		
+		(fractionDigits ? decimal + Math.abs(number - wholePart).toFixed(fractionDigits).slice(2) : "");
+		
+		};
+
+	function para(tl) {
+		return Number(tl).para(2, ',', '.')+" TL";
 	}
 	// PDF dosyasına yazdırma işlemi
 	// Veritabanından verileri çekme
@@ -286,7 +242,8 @@ app.get('/generate-pdf', (req, res) => {
 		.text(`${row.yuklenici_adi}`, startX+250, startY + 100, { align: 'left' })
 
 		.text('Sözleşme Bedeli :', startX, startY + 150)
-		.text(`${row.sozlesme_bedeli}`, startX+250, startY + 150, { align: 'left' })
+		.text(`${para(row.sozlesme_bedeli)}`, startX+250, startY + 150, { align: 'left'})
+		
 
 		.text('İhale Tarihi :', startX, startY + 170)
 		.text(`${row.ihale_tarihi}`, startX+250, startY + 170, { align: 'left' })
@@ -309,7 +266,7 @@ app.get('/generate-pdf', (req, res) => {
 		doc.moveDown();
 
 
-	// --------------TABLLLOOOOOO---------45----
+	// --------------TABLLLOOOOOO-------------
 	doc
 			.lineCap('butt')
 			.moveTo(startX+100, startY + 310)
@@ -329,15 +286,15 @@ app.get('/generate-pdf', (req, res) => {
 			.stroke()
 
 			row1(doc, startY + 310);
-			
+
 			doc
 			.text('Sözleşme Bedeli', startX,startY+320)
-			.text(`${row.sozlesme_bedeli}`, startX+15, startY + 360, { align: 'left' })
+			.text(`${para(row.sozlesme_bedeli)}`, startX+5, startY + 360, { align: 'left' })
 			.text('Sözleşme Artış', startX+140,startY+310)
 			.text('Onayının Tarihi / No su', startX+120,startY+322)
 			.text('Ek Sözleşme Bedeli', startX+260,startY+320)
 			.text('Toplam Sözleşme Bedeli', startX+400,startY+310)
-			.text(`${row.sozlesme_bedeli}`, startX+405, startY + 360, { align: 'left' })
+			.text(`${para(row.sozlesme_bedeli)}`, startX+400, startY + 360, { align: 'left'})
 /*----------------------------------------------*/
 			doc
 			.lineCap('butt')
@@ -366,6 +323,7 @@ app.get('/generate-pdf', (req, res) => {
 			.text('İş Bitim Tarihi',startX+400, startY+405)
 
 		});
+
 		// PDF dosyasına yazdırma işlemini tamamla
 		doc.end();
 
@@ -375,10 +333,14 @@ app.get('/generate-pdf', (req, res) => {
 		// PDF dosyasını indirme
 		res.setHeader('Content-Type', 'application/pdf');
 		res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu.pdf');
+
 		doc.pipe(res);
+
 	});
 });
 
 // MySQL bağlantısını kapat
 // connection.end();
 app.listen(5001);
+
+
