@@ -423,6 +423,7 @@ app.get('/generate-pdf2', function (req, res) {
 
 		doc.font('arial.ttf').text('HAKEDİŞ RAPORU', { align: 'center' }).fontSize('14');
 
+		// -------- ÜST SATIRLAR ---------
 		row1(doc, startY - 180);
 		row1(doc, startY - 160);
 		row1(doc, startY - 140);
@@ -430,9 +431,16 @@ app.get('/generate-pdf2', function (req, res) {
 		row1(doc, startY - 100);
 		row1(doc, startY - 80);
 		row1(doc, startY - 60);
-		//-------------ALT SATIRLAR----------
-		row1(doc, startY + 140);
-		row1(doc, startY + 160);
+		doc // SOL DİK
+			.lineCap('butt')
+			.moveTo(startX + 5, startY - 180)
+			.lineTo(startX + 5, startY - 40)
+			.stroke();
+		doc //SAĞ DİK
+			.lineCap('butt')
+			.moveTo(startX + 410, startY - 220)
+			.lineTo(startX + 410, startY - 40)
+			.stroke();
 
 		//-------------ORTA SATIR--------------
 		row2(doc, startY - 40);
@@ -444,23 +452,19 @@ app.get('/generate-pdf2', function (req, res) {
 		row2(doc, startY + 80);
 		row2(doc, startY + 100);
 		row2(doc, startY + 120);
-
-		doc
-			.lineCap('butt')
-			.moveTo(startX + 5, startY - 180)
-			.lineTo(startX + 5, startY - 40)
-			.stroke();
-		doc
-			.lineCap('butt')
-			.moveTo(startX + 410, startY - 220)
-			.lineTo(startX + 410, startY - 40)
-			.stroke();
-		/*-----------------------ORTA------------------------------ */
 		doc // SOL DİK
 			.lineCap('butt')
 			.moveTo(startX + 20, startY - 40)
 			.lineTo(startX + 20, startY + 140)
 			.stroke();
+
+		//-------------ALT SATIRLAR----------
+		row1(doc, startY + 140);
+		row1(doc, startY + 160);
+		doc
+			.lineCap('butt') // ALT CİZGİ
+			.moveTo(startX - 20, startY + 300)
+			.lineTo(startX + 550, startY + 300);
 
 		doc.end();
 		console.log('Hakediş raporu-2 başarıyla oluşturuldu');
