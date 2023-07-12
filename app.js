@@ -129,66 +129,75 @@ app.post('/welcome', function (req, res) {
 
 app.get('/generate-pdf', (req, res) => {
 	// PDF oluşturma işlemleri
-	const doc = new PDFDocument({ size: 'A4', margin:30});
+	const doc = new PDFDocument({ size: 'A4', margin: 30 });
 
 	const startY = 270; // Başlangıç y koordinatı
-	const startX = 35;  // Başlangıç x kordinatı
+	const startX = 35; // Başlangıç x kordinatı
 
 	cerceve();
 	generateHeader(doc);
 
-	function cerceve(){
+	function cerceve() {
 		const frameX = 15; // Çerçevenin sol kenarının X koordinatı
 		const frameY = 30; // Çerçevenin üst kenarının Y koordinatı
 		const frameWidth = 570; // Çerçevenin genişliği
 		const frameHeight = 750; // Çerçevenin yüksekliği
 		const frameThickness = 2; // Çerçevenin kalınlığı piksel cinsinden
-		
-		doc.rect(frameX, frameY, frameWidth, frameThickness) // Üst çerçeve
-			 .fill('#000000');
-		doc.rect(frameX, frameY + frameHeight - frameThickness, frameWidth, frameThickness) // Alt çerçeve
-			 .fill('#000000');
-		doc.rect(frameX, frameY + frameThickness, frameThickness, frameHeight - 2 * frameThickness) // Sol çerçeve
-			 .fill('#000000');
-		doc.rect(frameX + frameWidth - frameThickness, frameY + frameThickness, frameThickness, frameHeight - 2 * frameThickness) // Sağ çerçeve
-			 .fill('#000000');
-		
-		}
+
+		doc
+			.rect(frameX, frameY, frameWidth, frameThickness) // Üst çerçeve
+			.fill('#000000');
+		doc
+			.rect(frameX, frameY + frameHeight - frameThickness, frameWidth, frameThickness) // Alt çerçeve
+			.fill('#000000');
+		doc
+			.rect(frameX, frameY + frameThickness, frameThickness, frameHeight - 2 * frameThickness) // Sol çerçeve
+			.fill('#000000');
+		doc
+			.rect(
+				frameX + frameWidth - frameThickness,
+				frameY + frameThickness,
+				frameThickness,
+				frameHeight - 2 * frameThickness
+			) // Sağ çerçeve
+			.fill('#000000');
+	}
 
 	function row1(doc, heigth) {
-		doc.lineJoin('miter')
-			.rect(30, heigth, 550, 85)
-			.stroke()
+		doc.lineJoin('miter').rect(30, heigth, 550, 85).stroke();
 		return doc;
 	}
 
 	Number.prototype.para = function (fractionDigits, decimal, separator) {
-		fractionDigits = isNaN(fractionDigits = Math.abs(fractionDigits)) ? 2 : fractionDigits;
-		
-		decimal = typeof (decimal) === "undefined" ? "." : decimal;
-		
-		separator = typeof (separator) === "undefined" ? "," : separator;
-		
+		fractionDigits = isNaN((fractionDigits = Math.abs(fractionDigits))) ? 2 : fractionDigits;
+
+		decimal = typeof decimal === 'undefined' ? '.' : decimal;
+
+		separator = typeof separator === 'undefined' ? ',' : separator;
+
 		var number = this;
-		
-		var neg = number < 0 ? "-" : "";
-		
-		var wholePart = parseInt(number = Math.abs(+number || 0).toFixed(fractionDigits)) + "";
-		
+
+		var neg = number < 0 ? '-' : '';
+
+		var wholePart = parseInt((number = Math.abs(+number || 0).toFixed(fractionDigits))) + '';
+
 		var separtorIndex = (separtorIndex = wholePart.length) > 3 ? separtorIndex % 3 : 0;
-		
-		return neg +
-		
-		(separtorIndex ? wholePart.substr(0, separtorIndex) + separator : "") +
-		
-		wholePart.substr(separtorIndex).replace(/(\d{3})(?=\d)/g, "$1" + separator) +
-		
-		(fractionDigits ? decimal + Math.abs(number - wholePart).toFixed(fractionDigits).slice(2) : "");
-		
-		};
+
+		return (
+			neg +
+			(separtorIndex ? wholePart.substr(0, separtorIndex) + separator : '') +
+			wholePart.substr(separtorIndex).replace(/(\d{3})(?=\d)/g, '$1' + separator) +
+			(fractionDigits
+				? decimal +
+				  Math.abs(number - wholePart)
+						.toFixed(fractionDigits)
+						.slice(2)
+				: '')
+		);
+	};
 
 	function para(tl) {
-		return Number(tl).para(2, ',', '.')+" TL";
+		return Number(tl).para(2, ',', '.') + ' TL';
 	}
 	function generateHeader(doc) {
 		const logoLeft = 'assets/gorseller/logo_left.png';
@@ -221,105 +230,101 @@ app.get('/generate-pdf', (req, res) => {
 		}
 		// Verileri PDF'e yazdırma
 		results.forEach((row) => {
-			
-		doc
-		.font('arial.ttf')
-		.fontSize(12)
-		.text(`Tarihi: ${row.tarih}`, 100, 180, { align: 'center' })
-		.text(`No su: ${row.no}`, 100, 200, { align: 'center' })
-		.text(`Uygulama Yılı: ${row.uygulama_yili}`, 100, 220, { align: 'center' })
+			doc
+				.font('arial.ttf')
+				.fontSize(12)
+				.text(`Tarihi: ${row.tarih}`, 100, 180, { align: 'center' })
+				.text(`No su: ${row.no}`, 100, 200, { align: 'center' })
+				.text(`Uygulama Yılı: ${row.uygulama_yili}`, 100, 220, { align: 'center' });
 
-	doc
-		.text('Yapılan işin / Hizmetin Adı :', startX, startY)
-		.text(`${row.is_adi}`, startX+250, startY, { align: 'left' })
+			doc
+				.text('Yapılan işin / Hizmetin Adı :', startX, startY)
+				.text(`${row.is_adi}`, startX + 250, startY, { align: 'left' })
 
-		.text('Yapılan İsin / Hizmetin Etüd / Proje No su :', startX, startY + 60)
-		.text(`${row.proje_no}`, startX+250, startY + 60, { align: 'left' })
+				.text('Yapılan İsin / Hizmetin Etüd / Proje No su :', startX, startY + 60)
+				.text(`${row.proje_no}`, startX + 250, startY + 60, { align: 'left' })
 
-		.text('Yüklenicinin Adi / Ticari Unvanı :', startX, startY + 100)
-		.text(`${row.yuklenici_adi}`, startX+250, startY + 100, { align: 'left' })
+				.text('Yüklenicinin Adi / Ticari Unvanı :', startX, startY + 100)
+				.text(`${row.yuklenici_adi}`, startX + 250, startY + 100, { align: 'left' })
 
-		.text('Sözleşme Bedeli :', startX, startY + 150)
-		.text(`${para(row.sozlesme_bedeli)}`, startX+250, startY + 150, { align: 'left'})
-		
+				.text('Sözleşme Bedeli :', startX, startY + 150)
+				.text(`${para(row.sozlesme_bedeli)}`, startX + 250, startY + 150, { align: 'left' })
 
-		.text('İhale Tarihi :', startX, startY + 170)
-		.text(`${row.ihale_tarihi}`, startX+250, startY + 170, { align: 'left' })
+				.text('İhale Tarihi :', startX, startY + 170)
+				.text(`${row.ihale_tarihi}`, startX + 250, startY + 170, { align: 'left' })
 
-		.text('Kayıt no :', startX, startY + 190)
-		.text(`${row.kayit_no}`, startX+250, startY + 190, { align: 'left' })
+				.text('Kayıt no :', startX, startY + 190)
+				.text(`${row.kayit_no}`, startX + 250, startY + 190, { align: 'left' })
 
-		.text('Sözleşme Tarihi :', startX, startY + 210)
-		.text(`${row.sozlesme_tarih}`, startX+250, startY + 210, { align: 'left' })
+				.text('Sözleşme Tarihi :', startX, startY + 210)
+				.text(`${row.sozlesme_tarih}`, startX + 250, startY + 210, { align: 'left' })
 
-		.text('İşyeri Teslim Tarihi :', startX, startY + 230)
-		.text(`${row.isyeri_teslim_tarihi}`, startX+250, startY + 230, { align: 'left' })
+				.text('İşyeri Teslim Tarihi :', startX, startY + 230)
+				.text(`${row.isyeri_teslim_tarihi}`, startX + 250, startY + 230, { align: 'left' })
 
-		.text('Sözleşmeye Göre İşin Süresi :', startX, startY + 250)
-		.text(`${row.isin_suresi}`, startX+250, startY + 250, { align: 'left' })
+				.text('Sözleşmeye Göre İşin Süresi :', startX, startY + 250)
+				.text(`${row.isin_suresi}`, startX + 250, startY + 250, { align: 'left' })
 
-		.text('Sözleşmeye Göre İş Bitim Tarihi :', startX, startY + 270)
-		.text(`${row.is_bitim_tarihi}`, startX+250, startY + 270, { align: 'left' });
+				.text('Sözleşmeye Göre İş Bitim Tarihi :', startX, startY + 270)
+				.text(`${row.is_bitim_tarihi}`, startX + 250, startY + 270, { align: 'left' });
 
-		doc.moveDown();
+			doc.moveDown();
 
-
-	// --------------TABLLLOOOOOO-------------
-	doc
-			.lineCap('butt')
-			.moveTo(startX+100, startY + 310)
-			.lineTo(startX+100, startY + 395)
-			.stroke()
-			.lineCap('butt')
-			.moveTo(startX+250, startY + 310)
-			.lineTo(startX+250, startY + 395)
-			.stroke()
-			.lineCap('butt')
-			.moveTo(startX+370, startY + 310)
-			.lineTo(startX+370, startY + 395)
-			.stroke()
-			.lineCap('butt')
-			.moveTo(startX-5, startY+345)
-			.lineTo(startX+545, startY+345)
-			.stroke()
+			// --------------TABLLLOOOOOO-------------
+			doc
+				.lineCap('butt')
+				.moveTo(startX + 100, startY + 310)
+				.lineTo(startX + 100, startY + 395)
+				.stroke()
+				.lineCap('butt')
+				.moveTo(startX + 250, startY + 310)
+				.lineTo(startX + 250, startY + 395)
+				.stroke()
+				.lineCap('butt')
+				.moveTo(startX + 370, startY + 310)
+				.lineTo(startX + 370, startY + 395)
+				.stroke()
+				.lineCap('butt')
+				.moveTo(startX - 5, startY + 345)
+				.lineTo(startX + 545, startY + 345)
+				.stroke();
 
 			row1(doc, startY + 310);
 
 			doc
-			.text('Sözleşme Bedeli', startX,startY+320)
-			.text(`${para(row.sozlesme_bedeli)}`, startX+5, startY + 360, { align: 'left' })
-			.text('Sözleşme Artış', startX+140,startY+310)
-			.text('Onayının Tarihi / No su', startX+120,startY+322)
-			.text('Ek Sözleşme Bedeli', startX+260,startY+320)
-			.text('Toplam Sözleşme Bedeli', startX+400,startY+310)
-			.text(`${para(row.sozlesme_bedeli)}`, startX+400, startY + 360, { align: 'left'})
-/*----------------------------------------------*/
+				.text('Sözleşme Bedeli', startX, startY + 320)
+				.text(`${para(row.sozlesme_bedeli)}`, startX + 5, startY + 360, { align: 'left' })
+				.text('Sözleşme Artış', startX + 140, startY + 310)
+				.text('Onayının Tarihi / No su', startX + 120, startY + 322)
+				.text('Ek Sözleşme Bedeli', startX + 260, startY + 320)
+				.text('Toplam Sözleşme Bedeli', startX + 400, startY + 310)
+				.text(`${para(row.sozlesme_bedeli)}`, startX + 400, startY + 360, { align: 'left' });
+			/*----------------------------------------------*/
 			doc
-			.lineCap('butt')
-			.moveTo(startX+140, startY + 400)
-			.lineTo(startX+140, startY + 485)
-			.stroke()
-			.lineCap('butt')
-			.moveTo(startX+250, startY + 400)
-			.lineTo(startX+250, startY + 485)
-			.stroke()
-			.lineCap('butt')
-			.moveTo(startX+350, startY + 400)
-			.lineTo(startX+350, startY + 485)
-			.stroke()
-			.lineCap('butt')
-			.moveTo(startX-5, startY + 430)
-			.lineTo(startX+545, startY + 430)
-			.stroke()
+				.lineCap('butt')
+				.moveTo(startX + 140, startY + 400)
+				.lineTo(startX + 140, startY + 485)
+				.stroke()
+				.lineCap('butt')
+				.moveTo(startX + 250, startY + 400)
+				.lineTo(startX + 250, startY + 485)
+				.stroke()
+				.lineCap('butt')
+				.moveTo(startX + 350, startY + 400)
+				.lineTo(startX + 350, startY + 485)
+				.stroke()
+				.lineCap('butt')
+				.moveTo(startX - 5, startY + 430)
+				.lineTo(startX + 545, startY + 430)
+				.stroke();
 
 			row1(doc, startY + 400);
 
 			doc
-			.text('Süre uzatım kararı Tarih', startX,startY+405)
-			.text('Sayı', startX+170,startY+405)
-			.text('Verilen Süre', startX+270, startY+405)
-			.text('İş Bitim Tarihi',startX+400, startY+405)
-
+				.text('Süre uzatım kararı Tarih', startX, startY + 405)
+				.text('Sayı', startX + 170, startY + 405)
+				.text('Verilen Süre', startX + 270, startY + 405)
+				.text('İş Bitim Tarihi', startX + 400, startY + 405);
 		});
 
 		// PDF dosyasına yazdırma işlemini tamamla
@@ -331,209 +336,140 @@ app.get('/generate-pdf', (req, res) => {
 		// PDF dosyasını indirme
 		res.setHeader('Content-Type', 'application/pdf');
 		res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu.pdf');
-		
 
 		doc.pipe(res);
-
 	});
 });
 
-
-
-
-app.get('/generate-pdf2', function(req,res){
-
-	const doc = new PDFDocument({ size: 'A4', margin:30});
+app.get('/generate-pdf2', function (req, res) {
+	const doc = new PDFDocument({ size: 'A4', margin: 30 });
 
 	const startY = 270; // Başlangıç y koordinatı
-	const startX = 15;  // Başlangıç x kordinatı
+	const startX = 35; // Başlangıç x kordinatı
 
 	cerceve();
-	function cerceve(){
+	function cerceve() {
 		const frameX = 15; // Çerçevenin sol kenarının X koordinatı
 		const frameY = 50; // Çerçevenin üst kenarının Y koordinatı
 		const frameWidth = 570; // Çerçevenin genişliği
 		const frameHeight = 750; // Çerçevenin yüksekliği
 		const frameThickness = 2; // Çerçevenin kalınlığı piksel cinsinden
-		
-		doc.rect(frameX, frameY, frameWidth, frameThickness) // Üst çerçeve
-			 .fill('#000000');
-		doc.rect(frameX, frameY + frameHeight - frameThickness, frameWidth, frameThickness) // Alt çerçeve
-			 .fill('#000000');
-		doc.rect(frameX, frameY + frameThickness, frameThickness, frameHeight - 2 * frameThickness) // Sol çerçeve
-			 .fill('#000000');
-		doc.rect(frameX + frameWidth - frameThickness, frameY + frameThickness, frameThickness, frameHeight - 2 * frameThickness) // Sağ çerçeve
-			 .fill('#000000');
-		
-		}
+
+		doc
+			.rect(frameX, frameY, frameWidth, frameThickness) // Üst çerçeve
+			.fill('#000000');
+		doc
+			.rect(frameX, frameY + frameHeight - frameThickness, frameWidth, frameThickness) // Alt çerçeve
+			.fill('#000000');
+		doc
+			.rect(frameX, frameY + frameThickness, frameThickness, frameHeight - 2 * frameThickness) // Sol çerçeve
+			.fill('#000000');
+		doc
+			.rect(
+				frameX + frameWidth - frameThickness,
+				frameY + frameThickness,
+				frameThickness,
+				frameHeight - 2 * frameThickness
+			) // Sağ çerçeve
+			.fill('#000000');
+	}
 
 	function row1(doc, heigth) {
-		doc.lineJoin('miter')
-			.rect(17.2, heigth, 566.3, 20)
-			.stroke()
+		doc.lineJoin('miter').rect(17.2, heigth, 566.3, 20).stroke();
+		return doc;
+	}
+	function row2(doc, height) {
+		doc.lineJoin('miter').rect(55, height, 528, 20).stroke();
 		return doc;
 	}
 
 	Number.prototype.para = function (fractionDigits, decimal, separator) {
-		fractionDigits = isNaN(fractionDigits = Math.abs(fractionDigits)) ? 2 : fractionDigits;
-		
-		decimal = typeof (decimal) === "undefined" ? "." : decimal;
-		
-		separator = typeof (separator) === "undefined" ? "," : separator;
-		
+		fractionDigits = isNaN((fractionDigits = Math.abs(fractionDigits))) ? 2 : fractionDigits;
+
+		decimal = typeof decimal === 'undefined' ? '.' : decimal;
+
+		separator = typeof separator === 'undefined' ? ',' : separator;
+
 		var number = this;
-		
-		var neg = number < 0 ? "-" : "";
-		
-		var wholePart = parseInt(number = Math.abs(+number || 0).toFixed(fractionDigits)) + "";
-		
+
+		var neg = number < 0 ? '-' : '';
+
+		var wholePart = parseInt((number = Math.abs(+number || 0).toFixed(fractionDigits))) + '';
+
 		var separtorIndex = (separtorIndex = wholePart.length) > 3 ? separtorIndex % 3 : 0;
-		
-		return neg +
-		
-		(separtorIndex ? wholePart.substr(0, separtorIndex) + separator : "") +
-		
-		wholePart.substr(separtorIndex).replace(/(\d{3})(?=\d)/g, "$1" + separator) +
-		
-		(fractionDigits ? decimal + Math.abs(number - wholePart).toFixed(fractionDigits).slice(2) : "");
-		
-		};
+
+		return (
+			neg +
+			(separtorIndex ? wholePart.substr(0, separtorIndex) + separator : '') +
+			wholePart.substr(separtorIndex).replace(/(\d{3})(?=\d)/g, '$1' + separator) +
+			(fractionDigits
+				? decimal +
+				  Math.abs(number - wholePart)
+						.toFixed(fractionDigits)
+						.slice(2)
+				: '')
+		);
+	};
 
 	function para(tl) {
-		return Number(tl).para(2, ',', '.')+" TL";
+		return Number(tl).para(2, ',', '.') + ' TL';
 	}
-
 
 	connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (error, results) => {
 		if (error) {
 			console.error('MySQL sorgu hatası: ', error);
 			return;
 		}
+
+		doc.font('arial.ttf').text('HAKEDİŞ RAPORU', { align: 'center' }).fontSize('14');
+
+		row1(doc, startY - 180);
+		row1(doc, startY - 160);
+		row1(doc, startY - 140);
+		row1(doc, startY - 120);
+		row1(doc, startY - 100);
+		row1(doc, startY - 80);
+		row1(doc, startY - 60);
+		//-------------ALT SATIRLAR----------
+		row1(doc, startY + 140);
+		row1(doc, startY + 160);
+
+		//-------------ORTA SATIR--------------
+		row2(doc, startY - 40);
+		row2(doc, startY - 20);
+		row2(doc, startY);
+		row2(doc, startY + 20);
+		row2(doc, startY + 40);
+		row2(doc, startY + 60);
+		row2(doc, startY + 80);
+		row2(doc, startY + 100);
+		row2(doc, startY + 120);
+
 		doc
-		.font('arial.ttf')
-		.text('HAKEDİŞ RAPORU',{align:'center'}).fontSize('14')
-
-		row1(doc, startY - 170);
-		row1(doc, startY - 150);
-		row1(doc, startY - 130);
-		row1(doc, startY - 110);
-		row1(doc, startY - 90);
-		row1(doc, startY - 70);
-		row1(doc, startY - 50);
-		row1(doc, startY - 30);
-		row1(doc, startY - 10);
-
+			.lineCap('butt')
+			.moveTo(startX + 5, startY - 180)
+			.lineTo(startX + 5, startY - 40)
+			.stroke();
 		doc
-		.lineCap('butt')
-		.moveTo(startX+140, startY + 400)
-		.lineTo(startX+140, startY + 485)
-		.stroke()
-		doc
-		.lineCap('butt')
-		.moveTo(startX+100, startY + 310)
-		.lineTo(startX+100, startY + 395)
-		.stroke()
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+			.lineCap('butt')
+			.moveTo(startX + 410, startY - 220)
+			.lineTo(startX + 410, startY - 40)
+			.stroke();
+		/*-----------------------ORTA------------------------------ */
+		doc // SOL DİK
+			.lineCap('butt')
+			.moveTo(startX + 20, startY - 40)
+			.lineTo(startX + 20, startY + 140)
+			.stroke();
 
 		doc.end();
 		console.log('Hakediş raporu-2 başarıyla oluşturuldu');
 		res.setHeader('Content-Type', 'application/pdf');
 		res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu2.pdf');
 		doc.pipe(res);
-
 	});
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // MySQL bağlantısını kapat
 // connection.end();
 app.listen(5001);
-
