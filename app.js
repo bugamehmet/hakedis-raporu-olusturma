@@ -134,34 +134,26 @@ app.get('/generate-pdf', (req, res) => {
 	const startY = 270; // Başlangıç y koordinatı
 	const startX = 35; // Başlangıç x kordinatı
 
-	cerceve();
+	generateFrame();
 	generateHeader(doc);
 
-	function cerceve() {
+	function generateFrame() {
 		const frameX = 15; // Çerçevenin sol kenarının X koordinatı
 		const frameY = 30; // Çerçevenin üst kenarının Y koordinatı
 		const frameWidth = 570; // Çerçevenin genişliği
 		const frameHeight = 750; // Çerçevenin yüksekliği
 		const frameThickness = 2; // Çerçevenin kalınlığı piksel cinsinden
-
-		doc
-			.rect(frameX, frameY, frameWidth, frameThickness) // Üst çerçeve
-			.fill('#000000');
-		doc
-			.rect(frameX, frameY + frameHeight - frameThickness, frameWidth, frameThickness) // Alt çerçeve
-			.fill('#000000');
-		doc
-			.rect(frameX, frameY + frameThickness, frameThickness, frameHeight - 2 * frameThickness) // Sol çerçeve
-			.fill('#000000');
-		doc
-			.rect(
-				frameX + frameWidth - frameThickness,
-				frameY + frameThickness,
-				frameThickness,
-				frameHeight - 2 * frameThickness
-			) // Sağ çerçeve
-			.fill('#000000');
+	
+		const drawRect = (x, y, width, height, color) => {
+			doc.rect(x, y, width, height).fill(color);
+		};
+	
+		drawRect(frameX, frameY, frameWidth, frameThickness, '#000000'); // Üst çerçeve
+		drawRect(frameX, frameY + frameHeight - frameThickness, frameWidth, frameThickness, '#000000'); // Alt çerçeve
+		drawRect(frameX, frameY + frameThickness, frameThickness, frameHeight - 2 * frameThickness, '#000000'); // Sol çerçeve
+		drawRect(frameX + frameWidth - frameThickness, frameY + frameThickness, frameThickness, frameHeight - 2 * frameThickness, '#000000'); // Sağ çerçeve
 	}
+	
 
 	function row1(doc, heigth) {
 		doc.lineJoin('miter').rect(30, heigth, 550, 85).stroke();
@@ -347,33 +339,24 @@ app.get('/generate-pdf2', function (req, res) {
 	const startY = 270; // Başlangıç y koordinatı
 	const startX = 35; // Başlangıç x kordinatı
 
-	cerceve();
-	function cerceve() {
+	generateFrame();
+	function generateFrame() {
 		const frameX = 15; // Çerçevenin sol kenarının X koordinatı
 		const frameY = 50; // Çerçevenin üst kenarının Y koordinatı
 		const frameWidth = 570; // Çerçevenin genişliği
 		const frameHeight = 750; // Çerçevenin yüksekliği
 		const frameThickness = 2; // Çerçevenin kalınlığı piksel cinsinden
-
-		doc
-			.rect(frameX, frameY, frameWidth, frameThickness) // Üst çerçeve
-			.fill('#000000');
-		doc
-			.rect(frameX, frameY + frameHeight - frameThickness, frameWidth, frameThickness) // Alt çerçeve
-			.fill('#000000');
-		doc
-			.rect(frameX, frameY + frameThickness, frameThickness, frameHeight - 2 * frameThickness) // Sol çerçeve
-			.fill('#000000');
-		doc
-			.rect(
-				frameX + frameWidth - frameThickness,
-				frameY + frameThickness,
-				frameThickness,
-				frameHeight - 2 * frameThickness
-			) // Sağ çerçeve
-			.fill('#000000');
+	
+		const drawRect = (x, y, width, height, color) => {
+			doc.rect(x, y, width, height).fill(color);
+		};
+	
+		drawRect(frameX, frameY, frameWidth, frameThickness, '#000000'); // Üst çerçeve
+		drawRect(frameX, frameY + frameHeight - frameThickness, frameWidth, frameThickness, '#000000'); // Alt çerçeve
+		drawRect(frameX, frameY + frameThickness, frameThickness, frameHeight - 2 * frameThickness, '#000000'); // Sol çerçeve
+		drawRect(frameX + frameWidth - frameThickness, frameY + frameThickness, frameThickness, frameHeight - 2 * frameThickness, '#000000'); // Sağ çerçeve
 	}
-
+	
 	function row1(doc, heigth) {
 		doc.lineJoin('miter').rect(17.2, heigth, 566.3, 20).stroke();
 		return doc;
@@ -420,10 +403,13 @@ app.get('/generate-pdf2', function (req, res) {
 			console.error('MySQL sorgu hatası: ', error);
 			return;
 		}
-
+		ust_bolum();
+		orta_bolüm();
+		alt_bolüm();
 		doc.font('arial.ttf').text('HAKEDİŞ RAPORU', { align: 'center' }).fontSize('14');
 
-		// -------- ÜST SATIRLAR ---------
+		function ust_bolum()
+		{
 		row1(doc, startY - 180);
 		row1(doc, startY - 160);
 		row1(doc, startY - 140);
@@ -441,8 +427,10 @@ app.get('/generate-pdf2', function (req, res) {
 			.moveTo(startX + 410, startY - 220)
 			.lineTo(startX + 410, startY - 40)
 			.stroke();
+		}
 
-		//-------------ORTA SATIR--------------
+		function orta_bolüm()
+		{
 		row2(doc, startY - 40);
 		row2(doc, startY - 20);
 		row2(doc, startY);
@@ -457,14 +445,18 @@ app.get('/generate-pdf2', function (req, res) {
 			.moveTo(startX + 20, startY - 40)
 			.lineTo(startX + 20, startY + 140)
 			.stroke();
+		}
 
-		//-------------ALT SATIRLAR----------
+		function alt_bolüm()
+		{
 		row1(doc, startY + 140);
 		row1(doc, startY + 160);
 		doc
-			.lineCap('butt') // ALT CİZGİ
-			.moveTo(startX - 20, startY + 300)
-			.lineTo(startX + 550, startY + 300);
+		.lineCap('butt') //ALT CİZGİ
+		.moveTo(startX - 20, startY + 300)
+		.lineTo(startX + 550, startY + 300).stroke();
+		}
+
 
 		doc.end();
 		console.log('Hakediş raporu-2 başarıyla oluşturuldu');
