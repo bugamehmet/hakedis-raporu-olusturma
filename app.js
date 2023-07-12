@@ -3,6 +3,7 @@ const express = require('express');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
 const { table } = require('console');
+const e = require('express');
 
 const app = express();
 app.use('/assets', express.static('assets'));
@@ -143,54 +144,38 @@ app.get('/generate-pdf', (req, res) => {
 		const frameWidth = 570; // Çerçevenin genişliği
 		const frameHeight = 750; // Çerçevenin yüksekliği
 		const frameThickness = 2; // Çerçevenin kalınlığı piksel cinsinden
-	
+
 		const drawRect = (x, y, width, height, color) => {
 			doc.rect(x, y, width, height).fill(color);
 		};
-	
+
 		drawRect(frameX, frameY, frameWidth, frameThickness, '#000000'); // Üst çerçeve
 		drawRect(frameX, frameY + frameHeight - frameThickness, frameWidth, frameThickness, '#000000'); // Alt çerçeve
-		drawRect(frameX, frameY + frameThickness, frameThickness, frameHeight - 2 * frameThickness, '#000000'); // Sol çerçeve
-		drawRect(frameX + frameWidth - frameThickness, frameY + frameThickness, frameThickness, frameHeight - 2 * frameThickness, '#000000'); // Sağ çerçeve
+		drawRect(
+			frameX,
+			frameY + frameThickness,
+			frameThickness,
+			frameHeight - 2 * frameThickness,
+			'#000000'
+		); // Sol çerçeve
+		drawRect(
+			frameX + frameWidth - frameThickness,
+			frameY + frameThickness,
+			frameThickness,
+			frameHeight - 2 * frameThickness,
+			'#000000'
+		); // Sağ çerçeve
 	}
-	
 
 	function row1(doc, heigth) {
 		doc.lineJoin('miter').rect(30, heigth, 550, 85).stroke();
 		return doc;
 	}
 
-	Number.prototype.para = function (fractionDigits, decimal, separator) {
-		fractionDigits = isNaN((fractionDigits = Math.abs(fractionDigits))) ? 2 : fractionDigits;
-
-		decimal = typeof decimal === 'undefined' ? '.' : decimal;
-
-		separator = typeof separator === 'undefined' ? ',' : separator;
-
-		var number = this;
-
-		var neg = number < 0 ? '-' : '';
-
-		var wholePart = parseInt((number = Math.abs(+number || 0).toFixed(fractionDigits))) + '';
-
-		var separtorIndex = (separtorIndex = wholePart.length) > 3 ? separtorIndex % 3 : 0;
-
-		return (
-			neg +
-			(separtorIndex ? wholePart.substr(0, separtorIndex) + separator : '') +
-			wholePart.substr(separtorIndex).replace(/(\d{3})(?=\d)/g, '$1' + separator) +
-			(fractionDigits
-				? decimal +
-				  Math.abs(number - wholePart)
-						.toFixed(fractionDigits)
-						.slice(2)
-				: '')
-		);
-	};
-
-	function para(tl) {
-		return Number(tl).para(2, ',', '.') + ' TL';
+	function para(number, fractionDigits = 2) {
+		return number.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' TL';
 	}
+
 	function generateHeader(doc) {
 		const logoLeft = 'assets/gorseller/logo_left.png';
 		const logoRight = 'assets/gorseller/logo_right.png';
@@ -223,7 +208,7 @@ app.get('/generate-pdf', (req, res) => {
 		// Verileri PDF'e yazdırma
 		results.forEach((row) => {
 			doc
-				.font('arial.ttf')
+				.font('Roboto.ttf')
 				.fontSize(12)
 				.text(`Tarihi: ${row.tarih}`, 100, 180, { align: 'center' })
 				.text(`No su: ${row.no}`, 100, 200, { align: 'center' })
@@ -346,17 +331,29 @@ app.get('/generate-pdf2', function (req, res) {
 		const frameWidth = 570; // Çerçevenin genişliği
 		const frameHeight = 750; // Çerçevenin yüksekliği
 		const frameThickness = 2; // Çerçevenin kalınlığı piksel cinsinden
-	
+
 		const drawRect = (x, y, width, height, color) => {
 			doc.rect(x, y, width, height).fill(color);
 		};
-	
+
 		drawRect(frameX, frameY, frameWidth, frameThickness, '#000000'); // Üst çerçeve
 		drawRect(frameX, frameY + frameHeight - frameThickness, frameWidth, frameThickness, '#000000'); // Alt çerçeve
-		drawRect(frameX, frameY + frameThickness, frameThickness, frameHeight - 2 * frameThickness, '#000000'); // Sol çerçeve
-		drawRect(frameX + frameWidth - frameThickness, frameY + frameThickness, frameThickness, frameHeight - 2 * frameThickness, '#000000'); // Sağ çerçeve
+		drawRect(
+			frameX,
+			frameY + frameThickness,
+			frameThickness,
+			frameHeight - 2 * frameThickness,
+			'#000000'
+		); // Sol çerçeve
+		drawRect(
+			frameX + frameWidth - frameThickness,
+			frameY + frameThickness,
+			frameThickness,
+			frameHeight - 2 * frameThickness,
+			'#000000'
+		); // Sağ çerçeve
 	}
-	
+
 	function row1(doc, heigth) {
 		doc.lineJoin('miter').rect(17.2, heigth, 566.3, 20).stroke();
 		return doc;
@@ -366,36 +363,8 @@ app.get('/generate-pdf2', function (req, res) {
 		return doc;
 	}
 
-	Number.prototype.para = function (fractionDigits, decimal, separator) {
-		fractionDigits = isNaN((fractionDigits = Math.abs(fractionDigits))) ? 2 : fractionDigits;
-
-		decimal = typeof decimal === 'undefined' ? '.' : decimal;
-
-		separator = typeof separator === 'undefined' ? ',' : separator;
-
-		var number = this;
-
-		var neg = number < 0 ? '-' : '';
-
-		var wholePart = parseInt((number = Math.abs(+number || 0).toFixed(fractionDigits))) + '';
-
-		var separtorIndex = (separtorIndex = wholePart.length) > 3 ? separtorIndex % 3 : 0;
-
-		return (
-			neg +
-			(separtorIndex ? wholePart.substr(0, separtorIndex) + separator : '') +
-			wholePart.substr(separtorIndex).replace(/(\d{3})(?=\d)/g, '$1' + separator) +
-			(fractionDigits
-				? decimal +
-				  Math.abs(number - wholePart)
-						.toFixed(fractionDigits)
-						.slice(2)
-				: '')
-		);
-	};
-
-	function para(tl) {
-		return Number(tl).para(2, ',', '.') + ' TL';
+	function para(number, fractionDigits = 2) {
+		return number.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' TL';
 	}
 
 	connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (error, results) => {
@@ -403,61 +372,88 @@ app.get('/generate-pdf2', function (req, res) {
 			console.error('MySQL sorgu hatası: ', error);
 			return;
 		}
-		ust_bolum();
-		orta_bolüm();
-		alt_bolüm();
-		doc.font('arial.ttf').text('HAKEDİŞ RAPORU', { align: 'center' }).fontSize('14');
+		doc.font('Roboto-Bold.ttf').text('HAKEDİŞ RAPORU', { align: 'center' }).fontSize('14');
 
-		function ust_bolum()
-		{
-		row1(doc, startY - 180);
-		row1(doc, startY - 160);
-		row1(doc, startY - 140);
-		row1(doc, startY - 120);
-		row1(doc, startY - 100);
-		row1(doc, startY - 80);
-		row1(doc, startY - 60);
-		doc // SOL DİK
-			.lineCap('butt')
-			.moveTo(startX + 5, startY - 180)
-			.lineTo(startX + 5, startY - 40)
-			.stroke();
-		doc //SAĞ DİK
-			.lineCap('butt')
-			.moveTo(startX + 410, startY - 220)
-			.lineTo(startX + 410, startY - 40)
-			.stroke();
-		}
+		results.forEach((e) => {
+			ust_bolum();
+			orta_bolum();
+			alt_bolum();
 
-		function orta_bolüm()
-		{
-		row2(doc, startY - 40);
-		row2(doc, startY - 20);
-		row2(doc, startY);
-		row2(doc, startY + 20);
-		row2(doc, startY + 40);
-		row2(doc, startY + 60);
-		row2(doc, startY + 80);
-		row2(doc, startY + 100);
-		row2(doc, startY + 120);
-		doc // SOL DİK
-			.lineCap('butt')
-			.moveTo(startX + 20, startY - 40)
-			.lineTo(startX + 20, startY + 140)
-			.stroke();
-		}
+			function ust_bolum() {
+				row1(doc, startY - 180);
+				row1(doc, startY - 160);
+				row1(doc, startY - 140);
+				row1(doc, startY - 120);
+				row1(doc, startY - 100);
+				row1(doc, startY - 80);
+				row1(doc, startY - 60);
+				doc // SINIR EKLENECEK !! -- KALINLIKLAR EKLENECEK
+					.fontSize('10')
+					.text(`${e.is_adi}`, startX - 10, startY - 205, { align: 'left' })
 
-		function alt_bolüm()
-		{
-		row1(doc, startY + 140);
-		row1(doc, startY + 160);
-		doc
-		.lineCap('butt') //ALT CİZGİ
-		.moveTo(startX - 20, startY + 300)
-		.lineTo(startX + 550, startY + 300).stroke();
-		}
+					.font('Roboto.ttf')
+					.fontSize('11')
+					.text('A', startX - 10, startY - 175)
+					.text('Sözleşme Fiyatları ile Yapılan Hizmet Tutarı :', startX + 10, startY - 175)
+					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY - 175, { align: 'left' })
+					.text('B', startX - 10, startY - 155)
+					.text('Fiyat Farkı Tutarı', startX + 10, startY - 155)
+					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY - 155, { align: 'left' })
+					.text('C', startX - 10, startY - 135)
+					.text('Toplam Tutar ( A + B )', startX + 10, startY - 135)
+					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY - 135, { align: 'left' })
+					.text('D', startX - 10, startY - 115)
+					.text('Bir Önceki Hakedişin Toplam Tutarı', startX + 10, startY - 115)
+					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY - 115, { align: 'left' })
+					.text('E', startX - 10, startY - 95)
+					.text('Bu Hakedişin Tutarı', startX + 10, startY - 95)
+					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY - 95, { align: 'left' })
+					.text('F', startX - 10, startY - 75)
+					.text('KDV ( E x %18 )', startX + 10, startY - 75)
+					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY - 75, { align: 'left' })
+					.text('G', startX - 10, startY - 55)
+					.text('Tahakkuk Tutarı', startX + 10, startY - 55)
+					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY - 55, { align: 'left' });
 
+				doc // SOL DİK
+					.lineCap('butt')
+					.moveTo(startX + 5, startY - 180)
+					.lineTo(startX + 5, startY - 40)
+					.stroke();
+				doc //SAĞ DİK
+					.lineCap('butt')
+					.moveTo(startX + 410, startY - 220)
+					.lineTo(startX + 410, startY - 40)
+					.stroke();
+			}
 
+			function orta_bolum() {
+				row2(doc, startY - 40);
+				row2(doc, startY - 20);
+				row2(doc, startY);
+				row2(doc, startY + 20);
+				row2(doc, startY + 40);
+				row2(doc, startY + 60);
+				row2(doc, startY + 80);
+				row2(doc, startY + 100);
+				row2(doc, startY + 120);
+				doc // SOL DİK
+					.lineCap('butt')
+					.moveTo(startX + 20, startY - 40)
+					.lineTo(startX + 20, startY + 140)
+					.stroke();
+			}
+
+			function alt_bolum() {
+				row1(doc, startY + 140);
+				row1(doc, startY + 160);
+				doc
+					.lineCap('butt') //ALT CİZGİ
+					.moveTo(startX - 20, startY + 300)
+					.lineTo(startX + 550, startY + 300)
+					.stroke();
+			}
+		});
 		doc.end();
 		console.log('Hakediş raporu-2 başarıyla oluşturuldu');
 		res.setHeader('Content-Type', 'application/pdf');
