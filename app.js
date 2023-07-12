@@ -155,36 +155,12 @@ app.get('/generate-pdf', (req, res) => {
 		
 		}
 
-	function generateHeader(doc) {
-		const logoLeft = 'assets/gorseller/logo_left.png';
-		const logoRight = 'assets/gorseller/logo_right.png';
-		doc.image(logoLeft, 20, 50, { width: 60, height: 80 });
-		doc.image(logoRight, 530, 50, { width: 60, height: 80 });
-		doc.font('arial.ttf').fontSize(12).text('T.C', 100, 30, { align: 'center' });
-		doc
-			.font('arial.ttf')
-			.fontSize(12)
-			.text('SAMSUN BÜYÜK ŞEHİR BELEDİYESİ', 100, 50, { align: 'center' });
-		doc
-			.font('arial.ttf')
-			.fontSize(12)
-			.text('SAMSUN SU VE KANALİZASYON GENEL MÜDÜRLÜĞÜ', 100, 70, { align: 'center' });
-		doc
-			.font('arial.ttf')
-			.fontSize(12)
-			.text('BİLGİ İŞLEM DAİRESİ BAŞKANLIĞI', 100, 90, { align: 'center' });
-		// Hakediş raporu başlığı
-		doc.font('arial.ttf').fontSize(16).text('Hakediş Raporu', 100, 150, { align: 'center' });
-		doc.moveDown();
-	}
-
 	function row1(doc, heigth) {
 		doc.lineJoin('miter')
 			.rect(30, heigth, 550, 85)
 			.stroke()
 		return doc;
 	}
-
 
 	Number.prototype.para = function (fractionDigits, decimal, separator) {
 		fractionDigits = isNaN(fractionDigits = Math.abs(fractionDigits)) ? 2 : fractionDigits;
@@ -213,6 +189,28 @@ app.get('/generate-pdf', (req, res) => {
 
 	function para(tl) {
 		return Number(tl).para(2, ',', '.')+" TL";
+	}
+	function generateHeader(doc) {
+		const logoLeft = 'assets/gorseller/logo_left.png';
+		const logoRight = 'assets/gorseller/logo_right.png';
+		doc.image(logoLeft, 20, 50, { width: 60, height: 80 });
+		doc.image(logoRight, 500, 50, { width: 60, height: 80 });
+		doc.font('arial.ttf').fontSize(12).text('T.C', 100, 30, { align: 'center' });
+		doc
+			.font('arial.ttf')
+			.fontSize(12)
+			.text('SAMSUN BÜYÜK ŞEHİR BELEDİYESİ', 100, 50, { align: 'center' });
+		doc
+			.font('arial.ttf')
+			.fontSize(12)
+			.text('SAMSUN SU VE KANALİZASYON GENEL MÜDÜRLÜĞÜ', 100, 70, { align: 'center' });
+		doc
+			.font('arial.ttf')
+			.fontSize(12)
+			.text('BİLGİ İŞLEM DAİRESİ BAŞKANLIĞI', 100, 90, { align: 'center' });
+		// Hakediş raporu başlığı
+		doc.font('arial.ttf').fontSize(16).text('Hakediş Raporu', 100, 150, { align: 'center' });
+		doc.moveDown();
 	}
 	// PDF dosyasına yazdırma işlemi
 	// Veritabanından verileri çekme
@@ -333,14 +331,209 @@ app.get('/generate-pdf', (req, res) => {
 		// PDF dosyasını indirme
 		res.setHeader('Content-Type', 'application/pdf');
 		res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu.pdf');
+		
 
 		doc.pipe(res);
 
 	});
 });
 
+
+
+
+app.get('/generate-pdf2', function(req,res){
+
+	const doc = new PDFDocument({ size: 'A4', margin:30});
+
+	const startY = 270; // Başlangıç y koordinatı
+	const startX = 15;  // Başlangıç x kordinatı
+
+	cerceve();
+	function cerceve(){
+		const frameX = 15; // Çerçevenin sol kenarının X koordinatı
+		const frameY = 50; // Çerçevenin üst kenarının Y koordinatı
+		const frameWidth = 570; // Çerçevenin genişliği
+		const frameHeight = 750; // Çerçevenin yüksekliği
+		const frameThickness = 2; // Çerçevenin kalınlığı piksel cinsinden
+		
+		doc.rect(frameX, frameY, frameWidth, frameThickness) // Üst çerçeve
+			 .fill('#000000');
+		doc.rect(frameX, frameY + frameHeight - frameThickness, frameWidth, frameThickness) // Alt çerçeve
+			 .fill('#000000');
+		doc.rect(frameX, frameY + frameThickness, frameThickness, frameHeight - 2 * frameThickness) // Sol çerçeve
+			 .fill('#000000');
+		doc.rect(frameX + frameWidth - frameThickness, frameY + frameThickness, frameThickness, frameHeight - 2 * frameThickness) // Sağ çerçeve
+			 .fill('#000000');
+		
+		}
+
+	function row1(doc, heigth) {
+		doc.lineJoin('miter')
+			.rect(17.2, heigth, 566.3, 20)
+			.stroke()
+		return doc;
+	}
+
+	Number.prototype.para = function (fractionDigits, decimal, separator) {
+		fractionDigits = isNaN(fractionDigits = Math.abs(fractionDigits)) ? 2 : fractionDigits;
+		
+		decimal = typeof (decimal) === "undefined" ? "." : decimal;
+		
+		separator = typeof (separator) === "undefined" ? "," : separator;
+		
+		var number = this;
+		
+		var neg = number < 0 ? "-" : "";
+		
+		var wholePart = parseInt(number = Math.abs(+number || 0).toFixed(fractionDigits)) + "";
+		
+		var separtorIndex = (separtorIndex = wholePart.length) > 3 ? separtorIndex % 3 : 0;
+		
+		return neg +
+		
+		(separtorIndex ? wholePart.substr(0, separtorIndex) + separator : "") +
+		
+		wholePart.substr(separtorIndex).replace(/(\d{3})(?=\d)/g, "$1" + separator) +
+		
+		(fractionDigits ? decimal + Math.abs(number - wholePart).toFixed(fractionDigits).slice(2) : "");
+		
+		};
+
+	function para(tl) {
+		return Number(tl).para(2, ',', '.')+" TL";
+	}
+
+
+	connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (error, results) => {
+		if (error) {
+			console.error('MySQL sorgu hatası: ', error);
+			return;
+		}
+		doc
+		.font('arial.ttf')
+		.text('HAKEDİŞ RAPORU',{align:'center'}).fontSize('14')
+
+		row1(doc, startY - 170);
+		row1(doc, startY - 150);
+		row1(doc, startY - 130);
+		row1(doc, startY - 110);
+		row1(doc, startY - 90);
+		row1(doc, startY - 70);
+		row1(doc, startY - 50);
+		row1(doc, startY - 30);
+		row1(doc, startY - 10);
+
+		doc
+		.lineCap('butt')
+		.moveTo(startX+140, startY + 400)
+		.lineTo(startX+140, startY + 485)
+		.stroke()
+		doc
+		.lineCap('butt')
+		.moveTo(startX+100, startY + 310)
+		.lineTo(startX+100, startY + 395)
+		.stroke()
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		doc.end();
+		console.log('Hakediş raporu-2 başarıyla oluşturuldu');
+		res.setHeader('Content-Type', 'application/pdf');
+		res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu2.pdf');
+		doc.pipe(res);
+
+	});
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // MySQL bağlantısını kapat
 // connection.end();
 app.listen(5001);
-
 
