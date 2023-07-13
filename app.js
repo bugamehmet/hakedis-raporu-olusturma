@@ -130,7 +130,7 @@ app.post('/welcome', function (req, res) {
 
 app.get('/generate-pdf', (req, res) => {
 	// PDF oluşturma işlemleri
-	const doc = new PDFDocument({ size: 'A4', margin: 30 });
+	const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
 
 	const startY = 270; // Başlangıç y koordinatı
 	const startX = 35; // Başlangıç x kordinatı
@@ -181,21 +181,14 @@ app.get('/generate-pdf', (req, res) => {
 		const logoRight = 'assets/gorseller/logo_right.png';
 		doc.image(logoLeft, 20, 50, { width: 60, height: 80 });
 		doc.image(logoRight, 500, 50, { width: 60, height: 80 });
-		doc.font('arial.ttf').fontSize(12).text('T.C', 100, 30, { align: 'center' });
+		doc.fontSize(12).text('T.C', 100, 30, { align: 'center' });
+		doc.fontSize(12).text('SAMSUN BÜYÜK ŞEHİR BELEDİYESİ', 100, 50, { align: 'center' });
 		doc
-			.font('arial.ttf')
-			.fontSize(12)
-			.text('SAMSUN BÜYÜK ŞEHİR BELEDİYESİ', 100, 50, { align: 'center' });
-		doc
-			.font('arial.ttf')
 			.fontSize(12)
 			.text('SAMSUN SU VE KANALİZASYON GENEL MÜDÜRLÜĞÜ', 100, 70, { align: 'center' });
-		doc
-			.font('arial.ttf')
-			.fontSize(12)
-			.text('BİLGİ İŞLEM DAİRESİ BAŞKANLIĞI', 100, 90, { align: 'center' });
+		doc.fontSize(12).text('BİLGİ İŞLEM DAİRESİ BAŞKANLIĞI', 100, 90, { align: 'center' });
 		// Hakediş raporu başlığı
-		doc.font('arial.ttf').fontSize(16).text('Hakediş Raporu', 100, 150, { align: 'center' });
+		doc.fontSize(16).text('Hakediş Raporu', 100, 150, { align: 'center' });
 		doc.moveDown();
 	}
 	// PDF dosyasına yazdırma işlemi
@@ -208,7 +201,6 @@ app.get('/generate-pdf', (req, res) => {
 		// Verileri PDF'e yazdırma
 		results.forEach((row) => {
 			doc
-				.font('Roboto.ttf')
 				.fontSize(12)
 				.text(`Tarihi: ${row.tarih}`, 100, 180, { align: 'center' })
 				.text(`No su: ${row.no}`, 100, 200, { align: 'center' })
@@ -216,34 +208,34 @@ app.get('/generate-pdf', (req, res) => {
 
 			doc
 				.text('Yapılan işin / Hizmetin Adı :', startX, startY)
-				.text(`${row.is_adi}`, startX + 250, startY, { align: 'left' })
+				.text(`${row.is_adi}`, 600, startY, { align: 'left' })
 
 				.text('Yapılan İsin / Hizmetin Etüd / Proje No su :', startX, startY + 60)
-				.text(`${row.proje_no}`, startX + 250, startY + 60, { align: 'left' })
+				.text(`${row.proje_no}`, 600, startY + 60, { align: 'left' })
 
 				.text('Yüklenicinin Adi / Ticari Unvanı :', startX, startY + 100)
-				.text(`${row.yuklenici_adi}`, startX + 250, startY + 100, { align: 'left' })
+				.text(`${row.yuklenici_adi}`, 600, startY + 100, { align: 'left' })
 
 				.text('Sözleşme Bedeli :', startX, startY + 150)
-				.text(`${para(row.sozlesme_bedeli)}`, startX + 250, startY + 150, { align: 'left' })
+				.text(`${para(row.sozlesme_bedeli)}`, 600, startY + 150, { align: 'left' })
 
 				.text('İhale Tarihi :', startX, startY + 170)
-				.text(`${row.ihale_tarihi}`, startX + 250, startY + 170, { align: 'left' })
+				.text(`${row.ihale_tarihi}`, 600, startY + 170, { align: 'left' })
 
 				.text('Kayıt no :', startX, startY + 190)
-				.text(`${row.kayit_no}`, startX + 250, startY + 190, { align: 'left' })
+				.text(`${row.kayit_no}`, 600, startY + 190, { align: 'left' })
 
 				.text('Sözleşme Tarihi :', startX, startY + 210)
-				.text(`${row.sozlesme_tarih}`, startX + 250, startY + 210, { align: 'left' })
+				.text(`${row.sozlesme_tarih}`, 600, startY + 210, { align: 'left' })
 
 				.text('İşyeri Teslim Tarihi :', startX, startY + 230)
-				.text(`${row.isyeri_teslim_tarihi}`, startX + 250, startY + 230, { align: 'left' })
+				.text(`${row.isyeri_teslim_tarihi}`, 600, startY + 230, { align: 'left' })
 
-				.text('Sözleşmeye Göre İşin Süresi :', startX, startY + 250)
-				.text(`${row.isin_suresi}`, startX + 250, startY + 250, { align: 'left' })
+				.text('Sözleşmeye Göre İşin Süresi :', startX, 2950)
+				.text(`${row.isin_suresi}`, 600, 2950, { align: 'left' })
 
 				.text('Sözleşmeye Göre İş Bitim Tarihi :', startX, startY + 270)
-				.text(`${row.is_bitim_tarihi}`, startX + 250, startY + 270, { align: 'left' });
+				.text(`${row.is_bitim_tarihi}`, 600, startY + 270, { align: 'left' });
 
 			doc.moveDown();
 
@@ -254,8 +246,8 @@ app.get('/generate-pdf', (req, res) => {
 				.lineTo(startX + 100, startY + 395)
 				.stroke()
 				.lineCap('butt')
-				.moveTo(startX + 250, startY + 310)
-				.lineTo(startX + 250, startY + 395)
+				.moveTo(600, startY + 310)
+				.lineTo(600, startY + 395)
 				.stroke()
 				.lineCap('butt')
 				.moveTo(startX + 370, startY + 310)
@@ -283,8 +275,8 @@ app.get('/generate-pdf', (req, res) => {
 				.lineTo(startX + 140, startY + 485)
 				.stroke()
 				.lineCap('butt')
-				.moveTo(startX + 250, startY + 400)
-				.lineTo(startX + 250, startY + 485)
+				.moveTo(600, startY + 400)
+				.lineTo(600, startY + 485)
 				.stroke()
 				.lineCap('butt')
 				.moveTo(startX + 350, startY + 400)
@@ -321,8 +313,7 @@ app.get('/generate-pdf', (req, res) => {
 app.get('/generate-pdf2', function (req, res) {
 	const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
 
-	const startY = 270; // Başlangıç y koordinatı
-	const startX = 35; // Başlangıç x kordinatı
+	const startY = 270;
 
 	generateFrame();
 	function generateFrame() {
@@ -380,101 +371,129 @@ app.get('/generate-pdf2', function (req, res) {
 			alt_bolum();
 
 			function ust_bolum() {
-				row1(doc, startY - 180);
-				row1(doc, startY - 160);
-				row1(doc, startY - 140);
-				row1(doc, startY - 120);
-				row1(doc, startY - 100);
-				row1(doc, startY - 80);
-				row1(doc, startY - 60);
+				row1(doc, 90);
+				row1(doc, 110);
+				row1(doc, 130);
+				row1(doc, 150);
+				row1(doc, 170);
+				row1(doc, 190);
+				row1(doc, 210);
+
 				doc // SINIR EKLENECEK !! -- KALINLIKLAR EKLENECEK
 					.fontSize('10')
-					.text(`${e.is_adi}`, startX - 10, startY - 205, { align: 'left' })
+					.text(`${e.is_adi}`, 25, 65, { align: 'left' })
 
 					.font('Roboto.ttf')
 					.fontSize('11')
-					.text('A', startX - 10, startY - 175)
-					.text('Sözleşme Fiyatları ile Yapılan Hizmet Tutarı :', startX + 10, startY - 175)
-					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY - 175, { align: 'left' })
-					.text('B', startX - 10, startY - 155)
-					.text('Fiyat Farkı Tutarı', startX + 10, startY - 155)
-					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY - 155, { align: 'left' })
-					.text('C', startX - 10, startY - 135)
-					.text('Toplam Tutar ( A + B )', startX + 10, startY - 135)
-					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY - 135, { align: 'left' })
-					.text('D', startX - 10, startY - 115)
-					.text('Bir Önceki Hakedişin Toplam Tutarı', startX + 10, startY - 115)
-					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY - 115, { align: 'left' })
-					.text('E', startX - 10, startY - 95)
-					.text('Bu Hakedişin Tutarı', startX + 10, startY - 95)
-					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY - 95, { align: 'left' })
-					.text('F', startX - 10, startY - 75)
-					.text('KDV ( E x %18 )', startX + 10, startY - 75)
-					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY - 75, { align: 'left' })
-					.text('G', startX - 10, startY - 55)
-					.text('Tahakkuk Tutarı', startX + 10, startY - 55)
-					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY - 55, { align: 'left' });
+					.text('A', 25, 95)
+					.text('Sözleşme Fiyatları ile Yapılan Hizmet Tutarı :', 45, 95)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 95, { align: 'left' })
+					.text('B', 25, 115)
+					.text('Fiyat Farkı Tutarı', 45, 115)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 115, { align: 'left' })
+					.text('C', 25, 135)
+					.text('Toplam Tutar ( A + B )', 45, 135)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 135, { align: 'left' })
+					.text('D', 25, 155)
+					.text('Bir Önceki Hakedişin Toplam Tutarı', 45, 155)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 155, { align: 'left' })
+					.text('E', 25, 175)
+					.text('Bu Hakedişin Tutarı', 45, 175)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 175, { align: 'left' })
+					.text('F', 25, 195)
+					.text('KDV ( E x %18 )', 45, 195)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 195, { align: 'left' })
+					.text('G', 25, 215)
+					.text('Tahakkuk Tutarı', 45, 215)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 215, { align: 'left' });
 
 				doc // SOL DİK
 					.lineCap('butt')
-					.moveTo(startX + 5, startY - 180)
-					.lineTo(startX + 5, startY - 40)
+					.moveTo(40, 90)
+					.lineTo(40, 230)
 					.stroke();
-				doc //SAĞ DİK
+				doc // SAĞ DİK
 					.lineCap('butt')
-					.moveTo(startX + 410, startY - 220)
-					.lineTo(startX + 410, startY + 140)
+					.moveTo(445, 50)
+					.lineTo(445, 450)
 					.stroke();
 			}
 
 			function orta_bolum() {
-				row2(doc, startY - 40);
-				row2(doc, startY - 20);
-				row2(doc, startY);
-				row2(doc, startY + 20);
-				row2(doc, startY + 40);
-				row2(doc, startY + 60);
-				row2(doc, startY + 80);
-				row2(doc, startY + 100);
-				row2(doc, startY + 120);
+				row2(doc, 230);
+				row2(doc, 250);
+				row2(doc, 270);
+				row2(doc, 290);
+				row2(doc, 310);
+				row2(doc, 330);
+				row2(doc, 350);
+				row2(doc, 370);
+				row2(doc, 390);
 
 				doc
 					.fontSize('11')
 					.font('Roboto.ttf')
-					.text('a) Gelir/ Kurumlar Vergisi ( E x % .. )', startX + 25, startY - 35)
-					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY - 35, { align: 'left' })
-					.text('b) Damga Vergisi ( E - g x % ..)0,00825', startX + 25, startY - 15)
-					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY - 15, { align: 'left' })
-					.text('c) KDV Tevfikatı (7/10)', startX + 25, startY +5)
-					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY + 5, { align: 'left' })
-					.text('d) Sosyal Sigortalar Kurumu Kesintisi', startX + 25, startY + 25)
-					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY + 25, { align: 'left' })
-					.text('e) İdare Makinesi Kiraları', startX + 25, startY + 45)
-					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY + 45, { align: 'left' })
-					.text('f) Gecikme Cezası', startX + 25, startY + 65)
-					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY + 65, { align: 'left' })
-					.text('g) Avans Mahsubu', startX + 25, startY + 85)
-					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY + 85, { align: 'left' })
-					.text('h) Bu Hakedişle Ödenen Fiyat Farkı Teminat Kesintisi (%6)', startX + 25, startY + 105)
-					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY + 105, { align: 'left' })
-					.text('ı) İdari Para Cezası ( Ekteki 07/02/2023 Tarihli Tutanakta Belirtldiği Üzere )', startX + 25, startY + 125)
-					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY + 125, { align: 'left' });
+					.text('a) Gelir/ Kurumlar Vergisi ( E x % .. )', 60, 235)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 235, { align: 'left' })
+					.text('b) Damga Vergisi ( E - g x % ..)0,00825', 60, 255)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 255, { align: 'left' })
+					.text('c) KDV Tevfikatı (7/10)', 60, 275)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 275, { align: 'left' })
+					.text('d) Sosyal Sigortalar Kurumu Kesintisi', 60, 295)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 295, { align: 'left' })
+					.text('e) İdare Makinesi Kiraları', 60, 315)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 315, { align: 'left' })
+					.text('f) Gecikme Cezası', 60, 335)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 335, { align: 'left' })
+					.text('g) Avans Mahsubu', 60, 355)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 355, { align: 'left' })
+					.text('h) Bu Hakedişle Ödenen Fiyat Farkı Teminat Kesintisi (%6)', 60, 375)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 375, { align: 'left' })
+					.text(
+						'ı) İdari Para Cezası ( Ekteki 07/02/2023 Tarihli Tutanakta Belirtldiği Üzere )',
+						60,
+						395
+					)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 395, { align: 'left' });
 
 				doc // SOL DİK
 					.lineCap('butt')
-					.moveTo(startX + 20, startY - 40)
-					.lineTo(startX + 20, startY + 140)
+					.moveTo(55, 230)
+					.lineTo(55, 410)
 					.stroke();
 			}
 
 			function alt_bolum() {
-				row1(doc, startY + 140);
-				row1(doc, startY + 160);
+				//underline- metnin altını çizip çizmeme
+				row1(doc, 410);
+				row1(doc, 430);
+
 				doc
-					.lineCap('butt') //ALT CİZGİ
-					.moveTo(startX - 20, startY + 300)
-					.lineTo(startX + 550, startY + 300)
+					.save() // Dökümanın mevcut durumunu kaydet
+					.translate(25, 400) // Başlangıç noktasını ayarla
+					.rotate(-90, { origin: [0, 0] }) // Metni belirli bir açıyla döndür
+					.font('Roboto-Bold.ttf')
+					.fontSize('12')
+					.text('KESİNTİLER VE MAHPUSLAR', 0, 0)
+					.restore(); // Dökümanı önceki durumuna geri getir
+
+				doc
+					.font('Roboto.ttf')
+					.fontSize('11')
+					.text('H', 25, 415)
+					.text('Kesintiler ve Mahpuslar Toplamı', 45, 415)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 415, { align: 'rigth' })
+					.text('I', 25, 435)
+					.text('Yükleniciye Ödenecek Tutar ( G - H )', 45, 435)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 435, { align: 'left' });
+
+				doc // SOL DİK
+					.lineCap('butt')
+					.moveTo(40, 410)
+					.lineTo(40, 450)
 					.stroke();
+
+				doc.lineWidth('3').lineCap('butt').moveTo(15, 570).lineTo(585, 570).stroke();
 			}
 		});
 		doc.end();
