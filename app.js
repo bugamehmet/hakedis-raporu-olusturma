@@ -173,7 +173,7 @@ app.get('/generate-pdf', (req, res) => {
 	}
 
 	function para(number, fractionDigits = 2) {
-		return number.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' TL';
+		return number.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺';
 	}
 
 	function generateHeader(doc) {
@@ -319,7 +319,7 @@ app.get('/generate-pdf', (req, res) => {
 });
 
 app.get('/generate-pdf2', function (req, res) {
-	const doc = new PDFDocument({ size: 'A4', margin: 30 });
+	const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
 
 	const startY = 270; // Başlangıç y koordinatı
 	const startX = 35; // Başlangıç x kordinatı
@@ -364,7 +364,7 @@ app.get('/generate-pdf2', function (req, res) {
 	}
 
 	function para(number, fractionDigits = 2) {
-		return number.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' TL';
+		return number.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺';
 	}
 
 	connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (error, results) => {
@@ -423,7 +423,7 @@ app.get('/generate-pdf2', function (req, res) {
 				doc //SAĞ DİK
 					.lineCap('butt')
 					.moveTo(startX + 410, startY - 220)
-					.lineTo(startX + 410, startY - 40)
+					.lineTo(startX + 410, startY + 140)
 					.stroke();
 			}
 
@@ -437,6 +437,29 @@ app.get('/generate-pdf2', function (req, res) {
 				row2(doc, startY + 80);
 				row2(doc, startY + 100);
 				row2(doc, startY + 120);
+
+				doc
+					.fontSize('11')
+					.font('Roboto.ttf')
+					.text('a) Gelir/ Kurumlar Vergisi ( E x % .. )', startX + 25, startY - 35)
+					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY - 35, { align: 'left' })
+					.text('b) Damga Vergisi ( E - g x % ..)0,00825', startX + 25, startY - 15)
+					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY - 15, { align: 'left' })
+					.text('c) KDV Tevfikatı (7/10)', startX + 25, startY +5)
+					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY + 5, { align: 'left' })
+					.text('d) Sosyal Sigortalar Kurumu Kesintisi', startX + 25, startY + 25)
+					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY + 25, { align: 'left' })
+					.text('e) İdare Makinesi Kiraları', startX + 25, startY + 45)
+					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY + 45, { align: 'left' })
+					.text('f) Gecikme Cezası', startX + 25, startY + 65)
+					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY + 65, { align: 'left' })
+					.text('g) Avans Mahsubu', startX + 25, startY + 85)
+					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY + 85, { align: 'left' })
+					.text('h) Bu Hakedişle Ödenen Fiyat Farkı Teminat Kesintisi (%6)', startX + 25, startY + 105)
+					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY + 105, { align: 'left' })
+					.text('ı) İdari Para Cezası ( Ekteki 07/02/2023 Tarihli Tutanakta Belirtldiği Üzere )', startX + 25, startY + 125)
+					.text(`${para(e.sozlesme_bedeli)}`, startX + 420, startY + 125, { align: 'left' });
+
 				doc // SOL DİK
 					.lineCap('butt')
 					.moveTo(startX + 20, startY - 40)
