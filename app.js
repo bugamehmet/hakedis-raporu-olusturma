@@ -132,9 +132,6 @@ app.get('/generate-pdf', (req, res) => {
 	// PDF oluşturma işlemleri
 	const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
 
-	const startY = 270; // Başlangıç y koordinatı
-	const startX = 35; // Başlangıç x kordinatı
-
 	generateFrame();
 	generateHeader(doc);
 
@@ -207,93 +204,93 @@ app.get('/generate-pdf', (req, res) => {
 				.text(`Uygulama Yılı: ${row.uygulama_yili}`, 100, 220, { align: 'center' });
 
 			doc
-				.text('Yapılan işin / Hizmetin Adı :', startX, startY)
-				.text(`${row.is_adi}`, 600, startY, { align: 'left' })
+				.text('Yapılan işin / Hizmetin Adı :', 35, 270)
+				.text(`${row.is_adi}`, 275, 270, { align: 'left' })
 
-				.text('Yapılan İsin / Hizmetin Etüd / Proje No su :', startX, startY + 60)
-				.text(`${row.proje_no}`, 600, startY + 60, { align: 'left' })
+				.text('Yapılan İsin / Hizmetin Etüd / Proje No su :', 35, 330)
+				.text(`${row.proje_no}`, 275, 330, { align: 'left' })
 
-				.text('Yüklenicinin Adi / Ticari Unvanı :', startX, startY + 100)
-				.text(`${row.yuklenici_adi}`, 600, startY + 100, { align: 'left' })
+				.text('Yüklenicinin Adi / Ticari Unvanı :', 35, 370)
+				.text(`${row.yuklenici_adi}`, 275, 370, { align: 'left' })
 
-				.text('Sözleşme Bedeli :', startX, startY + 150)
-				.text(`${para(row.sozlesme_bedeli)}`, 600, startY + 150, { align: 'left' })
+				.text('Sözleşme Bedeli :', 35, 420)
+				.text(`${para(row.sozlesme_bedeli)}`, 275, 420, { align: 'left' })
 
-				.text('İhale Tarihi :', startX, startY + 170)
-				.text(`${row.ihale_tarihi}`, 600, startY + 170, { align: 'left' })
+				.text('İhale Tarihi :', 35, 440)
+				.text(`${row.ihale_tarihi}`, 275, 440, { align: 'left' })
 
-				.text('Kayıt no :', startX, startY + 190)
-				.text(`${row.kayit_no}`, 600, startY + 190, { align: 'left' })
+				.text('Kayıt no :', 35, 460)
+				.text(`${row.kayit_no}`, 275, 460, { align: 'left' })
 
-				.text('Sözleşme Tarihi :', startX, startY + 210)
-				.text(`${row.sozlesme_tarih}`, 600, startY + 210, { align: 'left' })
+				.text('Sözleşme Tarihi :', 35, 480)
+				.text(`${row.sozlesme_tarih}`, 275, 480, { align: 'left' })
 
-				.text('İşyeri Teslim Tarihi :', startX, startY + 230)
-				.text(`${row.isyeri_teslim_tarihi}`, 600, startY + 230, { align: 'left' })
+				.text('İşyeri Teslim Tarihi :', 35, 500)
+				.text(`${row.isyeri_teslim_tarihi}`, 275, 500, { align: 'left' })
 
-				.text('Sözleşmeye Göre İşin Süresi :', startX, 2950)
-				.text(`${row.isin_suresi}`, 600, 2950, { align: 'left' })
+				.text('Sözleşmeye Göre İşin Süresi :', 35, 520)
+				.text(`${row.isin_suresi}`, 275, 520, { align: 'left' })
 
-				.text('Sözleşmeye Göre İş Bitim Tarihi :', startX, startY + 270)
-				.text(`${row.is_bitim_tarihi}`, 600, startY + 270, { align: 'left' });
+				.text('Sözleşmeye Göre İş Bitim Tarihi :', 35, 540)
+				.text(`${row.is_bitim_tarihi}`, 275, 540, { align: 'left' });
 
 			doc.moveDown();
 
 			// --------------TABLLLOOOOOO-------------
 			doc
 				.lineCap('butt')
-				.moveTo(startX + 100, startY + 310)
-				.lineTo(startX + 100, startY + 395)
+				.moveTo(135, 580)
+				.lineTo(135, 665)
 				.stroke()
 				.lineCap('butt')
-				.moveTo(600, startY + 310)
-				.lineTo(600, startY + 395)
+				.moveTo(600, 580)
+				.lineTo(600, 665)
 				.stroke()
 				.lineCap('butt')
-				.moveTo(startX + 370, startY + 310)
-				.lineTo(startX + 370, startY + 395)
+				.moveTo(405, 580)
+				.lineTo(405, 665)
 				.stroke()
 				.lineCap('butt')
-				.moveTo(startX - 5, startY + 345)
-				.lineTo(startX + 545, startY + 345)
+				.moveTo(30, 615)
+				.lineTo(580, 615)
 				.stroke();
 
-			row1(doc, startY + 310);
+			row1(doc, 580);
 
 			doc
-				.text('Sözleşme Bedeli', startX, startY + 320)
-				.text(`${para(row.sozlesme_bedeli)}`, startX + 5, startY + 360, { align: 'left' })
-				.text('Sözleşme Artış', startX + 140, startY + 310)
-				.text('Onayının Tarihi / No su', startX + 120, startY + 322)
-				.text('Ek Sözleşme Bedeli', startX + 260, startY + 320)
-				.text('Toplam Sözleşme Bedeli', startX + 400, startY + 310)
-				.text(`${para(row.sozlesme_bedeli)}`, startX + 400, startY + 360, { align: 'left' });
+				.text('Sözleşme Bedeli', 35, 590)
+				.text(`${para(row.sozlesme_bedeli)}`, 40, 630, { align: 'left' })
+				.text('Sözleşme Artış', 175, 580)
+				.text('Onayının Tarihi / No su', 155, 592)
+				.text('Ek Sözleşme Bedeli', 295, 590)
+				.text('Toplam Sözleşme Bedeli', 435, 580)
+				.text(`${para(row.sozlesme_bedeli)}`, 435, 630, { align: 'left' });
 			/*----------------------------------------------*/
 			doc
 				.lineCap('butt')
-				.moveTo(startX + 140, startY + 400)
-				.lineTo(startX + 140, startY + 485)
+				.moveTo(175, 670)
+				.lineTo(175, 755)
 				.stroke()
 				.lineCap('butt')
-				.moveTo(600, startY + 400)
-				.lineTo(600, startY + 485)
+				.moveTo(600, 670)
+				.lineTo(600, 755)
 				.stroke()
 				.lineCap('butt')
-				.moveTo(startX + 350, startY + 400)
-				.lineTo(startX + 350, startY + 485)
+				.moveTo(385, 670)
+				.lineTo(385, 755)
 				.stroke()
 				.lineCap('butt')
-				.moveTo(startX - 5, startY + 430)
-				.lineTo(startX + 545, startY + 430)
+				.moveTo(30, 700)
+				.lineTo(580, 700)
 				.stroke();
 
-			row1(doc, startY + 400);
+			row1(doc, 670);
 
 			doc
-				.text('Süre uzatım kararı Tarih', startX, startY + 405)
-				.text('Sayı', startX + 170, startY + 405)
-				.text('Verilen Süre', startX + 270, startY + 405)
-				.text('İş Bitim Tarihi', startX + 400, startY + 405);
+				.text('Süre uzatım kararı Tarih', 35, 675)
+				.text('Sayı', 205, 675)
+				.text('Verilen Süre', 305, 675)
+				.text('İş Bitim Tarihi', 435, 675);
 		});
 
 		// PDF dosyasına yazdırma işlemini tamamla
@@ -312,8 +309,6 @@ app.get('/generate-pdf', (req, res) => {
 
 app.get('/generate-pdf2', function (req, res) {
 	const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
-
-	const startY = 270;
 
 	generateFrame();
 	function generateFrame() {
