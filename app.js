@@ -2,8 +2,7 @@ const mysql = require('mysql');
 const express = require('express');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
-const { table } = require('console');
-const e = require('express');
+
 
 const app = express();
 app.use('/assets', express.static('assets'));
@@ -378,29 +377,30 @@ app.get('/generate-pdf2', function (req, res) {
 					.fontSize('10')
 					.text(`${e.is_adi}`, 25, 65, { align: 'left' })
 
+					.font('Roboto-Bold')
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 95, { align: 'left' })
+					.text('C', 25, 135)
+					.text('Toplam Tutar ( A + B )', 45, 135)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 135, { align: 'left' })
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 155, { align: 'left' })
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 175, { align: 'left' })
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 195, { align: 'left' })
+					.text('G', 25, 215)
+					.text('Tahakkuk Tutarı', 45, 215)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 215, { align: 'left' })
 					.font('Roboto.ttf')
 					.fontSize('11')
 					.text('A', 25, 95)
 					.text('Sözleşme Fiyatları ile Yapılan Hizmet Tutarı :', 45, 95)
-					.text(`${para(e.sozlesme_bedeli)}`, 455, 95, { align: 'left' })
 					.text('B', 25, 115)
 					.text('Fiyat Farkı Tutarı', 45, 115)
 					.text(`${para(e.sozlesme_bedeli)}`, 455, 115, { align: 'left' })
-					.text('C', 25, 135)
-					.text('Toplam Tutar ( A + B )', 45, 135)
-					.text(`${para(e.sozlesme_bedeli)}`, 455, 135, { align: 'left' })
 					.text('D', 25, 155)
 					.text('Bir Önceki Hakedişin Toplam Tutarı', 45, 155)
-					.text(`${para(e.sozlesme_bedeli)}`, 455, 155, { align: 'left' })
 					.text('E', 25, 175)
 					.text('Bu Hakedişin Tutarı', 45, 175)
-					.text(`${para(e.sozlesme_bedeli)}`, 455, 175, { align: 'left' })
 					.text('F', 25, 195)
-					.text('KDV ( E x %18 )', 45, 195)
-					.text(`${para(e.sozlesme_bedeli)}`, 455, 195, { align: 'left' })
-					.text('G', 25, 215)
-					.text('Tahakkuk Tutarı', 45, 215)
-					.text(`${para(e.sozlesme_bedeli)}`, 455, 215, { align: 'left' });
+					.text('KDV ( E x %18 )', 45, 195);
 
 				doc // SOL DİK
 					.lineCap('butt')
@@ -426,6 +426,9 @@ app.get('/generate-pdf2', function (req, res) {
 				row2(doc, 390);
 
 				doc
+					.font('Roboto-Bold.ttf')
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 275, { align: 'left' })
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 395, { align: 'left' })
 					.fontSize('11')
 					.font('Roboto.ttf')
 					.text('a) Gelir/ Kurumlar Vergisi ( E x % .. )', 60, 235)
@@ -433,7 +436,6 @@ app.get('/generate-pdf2', function (req, res) {
 					.text('b) Damga Vergisi ( E - g x % ..)0,00825', 60, 255)
 					.text(`${para(e.sozlesme_bedeli)}`, 455, 255, { align: 'left' })
 					.text('c) KDV Tevfikatı (7/10)', 60, 275)
-					.text(`${para(e.sozlesme_bedeli)}`, 455, 275, { align: 'left' })
 					.text('d) Sosyal Sigortalar Kurumu Kesintisi', 60, 295)
 					.text(`${para(e.sozlesme_bedeli)}`, 455, 295, { align: 'left' })
 					.text('e) İdare Makinesi Kiraları', 60, 315)
@@ -444,12 +446,7 @@ app.get('/generate-pdf2', function (req, res) {
 					.text(`${para(e.sozlesme_bedeli)}`, 455, 355, { align: 'left' })
 					.text('h) Bu Hakedişle Ödenen Fiyat Farkı Teminat Kesintisi (%6)', 60, 375)
 					.text(`${para(e.sozlesme_bedeli)}`, 455, 375, { align: 'left' })
-					.text(
-						'ı) İdari Para Cezası ( Ekteki 07/02/2023 Tarihli Tutanakta Belirtldiği Üzere )',
-						60,
-						395
-					)
-					.text(`${para(e.sozlesme_bedeli)}`, 455, 395, { align: 'left' });
+					.text('ı) İdari Para Cezası ( Ekteki 07/02/2023 Tarihli Tutanakta Belirtldiği Üzere )',60,395);
 
 				doc // SOL DİK
 					.lineCap('butt')
@@ -471,25 +468,50 @@ app.get('/generate-pdf2', function (req, res) {
 					.fontSize('12')
 					.text('KESİNTİLER VE MAHPUSLAR', 0, 0)
 					.restore(); // Dökümanı önceki durumuna geri getir
-
-				doc
-					.font('Roboto.ttf')
-					.fontSize('11')
-					.text('H', 25, 415)
-					.text('Kesintiler ve Mahpuslar Toplamı', 45, 415)
-					.text(`${para(e.sozlesme_bedeli)}`, 455, 415, { align: 'rigth' })
-					.text('I', 25, 435)
-					.text('Yükleniciye Ödenecek Tutar ( G - H )', 45, 435)
-					.text(`${para(e.sozlesme_bedeli)}`, 455, 435, { align: 'left' });
-
 				doc // SOL DİK
 					.lineCap('butt')
 					.moveTo(40, 410)
 					.lineTo(40, 450)
 					.stroke();
 
-				doc.lineWidth('3').lineCap('butt').moveTo(15, 570).lineTo(585, 570).stroke();
+				doc.lineWidth('2').lineCap('butt').moveTo(15, 525).lineTo(585, 525).stroke();
+				doc
+				.font('Roboto-Bold.ttf')
+				.fontSize('10')
+				.text('YÜKLENİCİ', 275, 455, { underline: true })
+				.text('KONTROL TEŞKİLATI', 260, 540, { underline: true, align: 'left' })
+				.text('ŞUBE MÜDÜRÜ', 50, 650, { underline: true, align: 'left' })
+				.text('DAİRE BAŞKANI', 460, 650, { underline: true, align: 'left' })
+				.text('GENEL MÜDÜR YARDIMCISI', 235, 710, { underline: true, align: 'left' })
+				.fontSize('11')
+				.text('H', 25, 415)
+				.text('Kesintiler ve Mahpuslar Toplamı', 45, 415)
+				.text(`${para(e.sozlesme_bedeli)}`, 455, 415, { align: 'rigth' })
+				.text('I', 25, 435)
+				.text('Yükleniciye Ödenecek Tutar ( G - H )', 45, 435)
+				.text(`${para(e.sozlesme_bedeli)}`, 455, 435, { align: 'left' })
+
+			doc
+				.font('Roboto.ttf')
+				.fontSize('8')
+				.text('|dismakamtarih1|', 270, 480)
+				.text('|dismakamunvanad1|', 265, 510)
+				.text('|makamtarih6|', 50, 560)
+				.text('|makam6|', 55, 590)
+				.text('|makamtarih5|', 270, 565)
+				.text('|makam5|', 275, 595)
+				.text('|makamtarih4|', 460, 565)
+				.text('|makam4|', 470, 595)
+				.text('|makamtarih3|', 55, 675)
+				.text('|makamtarih2|', 470, 675)
+				.text('|makamtarih1|', 260, 735)
+				.font('Roboto-Bold.ttf')
+				.text('|makam3|', 60, 705)
+				.text('|makam2|', 475, 705)
+				.text('|makam1|', 265, 765);
 			}
+
+
 		});
 		doc.end();
 		console.log('Hakediş raporu-2 başarıyla oluşturuldu');
