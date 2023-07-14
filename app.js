@@ -2,10 +2,9 @@ const mysql = require('mysql');
 const express = require('express');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
-
-
 const app = express();
 app.use('/assets', express.static('assets'));
+app.use(express.urlencoded({ extended: true }));
 
 //Veri tabanına bağlanmak için bir bağlantı nesnesi oluşturmak
 const connection = mysql.createConnection({
@@ -14,33 +13,33 @@ const connection = mysql.createConnection({
 	password: '12345678',
 	database: 'userDB',
 });
+
 //Sunucuya bağlanmak
-connection.connect(function (error) {
+connection.connect((error) => {
 	if (error) throw error;
 	else console.log('bağlanıldı!');
 });
 // body-parser yerine kullandığımız middleware
 // HTML form verilerini veri tabanına yollamadan önce işlemek için
-app.use(express.urlencoded({ extended: true }));
 
 // anadizine girildğinde index.html i tarayıcıya gönderir "GET"
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
 	res.sendFile(__dirname + '/index.html');
 });
 
 //welcome a GET isteğini yönlendirmek için
-app.get('/welcome', function (req, res) {
+app.get('/welcome', (req, res) => {
 	res.sendFile(__dirname + '/welcome.html');
 });
 
 // Register a Get isteğini yönlendirme
-app.get('/register', function (req, res) {
+app.get('/register', (req, res) => {
 	res.sendFile(__dirname + '/register.html');
 });
 
 //POST isteğini aldığımızda kullanıcı bilgilerini kontrol ederek
 // kullanıcıyı sayfaya yönlendiririz
-app.post('/', function (req, res) {
+app.post('/', (req, res) => {
 	var username = req.body.username;
 	var password = req.body.password;
 
@@ -59,7 +58,7 @@ app.post('/', function (req, res) {
 });
 
 //VERİTABANINA KULLANICIYI KAYDETME
-app.post('/register', function (req, res) {
+app.post('/register', (req, res) => {
 	var username = req.body.username;
 	var password = req.body.password;
 
@@ -80,7 +79,7 @@ app.post('/register', function (req, res) {
 });
 
 //RAPOR BİLGİLERİNİ VERİTABANINA KAYDETME
-app.post('/welcome', function (req, res) {
+app.post('/welcome', (req, res) => {
 	var no = req.body.no;
 	var uygulama_yili = req.body.uygulama_yili;
 	var tarih = req.body.tarih;
@@ -306,7 +305,7 @@ app.get('/generate-pdf', (req, res) => {
 	});
 });
 
-app.get('/generate-pdf2', function (req, res) {
+app.get('/generate-pdf2', (req, res) => {
 	const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
 
 	generateFrame();
@@ -424,6 +423,14 @@ app.get('/generate-pdf2', function (req, res) {
 				row2(doc, 350);
 				row2(doc, 370);
 				row2(doc, 390);
+				doc
+					.save() // Dökümanın mevcut durumunu kaydet
+					.translate(25, 400) // Başlangıç noktasını ayarla
+					.rotate(-90, { origin: [0, 0] }) // Metni belirli bir açıyla döndür
+					.font('Roboto-Bold.ttf')
+					.fontSize('12')
+					.text('KESİNTİLER VE MAHPUSLAR', 0, 0)
+					.restore(); // Dökümanı önceki durumuna geri getir
 
 				doc
 					.font('Roboto-Bold.ttf')
@@ -446,7 +453,11 @@ app.get('/generate-pdf2', function (req, res) {
 					.text(`${para(e.sozlesme_bedeli)}`, 455, 355, { align: 'left' })
 					.text('h) Bu Hakedişle Ödenen Fiyat Farkı Teminat Kesintisi (%6)', 60, 375)
 					.text(`${para(e.sozlesme_bedeli)}`, 455, 375, { align: 'left' })
-					.text('ı) İdari Para Cezası ( Ekteki 07/02/2023 Tarihli Tutanakta Belirtldiği Üzere )',60,395);
+					.text(
+						'ı) İdari Para Cezası ( Ekteki 07/02/2023 Tarihli Tutanakta Belirtldiği Üzere )',
+						60,
+						395
+					);
 
 				doc // SOL DİK
 					.lineCap('butt')
@@ -460,14 +471,6 @@ app.get('/generate-pdf2', function (req, res) {
 				row1(doc, 410);
 				row1(doc, 430);
 
-				doc
-					.save() // Dökümanın mevcut durumunu kaydet
-					.translate(25, 400) // Başlangıç noktasını ayarla
-					.rotate(-90, { origin: [0, 0] }) // Metni belirli bir açıyla döndür
-					.font('Roboto-Bold.ttf')
-					.fontSize('12')
-					.text('KESİNTİLER VE MAHPUSLAR', 0, 0)
-					.restore(); // Dökümanı önceki durumuna geri getir
 				doc // SOL DİK
 					.lineCap('butt')
 					.moveTo(40, 410)
@@ -476,42 +479,40 @@ app.get('/generate-pdf2', function (req, res) {
 
 				doc.lineWidth('2').lineCap('butt').moveTo(15, 525).lineTo(585, 525).stroke();
 				doc
-				.font('Roboto-Bold.ttf')
-				.fontSize('10')
-				.text('YÜKLENİCİ', 275, 455, { underline: true })
-				.text('KONTROL TEŞKİLATI', 260, 540, { underline: true, align: 'left' })
-				.text('ŞUBE MÜDÜRÜ', 50, 650, { underline: true, align: 'left' })
-				.text('DAİRE BAŞKANI', 460, 650, { underline: true, align: 'left' })
-				.text('GENEL MÜDÜR YARDIMCISI', 235, 710, { underline: true, align: 'left' })
-				.fontSize('11')
-				.text('H', 25, 415)
-				.text('Kesintiler ve Mahpuslar Toplamı', 45, 415)
-				.text(`${para(e.sozlesme_bedeli)}`, 455, 415, { align: 'rigth' })
-				.text('I', 25, 435)
-				.text('Yükleniciye Ödenecek Tutar ( G - H )', 45, 435)
-				.text(`${para(e.sozlesme_bedeli)}`, 455, 435, { align: 'left' })
+					.font('Roboto-Bold.ttf')
+					.fontSize('10')
+					.text('YÜKLENİCİ', 275, 455, { underline: true })
+					.text('KONTROL TEŞKİLATI', 260, 540, { underline: true, align: 'left' })
+					.text('ŞUBE MÜDÜRÜ', 50, 650, { underline: true, align: 'left' })
+					.text('DAİRE BAŞKANI', 460, 650, { underline: true, align: 'left' })
+					.text('GENEL MÜDÜR YARDIMCISI', 235, 710, { underline: true, align: 'left' })
+					.fontSize('11')
+					.text('H', 25, 415)
+					.text('Kesintiler ve Mahpuslar Toplamı', 45, 415)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 415, { align: 'rigth' })
+					.text('I', 25, 435)
+					.text('Yükleniciye Ödenecek Tutar ( G - H )', 45, 435)
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 435, { align: 'left' });
 
-			doc
-				.font('Roboto.ttf')
-				.fontSize('8')
-				.text('|dismakamtarih1|', 270, 480)
-				.text('|dismakamunvanad1|', 265, 510)
-				.text('|makamtarih6|', 50, 560)
-				.text('|makam6|', 55, 590)
-				.text('|makamtarih5|', 270, 565)
-				.text('|makam5|', 275, 595)
-				.text('|makamtarih4|', 460, 565)
-				.text('|makam4|', 470, 595)
-				.text('|makamtarih3|', 55, 675)
-				.text('|makamtarih2|', 470, 675)
-				.text('|makamtarih1|', 260, 735)
-				.font('Roboto-Bold.ttf')
-				.text('|makam3|', 60, 705)
-				.text('|makam2|', 475, 705)
-				.text('|makam1|', 265, 765);
+				doc
+					.font('Roboto.ttf')
+					.fontSize('8')
+					.text('|dismakamtarih1|', 270, 480)
+					.text('|dismakamunvanad1|', 265, 510)
+					.text('|makamtarih6|', 50, 560)
+					.text('|makam6|', 55, 590)
+					.text('|makamtarih5|', 270, 565)
+					.text('|makam5|', 275, 595)
+					.text('|makamtarih4|', 460, 565)
+					.text('|makam4|', 470, 595)
+					.text('|makamtarih3|', 55, 675)
+					.text('|makamtarih2|', 470, 675)
+					.text('|makamtarih1|', 260, 735)
+					.font('Roboto-Bold.ttf')
+					.text('|makam3|', 60, 705)
+					.text('|makam2|', 475, 705)
+					.text('|makam1|', 265, 765);
 			}
-
-
 		});
 		doc.end();
 		console.log('Hakediş raporu-2 başarıyla oluşturuldu');
@@ -519,6 +520,28 @@ app.get('/generate-pdf2', function (req, res) {
 		res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu2.pdf');
 		doc.pipe(res);
 	});
+});
+
+app.get('/generate-pdf3', (req, res) => {
+	const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
+	doc.page.dictionary.data.Rotate = 90;
+	doc.save();
+	
+	function row1(doc, heigth) {
+		doc.lineJoin('miter').rect(300, heigth, 580, 20).stroke();
+		return doc;
+	}
+
+	doc.rotate(-90,{origin:[450,550]}).font('Roboto-Bold.ttf').fontSize(14).text('HAKEDİŞ RAPORU', 450, 550, { align: 'left' })
+
+	row1(doc, 550);
+	
+	
+	doc.pipe(res);
+	doc.end();
+	console.log('Hakediş raporu-3 başarıyla oluşturuldu');
+	res.setHeader('Content-Type', 'application/pdf');
+	res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu3.pdf');
 });
 
 // MySQL bağlantısını kapat
