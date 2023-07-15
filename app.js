@@ -126,6 +126,7 @@ app.post('/welcome', (req, res) => {
 
 //--------------İNDİRME İNŞALLAH-------------//
 
+
 app.get('/generate-pdf', (req, res) => {
 	// PDF oluşturma işlemleri
 	const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
@@ -195,6 +196,7 @@ app.get('/generate-pdf', (req, res) => {
 		}
 		// Verileri PDF'e yazdırma
 		results.forEach((row) => {
+
 			doc
 				.fontSize(12)
 				.text(`Tarihi: ${row.tarih}`, 100, 180, { align: 'center' })
@@ -357,6 +359,8 @@ app.get('/generate-pdf2', (req, res) => {
 			return;
 		}
 		doc.font('Roboto-Bold.ttf').text('HAKEDİŞ RAPORU', { align: 'center' }).fontSize('14');
+
+		
 
 		results.forEach((e) => {
 			ust_bolum();
