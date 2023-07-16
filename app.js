@@ -538,6 +538,18 @@ app.get('/generate-pdf3', (req, res) => {
 
 	doc.rotate(-90,{origin:[450,550]}).font('Roboto-Bold.ttf').fontSize(14).text('HAKEDİŞ RAPORU', 450, 550, { align: 'left' })
 
+	connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (Error,results)=>{
+
+
+		
+	});
+
+
+	
+
+
+
+
 	row1(doc, 550);
 	
 	
