@@ -2,6 +2,7 @@ const mysql = require('mysql');
 const express = require('express');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
+const { error } = require('console');
 const app = express();
 app.use('/assets', express.static('assets'));
 app.use(express.urlencoded({ extended: true }));
@@ -126,6 +127,7 @@ app.post('/welcome', (req, res) => {
 
 //--------------İNDİRME İNŞALLAH-------------//
 
+/*connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1', error,results=>{})  CLEANCODE    */
 
 app.get('/generate-pdf', (req, res) => {
 	// PDF oluşturma işlemleri
@@ -196,7 +198,6 @@ app.get('/generate-pdf', (req, res) => {
 		}
 		// Verileri PDF'e yazdırma
 		results.forEach((row) => {
-
 			doc
 				.fontSize(12)
 				.text(`Tarihi: ${row.tarih}`, 100, 180, { align: 'center' })
@@ -306,7 +307,6 @@ app.get('/generate-pdf', (req, res) => {
 		doc.pipe(res);
 	});
 });
-
 app.get('/generate-pdf2', (req, res) => {
 	const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
 
@@ -359,8 +359,6 @@ app.get('/generate-pdf2', (req, res) => {
 			return;
 		}
 		doc.font('Roboto-Bold.ttf').text('HAKEDİŞ RAPORU', { align: 'center' }).fontSize('14');
-
-		
 
 		results.forEach((e) => {
 			ust_bolum();
@@ -526,40 +524,88 @@ app.get('/generate-pdf2', (req, res) => {
 	});
 });
 
-app.get('/generate-pdf3', (req, res) => {
-	const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
-	doc.page.dictionary.data.Rotate = 90;
-	doc.save();
-	
-	function row1(doc, heigth) {
-		doc.lineJoin('miter').rect(300, heigth, 580, 20).stroke();
-		return doc;
-	}
+connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (Error, results) => {
+	results.forEach((e) => {
+		app.get('/generate-pdf3', (req, res) => {
+			const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
+			doc.page.dictionary.data.Rotate = 90;
+			doc.save();
 
-	doc.rotate(-90,{origin:[450,550]}).font('Roboto-Bold.ttf').fontSize(14).text('HAKEDİŞ RAPORU', 450, 550, { align: 'left' })
+			function row1(doc, heigth) {
+				doc.lineJoin('miter').rect(-100, heigth, 750, 15).stroke();
+				return doc;
+			}
+			function row2(doc, heigth) {
+				doc.lineJoin('miter').rect(10, heigth, 780, 15).stroke();
+				return doc;
+			}
+			generateFrame();
+			function generateFrame() {
+				const frameX = 15; // Çerçevenin sol kenarının X koordinatı
+				const frameY = 50; // Çerçevenin üst kenarının Y koordinatı
+				const frameWidth = 450; // Çerçevenin genişliği
+				const frameHeight = 750; // Çerçevenin yüksekliği
+				const frameThickness = 2.5; // Çerçevenin kalınlığı piksel cinsinden
 
-	connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (Error,results)=>{
+				const drawRect = (x, y, width, height, color) => {
+					doc.rect(x, y, width, height).fill(color);
+				};
 
+				drawRect(frameX, frameY, frameWidth, frameThickness, '#000000'); // Üst çerçeve
+				drawRect(
+					frameX,
+					frameY + frameHeight - frameThickness,
+					frameWidth,
+					frameThickness,
+					'#000000'
+				); // Alt çerçeve
+				drawRect(
+					frameX,
+					frameY + frameThickness,
+					frameThickness,
+					frameHeight - 2 * frameThickness,
+					'#000000'
+				); // Sol çerçeve
+				drawRect(
+					frameX + frameWidth - frameThickness,
+					frameY + frameThickness,
+					frameThickness,
+					frameHeight - 2 * frameThickness,
+					'#000000'
+				); // Sağ çerçeve
+			}
+			header();
 
-		
+			function header() {
+				doc
+				.lineCap('butt')
+				.moveTo(45, 800)
+				.lineTo(45, 50)
+				.stroke();
+
+				doc
+					.rotate(-90, { origin: [350, 350] })
+					.font('Roboto-Bold.ttf')
+					.fontSize('5')
+					.text(`${e.is_adi}`, -95, 50)
+					.fontSize('8')
+					.text('YAPILAN İŞLER LİSTESİ', 230, 20)
+					.font('Roboto.ttf')
+					.fontSize('7')
+					.text('(Teklif Birim Fiyatlı Hizmet İçin)', 230, 30);
+
+					
+				row1(doc, 150);
+			}
+
+			doc.pipe(res);
+			doc.end();
+			console.log('Hakediş raporu-3 başarıyla oluşturuldu');
+			res.setHeader('Content-Type', 'application/pdf');
+			res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu3.pdf');
+		});
 	});
-
-
-	
-
-
-
-
-	row1(doc, 550);
-	
-	
-	doc.pipe(res);
-	doc.end();
-	console.log('Hakediş raporu-3 başarıyla oluşturuldu');
-	res.setHeader('Content-Type', 'application/pdf');
-	res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu3.pdf');
 });
-
 // MySQL bağlantısını kapat
 // connection.end();
 app.listen(5001);
