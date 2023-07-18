@@ -594,7 +594,6 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (Er
 					.fontSize('7')
 					.text('(Teklif Birim Fiyatlı Hizmet İçin)', 230, 30);
 
-					
 				row1(doc, 150);
 			}
 
