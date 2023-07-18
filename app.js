@@ -578,21 +578,48 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (Er
 
 			function header() {
 				doc
-				.lineCap('butt')
-				.moveTo(45, 800)
-				.lineTo(45, 50)
-				.stroke();
+					.lineCap('butt')
+					.moveTo(40, 800)
+					.lineTo(40, 50)
+					.moveTo(55, 800)
+					.lineTo(55, 50)
+					.moveTo(95, 800)
+					.lineTo(95, 50)
+					.moveTo(55, 760)
+					.lineTo(95, 760)
+					.moveTo(55, 600)
+					.lineTo(95, 600)
+					.moveTo(55, 510)
+					.lineTo(95, 510)
+					.moveTo(55, 460)
+					.lineTo(95, 460)
+					.moveTo(55, 360)
+					.lineTo(95, 360)
+					.moveTo(55, 160)
+					.lineTo(95, 160)
+					.moveTo(55, 135)
+					.lineTo(95, 135)
+					.stroke();
 
 				doc
 					.rotate(-90, { origin: [350, 350] })
 					.font('Roboto-Bold.ttf')
-					.fontSize('5')
-					.text(`${e.is_adi}`, -95, 50)
+					.fontSize('6')
+					.text(`${e.is_adi}`, -95, 45)
 					.fontSize('8')
 					.text('YAPILAN İŞLER LİSTESİ', 230, 20)
 					.font('Roboto.ttf')
 					.fontSize('7')
-					.text('(Teklif Birim Fiyatlı Hizmet İçin)', 230, 30);
+					.text('(Teklif Birim Fiyatlı Hizmet İçin)', 230, 30)
+					.fontSize('6')
+					.text('Sıra No', -90, 62)
+					.text('İşin Tanımı', 30, 62)
+					.text('Sözleşme Bedeli', 130, 62)
+					.text('Toplam İmalat', 195, 62)
+					.text('Toplam İmalat Tutarı', 250, 62)
+					.text('Önceki Hakediş Toplam İmalat', 350, 62)
+					.text('Bu Hakediş İmalat', 510, 62)
+					.text('Bu Hakediş Tutarı', 580, 62);
 
 				row1(doc, 150);
 			}
