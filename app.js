@@ -347,7 +347,6 @@ app.get('/generate-pdf2', (req, res) => {
 		doc.lineJoin('miter').rect(55, height, 528, 20).stroke();
 		return doc;
 	}
-
 	function para(number, fractionDigits = 2) {
 		return number.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺';
 	}
@@ -530,24 +529,25 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (Er
 			doc.page.dictionary.data.Rotate = 90;
 			doc.save();
 
-			generateFrame();
-			header(doc);
-			middle(doc);
+			generateFrame(); // FONKSİYONLARI ÇAĞIRIŞ SIRASINA GÖRE DEĞİŞİYOR
+			header();
+			Information();
 
 			function row1(doc, heigth) {
 				doc.lineJoin('miter').rect(-100, heigth, 750, 15).stroke();
 				return doc;
 			}
-			function row2(doc, heigth) {
-				doc.lineJoin('miter').rect(10, heigth, 780, 15).stroke();
+			function rowInformation(doc, heigth) {
+				doc.lineJoin('miter').rect(-99, heigth, 747, 13).stroke();
 				return doc;
 			}
+
 			function generateFrame() {
 				const frameX = 15; // Çerçevenin sol kenarının X koordinatı
 				const frameY = 50; // Çerçevenin üst kenarının Y koordinatı
 				const frameWidth = 450; // Çerçevenin genişliği
 				const frameHeight = 750; // Çerçevenin yüksekliği
-				const frameThickness = 2.5; // Çerçevenin kalınlığı piksel cinsinden
+				const frameThickness = 2; // Çerçevenin kalınlığı piksel cinsinden
 
 				const drawRect = (x, y, width, height, color) => {
 					doc.rect(x, y, width, height).fill(color);
@@ -639,33 +639,28 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (Er
 					.text('Bu Hakediş Tutarı', 575, 72, { width: 100 });
 			}
 
-			function middle(doc) {
-				function row1(doc, heigth) {
-					doc.lineJoin('miter').rect(-100, heigth, 750, 15).stroke();
-					return doc;
-				}
+			function Information() {
 				try {
-					for (let i = 0; i < 200; i += 10) {
-						row1(doc, 150 + i);
+					let x = 0;
+					for (let i = 0; i < 5; i++) {
+						rowInformation(doc, 95 + x);
+						doc
+							.lineCap('butt')
+							.moveTo(95 + x, 670)
+							.lineTo(108 + x, 670)
+							.stroke();
+						x = x + 13;
 					}
-				}
-				
-				
-				
-				
-				
-				
-				
-				catch (error) {
+				} catch (error) {
 					console.log(error);
 				}
 			}
 
 			doc.pipe(res);
-			doc.end();
 			console.log('Hakediş raporu-3 başarıyla oluşturuldu');
 			res.setHeader('Content-Type', 'application/pdf');
 			res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu3.pdf');
+			doc.end();
 		});
 	});
 });
