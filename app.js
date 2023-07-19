@@ -2,7 +2,6 @@ const mysql = require('mysql');
 const express = require('express');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
-const { error } = require('console');
 const app = express();
 app.use('/assets', express.static('assets'));
 app.use(express.urlencoded({ extended: true }));
@@ -531,6 +530,10 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (Er
 			doc.page.dictionary.data.Rotate = 90;
 			doc.save();
 
+			generateFrame();
+			header(doc);
+			middle(doc);
+
 			function row1(doc, heigth) {
 				doc.lineJoin('miter').rect(-100, heigth, 750, 15).stroke();
 				return doc;
@@ -539,7 +542,6 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (Er
 				doc.lineJoin('miter').rect(10, heigth, 780, 15).stroke();
 				return doc;
 			}
-			generateFrame();
 			function generateFrame() {
 				const frameX = 15; // Çerçevenin sol kenarının X koordinatı
 				const frameY = 50; // Çerçevenin üst kenarının Y koordinatı
@@ -574,7 +576,6 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (Er
 					'#000000'
 				); // Sağ çerçeve
 			}
-			header();
 
 			function header() {
 				doc
@@ -585,20 +586,26 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (Er
 					.lineTo(55, 50)
 					.moveTo(95, 800)
 					.lineTo(95, 50)
-					.moveTo(55, 760)
-					.lineTo(95, 760)
-					.moveTo(55, 600)
-					.lineTo(95, 600)
-					.moveTo(55, 510)
-					.lineTo(95, 510)
-					.moveTo(55, 460)
-					.lineTo(95, 460)
-					.moveTo(55, 360)
-					.lineTo(95, 360)
-					.moveTo(55, 160)
-					.lineTo(95, 160)
-					.moveTo(55, 135)
-					.lineTo(95, 135)
+					.moveTo(65, 550)
+					.lineTo(65, 50)
+					.moveTo(40, 200)
+					.lineTo(55, 200)
+					.moveTo(55, 770) // sıra no R
+					.lineTo(95, 770)
+					.moveTo(55, 550) // işin tanımı R
+					.lineTo(95, 550)
+					.moveTo(55, 465) // sözleşme bedeli R
+					.lineTo(95, 465)
+					.moveTo(55, 405) //Gerçekleşen toplam imalat R
+					.lineTo(95, 405)
+					.moveTo(55, 345) //toplam İmalat Tutarı R
+					.lineTo(95, 345)
+					.moveTo(55, 265) //Önceki Hakediş Toplam İmalat R
+					.lineTo(95, 265)
+					.moveTo(55, 200) //önceki hakediş toplam imalat tutarı R
+					.lineTo(95, 200)
+					.moveTo(55, 150) // bu hakediş imalat R
+					.lineTo(95, 150)
 					.stroke();
 
 				doc
@@ -606,22 +613,52 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (Er
 					.font('Roboto-Bold.ttf')
 					.fontSize('6')
 					.text(`${e.is_adi}`, -95, 45)
+					.text('A', 190, 57)
+					.text('B', 265, 57)
+					.text('C=(AxB)', 315, 57)
+					.text('D', 395, 57)
+					.text('E=(AxD)', 455, 57)
+					.text('F=(B-D)', 515, 57)
+					.text('G=(AxF)', 585, 57)
 					.fontSize('8')
 					.text('YAPILAN İŞLER LİSTESİ', 230, 20)
 					.font('Roboto.ttf')
 					.fontSize('7')
-					.text('(Teklif Birim Fiyatlı Hizmet İçin)', 230, 30)
+					.text('(Teklif Birim Fiyatlı Hizmet İçin)', 225, 30)
 					.fontSize('6')
-					.text('Sıra No', -90, 62)
-					.text('İşin Tanımı', 30, 62)
-					.text('Sözleşme Bedeli', 130, 62)
-					.text('Toplam İmalat', 195, 62)
-					.text('Toplam İmalat Tutarı', 250, 62)
-					.text('Önceki Hakediş Toplam İmalat', 350, 62)
-					.text('Bu Hakediş İmalat', 510, 62)
-					.text('Bu Hakediş Tutarı', 580, 62);
+					.text('Sayfa No:', 507, 44)
+					.text('Hakediş No:', 575, 44)
+					.text('Sıra No', -95, 72)
+					.text('İşin Tanımı', 33, 72)
+					.text('Sözleşme Bedeli', 170, 72)
+					.text('Gerçekleşen Toplam İmalat', 250, 69, { width: 40, align: 'center' })
+					.text('Toplam İmalat Tutarı', 310, 69, { width: 40, align: 'center' })
+					.text('Önceki Hakediş Toplam İmalat', 375, 69, { width: 50, align: 'center' })
+					.text('Önceki Hakediş Toplam İmalat Tutarı', 440, 69, { width: 50, align: 'center' })
+					.text('Bu Hakediş İmalat', 507, 69, { width: 40, align: 'center' })
+					.text('Bu Hakediş Tutarı', 575, 72, { width: 100 });
+			}
 
-				row1(doc, 150);
+			function middle(doc) {
+				function row1(doc, heigth) {
+					doc.lineJoin('miter').rect(-100, heigth, 750, 15).stroke();
+					return doc;
+				}
+				try {
+					for (let i = 0; i < 200; i += 10) {
+						row1(doc, 150 + i);
+					}
+				}
+				
+				
+				
+				
+				
+				
+				
+				catch (error) {
+					console.log(error);
+				}
 			}
 
 			doc.pipe(res);
