@@ -2,6 +2,7 @@ const mysql = require('mysql');
 const express = require('express');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
+const e = require('express');
 const app = express();
 app.use('/assets', express.static('assets'));
 app.use(express.urlencoded({ extended: true }));
@@ -124,108 +125,100 @@ app.post('/welcome', (req, res) => {
 	);
 });
 
-//--------------İNDİRME İNŞALLAH-------------//
-
-/*connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1', error,results=>{})  CLEANCODE    */
 connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (error, results) => {
-	app.get('/generate-pdf', (req, res) => {
-		// PDF oluşturma işlemleri
-		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
-
-		generateFrame();
-		generateHeader(doc);
-
-		function generateFrame() {
-			const frameX = 15; // Çerçevenin sol kenarının X koordinatı
-			const frameY = 30; // Çerçevenin üst kenarının Y koordinatı
-			const frameWidth = 570; // Çerçevenin genişliği
-			const frameHeight = 750; // Çerçevenin yüksekliği
-			const frameThickness = 2; // Çerçevenin kalınlığı piksel cinsinden
-
-			const drawRect = (x, y, width, height, color) => {
-				doc.rect(x, y, width, height).fill(color);
-			};
-
-			drawRect(frameX, frameY, frameWidth, frameThickness, '#000000'); // Üst çerçeve
-			drawRect(
-				frameX,
-				frameY + frameHeight - frameThickness,
-				frameWidth,
-				frameThickness,
-				'#000000'
-			); // Alt çerçeve
-			drawRect(
-				frameX,
-				frameY + frameThickness,
-				frameThickness,
-				frameHeight - 2 * frameThickness,
-				'#000000'
-			); // Sol çerçeve
-			drawRect(
-				frameX + frameWidth - frameThickness,
-				frameY + frameThickness,
-				frameThickness,
-				frameHeight - 2 * frameThickness,
-				'#000000'
-			); // Sağ çerçeve
-		}
-		function row1(doc, heigth) {
-			doc.lineJoin('miter').rect(30, heigth, 550, 85).stroke();
-			return doc;
-		}
-		function para(number, fractionDigits = 2) {
-			return number.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺';
-		}
-		function generateHeader(doc) {
-			const logoLeft = 'assets/gorseller/logo_left.png';
-			const logoRight = 'assets/gorseller/logo_right.png';
-			doc
-				.image(logoLeft, 20, 50, { width: 60, height: 80 })
-				.image(logoRight, 500, 50, { width: 60, height: 80 })
-				.fontSize(12)
-				.text('T.C', 100, 30, { align: 'center' })
-				.text('SAMSUN BÜYÜK ŞEHİR BELEDİYESİ', 100, 50, { align: 'center' })
-				.text('SAMSUN SU VE KANALİZASYON GENEL MÜDÜRLÜĞÜ', 100, 70, { align: 'center' })
-				.text('BİLGİ İŞLEM DAİRESİ BAŞKANLIĞI', 100, 90, { align: 'center' })
-				.fontSize(16)
-				.text('Hakediş Raporu', 100, 150, { align: 'center' })
-				.moveDown();
-		}
-
-		results.forEach((row) => {
+	results.forEach((e) => {
+		app.get('/generate-pdf', (req, res) => {
+			const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
+			reportFrame();
+			reportHeader();
 			reportInformation();
 			reportTable();
 			reportFooter();
 
+			function reportFrame() {
+				const frameX = 15; // Çerçevenin sol kenarının X koordinatı
+				const frameY = 30; // Çerçevenin üst kenarının Y koordinatı
+				const frameWidth = 570; // Çerçevenin genişliği
+				const frameHeight = 750; // Çerçevenin yüksekliği
+				const frameThickness = 2; // Çerçevenin kalınlığı piksel cinsinden
+
+				const drawRect = (x, y, width, height, color) => {
+					doc.rect(x, y, width, height).fill(color);
+				};
+
+				drawRect(frameX, frameY, frameWidth, frameThickness, '#000000'); // Üst çerçeve
+				drawRect(
+					frameX,
+					frameY + frameHeight - frameThickness,
+					frameWidth,
+					frameThickness,
+					'#000000'
+				); // Alt çerçeve
+				drawRect(
+					frameX,
+					frameY + frameThickness,
+					frameThickness,
+					frameHeight - 2 * frameThickness,
+					'#000000'
+				); // Sol çerçeve
+				drawRect(
+					frameX + frameWidth - frameThickness,
+					frameY + frameThickness,
+					frameThickness,
+					frameHeight - 2 * frameThickness,
+					'#000000'
+				); // Sağ çerçeve
+			}
+			function rowReport(doc, heigth) {
+				doc.lineJoin('miter').rect(30, heigth, 550, 85).stroke();
+				return doc;
+			}
+			function para(number, fractionDigits = 2) {
+				return number.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺';
+			}
+			function reportHeader() {
+				const logoLeft = 'assets/gorseller/logo_left.png';
+				const logoRight = 'assets/gorseller/logo_right.png';
+				doc
+					.image(logoLeft, 20, 50, { width: 60, height: 80 })
+					.image(logoRight, 500, 50, { width: 60, height: 80 })
+					.fontSize(12)
+					.text('T.C', 100, 30, { align: 'center' })
+					.text('SAMSUN BÜYÜK ŞEHİR BELEDİYESİ', 100, 50, { align: 'center' })
+					.text('SAMSUN SU VE KANALİZASYON GENEL MÜDÜRLÜĞÜ', 100, 70, { align: 'center' })
+					.text('BİLGİ İŞLEM DAİRESİ BAŞKANLIĞI', 100, 90, { align: 'center' })
+					.fontSize(16)
+					.text('Hakediş Raporu', 100, 150, { align: 'center' })
+					.moveDown();
+			}
 			function reportInformation() {
 				doc
 					.fontSize(12)
-					.text(`Tarihi: ${row.tarih}`, 100, 180, { align: 'center' })
-					.text(`No su: ${row.no}`, 100, 200, { align: 'center' })
-					.text(`Uygulama Yılı: ${row.uygulama_yili}`, 100, 220, { align: 'center' })
+					.text(`Tarihi: ${e.tarih}`, 100, 180, { align: 'center' })
+					.text(`No su: ${e.no}`, 100, 200, { align: 'center' })
+					.text(`Uygulama Yılı: ${e.uygulama_yili}`, 100, 220, { align: 'center' })
 					.text('Yapılan işin / Hizmetin Adı :', 35, 270)
-					.text(`${row.is_adi}`, 275, 270, { align: 'left' })
+					.text(`${e.is_adi}`, 275, 270, { align: 'left' })
 					.text('Yapılan İsin / Hizmetin Etüd / Proje No su :', 35, 330)
-					.text(`${row.proje_no}`, 275, 330, { align: 'left' })
+					.text(`${e.proje_no}`, 275, 330, { align: 'left' })
 					.text('Yüklenicinin Adi / Ticari Unvanı :', 35, 370)
-					.text(`${row.yuklenici_adi}`, 275, 370, { align: 'left' })
+					.text(`${e.yuklenici_adi}`, 275, 370, { align: 'left' })
 					.text('Sözleşme Bedeli :', 35, 420)
-					.text(`${para(row.sozlesme_bedeli)}`, 275, 420, { align: 'left' })
+					.text(`${para(e.sozlesme_bedeli)}`, 275, 420, { align: 'left' })
 					.text('İhale Tarihi :', 35, 440)
-					.text(`${row.ihale_tarihi}`, 275, 440, { align: 'left' })
+					.text(`${e.ihale_tarihi}`, 275, 440, { align: 'left' })
 					.text('Kayıt no :', 35, 460)
-					.text(`${row.kayit_no}`, 275, 460, { align: 'left' })
+					.text(`${e.kayit_no}`, 275, 460, { align: 'left' })
 					.text('Sözleşme Tarihi :', 35, 480)
-					.text(`${row.sozlesme_tarih}`, 275, 480, { align: 'left' })
+					.text(`${e.sozlesme_tarih}`, 275, 480, { align: 'left' })
 					.text('İşyeri Teslim Tarihi :', 35, 500)
-					.text(`${row.isyeri_teslim_tarihi}`, 275, 500, { align: 'left' })
+					.text(`${e.isyeri_teslim_tarihi}`, 275, 500, { align: 'left' })
 					.text('Sözleşmeye Göre İşin Süresi :', 35, 520)
-					.text(`${row.isin_suresi}`, 275, 520, { align: 'left' })
+					.text(`${e.isin_suresi}`, 275, 520, { align: 'left' })
 					.text('Sözleşmeye Göre İş Bitim Tarihi :', 35, 540)
-					.text(`${row.is_bitim_tarihi}`, 275, 540, { align: 'left' })
+					.text(`${e.is_bitim_tarihi}`, 275, 540, { align: 'left' })
 					.moveDown();
 			}
-
 			function reportTable() {
 				doc
 					.lineCap('butt')
@@ -239,18 +232,17 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (er
 					.lineTo(580, 615)
 					.stroke();
 
-				row1(doc, 580);
+				rowReport(doc, 580);
 
 				doc
 					.text('Sözleşme Bedeli', 35, 590)
-					.text(`${para(row.sozlesme_bedeli)}`, 40, 630, { align: 'left' })
+					.text(`${para(e.sozlesme_bedeli)}`, 40, 630, { align: 'left' })
 					.text('Sözleşme Artış', 175, 580)
 					.text('Onayının Tarihi / No su', 155, 592)
 					.text('Ek Sözleşme Bedeli', 295, 590)
 					.text('Toplam Sözleşme Bedeli', 435, 580)
-					.text(`${para(row.sozlesme_bedeli)}`, 435, 630, { align: 'left' });
+					.text(`${para(e.sozlesme_bedeli)}`, 435, 630, { align: 'left' });
 			}
-
 			function reportFooter() {
 				doc
 					.lineCap('butt')
@@ -264,7 +256,7 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (er
 					.lineTo(580, 700)
 					.stroke();
 
-				row1(doc, 670);
+				rowReport(doc, 670);
 
 				doc
 					.text('Süre uzatım kararı Tarih', 35, 675)
@@ -272,87 +264,81 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (er
 					.text('Verilen Süre', 305, 675)
 					.text('İş Bitim Tarihi', 435, 675);
 			}
-
-			// PDF dosyasına yazdırma işlemini tamamla
 			doc.end();
-			// PDF dosyasının oluşturulduğunu bildir
 			console.log('Hakediş raporu başarıyla oluşturuldu');
-			// PDF dosyasını indirme
 			res.setHeader('Content-Type', 'application/pdf');
 			res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu.pdf');
 			doc.pipe(res);
 		});
-	});
-});
 
-connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (error, results) => {
-	app.get('/generate-pdf2', (req, res) => {
-		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
+		app.get('/generate-pdf2', (req, res) => {
+			const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
 
-		generateFrame();
-		function generateFrame() {
-			const frameX = 15; // Çerçevenin sol kenarının X koordinatı
-			const frameY = 50; // Çerçevenin üst kenarının Y koordinatı
-			const frameWidth = 570; // Çerçevenin genişliği
-			const frameHeight = 750; // Çerçevenin yüksekliği
-			const frameThickness = 2; // Çerçevenin kalınlığı piksel cinsinden
+			function progressFrame() {
+				const frameX = 15; // Çerçevenin sol kenarının X koordinatı
+				const frameY = 50; // Çerçevenin üst kenarının Y koordinatı
+				const frameWidth = 570; // Çerçevenin genişliği
+				const frameHeight = 750; // Çerçevenin yüksekliği
+				const frameThickness = 2; // Çerçevenin kalınlığı piksel cinsinden
 
-			const drawRect = (x, y, width, height, color) => {
-				doc.rect(x, y, width, height).fill(color);
-			};
+				const drawRect = (x, y, width, height, color) => {
+					doc.rect(x, y, width, height).fill(color);
+				};
 
-			drawRect(frameX, frameY, frameWidth, frameThickness, '#000000'); // Üst çerçeve
-			drawRect(
-				frameX,
-				frameY + frameHeight - frameThickness,
-				frameWidth,
-				frameThickness,
-				'#000000'
-			); // Alt çerçeve
-			drawRect(
-				frameX,
-				frameY + frameThickness,
-				frameThickness,
-				frameHeight - 2 * frameThickness,
-				'#000000'
-			); // Sol çerçeve
-			drawRect(
-				frameX + frameWidth - frameThickness,
-				frameY + frameThickness,
-				frameThickness,
-				frameHeight - 2 * frameThickness,
-				'#000000'
-			); // Sağ çerçeve
-		}
-		function row1(doc, heigth) {
-			doc.lineJoin('miter').rect(17.2, heigth, 566.3, 20).stroke();
-			return doc;
-		}
-		function row2(doc, height) {
-			doc.lineJoin('miter').rect(55, height, 528, 20).stroke();
-			return doc;
-		}
-		function para(number, fractionDigits = 2) {
-			return number.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺';
-		}
+				drawRect(frameX, frameY, frameWidth, frameThickness, '#000000'); // Üst çerçeve
+				drawRect(
+					frameX,
+					frameY + frameHeight - frameThickness,
+					frameWidth,
+					frameThickness,
+					'#000000'
+				); // Alt çerçeve
+				drawRect(
+					frameX,
+					frameY + frameThickness,
+					frameThickness,
+					frameHeight - 2 * frameThickness,
+					'#000000'
+				); // Sol çerçeve
+				drawRect(
+					frameX + frameWidth - frameThickness,
+					frameY + frameThickness,
+					frameThickness,
+					frameHeight - 2 * frameThickness,
+					'#000000'
+				); // Sağ çerçeve
+			}
+			function progressRow(doc, heigth) {
+				doc.lineJoin('miter').rect(17.2, heigth, 566.3, 20).stroke();
+				return doc;
+			}
+			function progressRow2(doc, height) {
+				doc.lineJoin('miter').rect(55, height, 528, 20).stroke();
+				return doc;
+			}
+			function para(number, fractionDigits = 2) {
+				return number.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺';
+			}
+			// SINIR EKLENECEK !!
 
-		doc.font('Roboto-Bold.ttf').text('HAKEDİŞ RAPORU', { align: 'center' }).fontSize('14');
+			progressFrame();
+			progressHeader();
+			progressMiddle();
+			progressFooter();
 
-		results.forEach((e) => {
-			ust_bolum();
-			orta_bolum();
-			alt_bolum();
+			function progressHeader() {
+				progressRow(doc, 90);
+				progressRow(doc, 110);
+				progressRow(doc, 130);
+				progressRow(doc, 150);
+				progressRow(doc, 170);
+				progressRow(doc, 190);
+				progressRow(doc, 210);
 
-			function ust_bolum() {
-				row1(doc, 90);
-				row1(doc, 110);
-				row1(doc, 130);
-				row1(doc, 150);
-				row1(doc, 170);
-				row1(doc, 190);
-				row1(doc, 210);
-
-				doc // SINIR EKLENECEK !! -- KALINLIKLAR EKLENECEK
+				doc
+					.font('Roboto-Bold.ttf')
+					.text('HAKEDİŞ RAPORU', { align: 'center' })
+					.fontSize('14')
 					.fontSize('10')
 					.text(`${e.is_adi}`, 25, 65, { align: 'left' })
 
@@ -393,16 +379,17 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (er
 					.stroke();
 			}
 
-			function orta_bolum() {
-				row2(doc, 230);
-				row2(doc, 250);
-				row2(doc, 270);
-				row2(doc, 290);
-				row2(doc, 310);
-				row2(doc, 330);
-				row2(doc, 350);
-				row2(doc, 370);
-				row2(doc, 390);
+			function progressMiddle() {
+				progressRow2(doc, 230);
+				progressRow2(doc, 250);
+				progressRow2(doc, 270);
+				progressRow2(doc, 290);
+				progressRow2(doc, 310);
+				progressRow2(doc, 330);
+				progressRow2(doc, 350);
+				progressRow2(doc, 370);
+				progressRow2(doc, 390);
+
 				doc
 					.save() // Dökümanın mevcut durumunu kaydet
 					.translate(25, 400) // Başlangıç noktasını ayarla
@@ -410,14 +397,14 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (er
 					.font('Roboto-Bold.ttf')
 					.fontSize('12')
 					.text('KESİNTİLER VE MAHPUSLAR', 0, 0)
-					.restore(); // Dökümanı önceki durumuna geri getir
+					.restore() // Dökümanı önceki durumuna geri getir
 
-				doc
 					.font('Roboto-Bold.ttf')
 					.text(`${para(e.sozlesme_bedeli)}`, 455, 275, { align: 'left' })
 					.text(`${para(e.sozlesme_bedeli)}`, 455, 395, { align: 'left' })
-					.fontSize('11')
+
 					.font('Roboto.ttf')
+					.fontSize('11')
 					.text('a) Gelir/ Kurumlar Vergisi ( E x % .. )', 60, 235)
 					.text(`${para(e.sozlesme_bedeli)}`, 455, 235, { align: 'left' })
 					.text('b) Damga Vergisi ( E - g x % ..)0,00825', 60, 255)
@@ -446,19 +433,21 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (er
 					.stroke();
 			}
 
-			function alt_bolum() {
-				//underline- metnin altını çizip çizmeme
-				row1(doc, 410);
-				row1(doc, 430);
+			function progressFooter() {
+				progressRow(doc, 410);
+				progressRow(doc, 430);
 
 				doc // SOL DİK
 					.lineCap('butt')
 					.moveTo(40, 410)
 					.lineTo(40, 450)
-					.stroke();
 
-				doc.lineWidth('2').lineCap('butt').moveTo(15, 525).lineTo(585, 525).stroke();
-				doc
+					.lineWidth('2')
+					.lineCap('butt')
+					.moveTo(15, 525)
+					.lineTo(585, 525)
+					.stroke()
+				
 					.font('Roboto-Bold.ttf')
 					.fontSize('10')
 					.text('YÜKLENİCİ', 275, 455, { underline: true })
@@ -466,15 +455,15 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (er
 					.text('ŞUBE MÜDÜRÜ', 50, 650, { underline: true, align: 'left' })
 					.text('DAİRE BAŞKANI', 460, 650, { underline: true, align: 'left' })
 					.text('GENEL MÜDÜR YARDIMCISI', 235, 710, { underline: true, align: 'left' })
+
 					.fontSize('11')
 					.text('H', 25, 415)
 					.text('Kesintiler ve Mahpuslar Toplamı', 45, 415)
 					.text(`${para(e.sozlesme_bedeli)}`, 455, 415, { align: 'rigth' })
 					.text('I', 25, 435)
 					.text('Yükleniciye Ödenecek Tutar ( G - H )', 45, 435)
-					.text(`${para(e.sozlesme_bedeli)}`, 455, 435, { align: 'left' });
+					.text(`${para(e.sozlesme_bedeli)}`, 455, 435, { align: 'left' })
 
-				doc
 					.font('Roboto.ttf')
 					.fontSize('8')
 					.text('|dismakamtarih1|', 270, 480)
@@ -493,26 +482,19 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (er
 					.text('|makam2|', 475, 705)
 					.text('|makam1|', 265, 765);
 			}
-		});
-		doc.end();
-		console.log('Hakediş raporu-2 başarıyla oluşturuldu');
-		res.setHeader('Content-Type', 'application/pdf');
-		res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu2.pdf');
-		doc.pipe(res);
-	});
-});
 
-connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (Error, results) => {
-	results.forEach((e) => {
+			doc.end();
+			console.log('Hakediş raporu-2 başarıyla oluşturuldu');
+			res.setHeader('Content-Type', 'application/pdf');
+			res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu2.pdf');
+			doc.pipe(res);
+		});
+
 		app.get('/generate-pdf3', (req, res) => {
 			const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
 			doc.page.dictionary.data.Rotate = 90;
-			doc.save();
+			// doc.save(); BİR ŞEY OLURSA cons doc ekle
 
-			function row1(doc, heigth) {
-				doc.lineJoin('miter').rect(-100, heigth, 750, 15).stroke();
-				return doc;
-			}
 			function rowLine(doc, x1, y1, x2, y2) {
 				doc.lineCap('butt').moveTo(x1, y1).lineTo(x2, y2).stroke();
 			}
@@ -641,6 +623,7 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (Er
 		});
 	});
 });
+
 // MySQL bağlantısını kapat
 // connection.end();
 app.listen(5001);
