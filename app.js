@@ -22,23 +22,21 @@ connection.connect((error) => {
 // body-parser yerine kullandığımız middleware
 // HTML form verilerini veri tabanına yollamadan önce işlemek için
 
-// anadizine girildğinde index.html i tarayıcıya gönderir "GET"
 app.get('/', (req, res) => {
 	res.sendFile(__dirname + '/index.html');
 });
 
-//welcome a GET isteğini yönlendirmek için
-app.get('/welcome', (req, res) => {
+// KULLANICI GİRİŞ SAYFASI
+app.get('/welcome/:userId', (req, res) => {
 	res.sendFile(__dirname + '/welcome.html');
 });
 
-// Register a Get isteğini yönlendirme
+// KULLANICI KAYIT SAYFASI
 app.get('/register', (req, res) => {
 	res.sendFile(__dirname + '/register.html');
 });
 
-//POST isteğini aldığımızda kullanıcı bilgilerini kontrol ederek
-// kullanıcıyı sayfaya yönlendiririz
+// KULLANICI GİRİŞ KONTROLÜ
 app.post('/', (req, res) => {
 	var username = req.body.username;
 	var password = req.body.password;
@@ -48,7 +46,9 @@ app.post('/', (req, res) => {
 		[username, password],
 		function (error, results, fields) {
 			if (results.length > 0) {
-				res.redirect('/welcome');
+				// Kullanıcı adı ve şifre doğru, kullanıcı kimliğini alalım
+				const userId = results[0].userId;
+				res.redirect('/welcome/' + userId);
 			} else {
 				res.redirect('/');
 			}
@@ -57,7 +57,7 @@ app.post('/', (req, res) => {
 	);
 });
 
-//VERİTABANINA KULLANICIYI KAYDETME
+// KULLANICI KAYDI
 app.post('/register', (req, res) => {
 	var username = req.body.username;
 	var password = req.body.password;
@@ -71,15 +71,19 @@ app.post('/register', (req, res) => {
 				console.log('Kayıt olma hatası:', error);
 				res.redirect('/');
 			} else {
-				res.redirect('/');
+				// Kayıt başarılıysa kullanıcı kimliğini alalım
+				const userId = results.insertId;
+				res.redirect('/welcome/' + userId);
 			}
 			res.end();
 		}
 	);
 });
 
-//RAPOR BİLGİLERİNİ VERİTABANINA KAYDETME
-app.post('/welcome', (req, res) => {
+// RAPOR OLUŞTURMA - Kullanıcının kendi kimliğiyle rapor oluşturma
+app.post('/welcome/:userId', (req, res) => {
+	const userId = req.params.userId; // Kullanıcının kimliğini alalım
+
 	var no = req.body.no;
 	var uygulama_yili = req.body.uygulama_yili;
 	var tarih = req.body.tarih;
@@ -94,9 +98,11 @@ app.post('/welcome', (req, res) => {
 	var isin_suresi = req.body.isin_suresi;
 	var is_bitim_tarihi = req.body.is_bitim_tarihi;
 
+	// Verileri veritabanına kaydedin ve kullanıcı kimliğiyle ilişkilendirin
 	connection.query(
-		'INSERT INTO hakedis_raporu (no, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+		'INSERT INTO hakedis_raporu (user_id, no, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 		[
+			userId, // Kullanıcının kimliği
 			no,
 			uygulama_yili,
 			tarih,
@@ -115,14 +121,16 @@ app.post('/welcome', (req, res) => {
 			if (error) {
 				console.log('Belge Kaydedilemedi');
 				console.log(error);
-				res.redirect('/welcome');
+				res.redirect('/welcome/' + userId); // Hata durumunda yine hoşgeldiniz sayfasına yönlendirme
 			} else {
-				res.redirect('/welcome');
+				res.redirect('/welcome/' + userId); // Başarılı kayıt durumunda yine hoşgeldiniz sayfasına yönlendirme
 			}
 			res.end();
 		}
 	);
 });
+
+
 
 connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC ', (error, results) => {
 	if (error) {
