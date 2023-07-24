@@ -124,7 +124,7 @@ app.post('/welcome', (req, res) => {
 	);
 });
 
-connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (error, results) => {
+connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC ', (error, results) => {
 	if (error) {
 		console.log(error);
 	}
@@ -609,20 +609,31 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (er
 			}
 
 			function Information() {
-					let x = 0;
-					for (let i = 0; i < 24; i++) {
-						rowInformation(95 + x);
-						lineInformation(95 + x, -70, 108 + x, -70);
-						lineInformation(95 + x, 150, 108 + x, 150);
-						lineInformation(95 + x, 235, 108 + x, 235);
-						lineInformation(95 + x, 295, 108 + x, 295);
-						lineInformation(95 + x, 355, 108 + x, 355);
-						lineInformation(95 + x, 435, 108 + x, 435);
-						lineInformation(95 + x, 500, 108 + x, 500);
-						lineInformation(95 + x, 550, 108 + x, 550);
-						x = x + 13;
-					}
-				}
+				let x = 0;
+				results.reverse().forEach((e) => {
+					rowInformation(95 + x);
+					lineInformation(95 + x, -70, 108 + x, -70);
+					lineInformation(95 + x, 150, 108 + x, 150);
+					lineInformation(95 + x, 235, 108 + x, 235);
+					lineInformation(95 + x, 295, 108 + x, 295);
+					lineInformation(95 + x, 355, 108 + x, 355);
+					lineInformation(95 + x, 435, 108 + x, 435);
+					lineInformation(95 + x, 500, 108 + x, 500);
+					lineInformation(95 + x, 550, 108 + x, 550);
+					doc
+						.text('sıra no', -95, 97 + x)
+						.text(`${e.is_adi}`, -67, 97 + x)
+						.text(`${e.sozlesme_bedeli}`, 170, 97 + x)
+						.text(`${e.sozlesme_bedeli}`, 250, 97 + x)
+						.text(`${e.sozlesme_bedeli}`, 310, 97 + x)
+						.text(`${e.sozlesme_bedeli}`, 375, 97 + x)
+						.text(`${e.sozlesme_bedeli}`, 440, 97 + x)
+						.text(`${e.sozlesme_bedeli}`, 507, 97 + x)
+						.text(`${e.sozlesme_bedeli}`, 575, 97 + x);
+					x = x + 13;
+				});
+			}
+
 			doc.pipe(res);
 			console.log('Hakediş raporu-3 başarıyla oluşturuldu');
 			res.setHeader('Content-Type', 'application/pdf');
