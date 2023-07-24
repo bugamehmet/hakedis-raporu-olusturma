@@ -495,10 +495,15 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (er
 
 		app.get('/generate-pdf3', (req, res) => {
 			const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
-			doc.page.dictionary.data.Rotate = 90; // SAVELERSEK ÇİZGİLER DÜZ ROWLAR TERS
+			doc.page.dictionary.data.Rotate = 90;
 
+			generateFrame();
 			header();
 			Information();
+
+			function para(number, fractionDigits = 2) {
+				return number.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺';
+			}
 
 			function rowInformation(heigth) {
 				doc.lineJoin('miter').rect(-99, heigth, 747, 13).stroke();
@@ -602,19 +607,22 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (er
 					.text('Bu Hakediş İmalat', 507, 69, { width: 40, align: 'center' })
 					.text('Bu Hakediş Tutarı', 575, 72, { width: 100 });
 			}
+
 			function Information() {
-				try {
 					let x = 0;
-					for (let i = 0; i < 5; i++) {
-						lineInformation(95 + x, -70, 108 + x, -70);
-						
+					for (let i = 0; i < 24; i++) {
 						rowInformation(95 + x);
+						lineInformation(95 + x, -70, 108 + x, -70);
+						lineInformation(95 + x, 150, 108 + x, 150);
+						lineInformation(95 + x, 235, 108 + x, 235);
+						lineInformation(95 + x, 295, 108 + x, 295);
+						lineInformation(95 + x, 355, 108 + x, 355);
+						lineInformation(95 + x, 435, 108 + x, 435);
+						lineInformation(95 + x, 500, 108 + x, 500);
+						lineInformation(95 + x, 550, 108 + x, 550);
 						x = x + 13;
 					}
-				} catch (error) {
-					console.log(error);
 				}
-			}
 			doc.pipe(res);
 			console.log('Hakediş raporu-3 başarıyla oluşturuldu');
 			res.setHeader('Content-Type', 'application/pdf');
