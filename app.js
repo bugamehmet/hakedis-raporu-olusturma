@@ -125,6 +125,10 @@ app.post('/welcome', (req, res) => {
 });
 
 connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (error, results) => {
+	if (error) {
+		console.log(error);
+	}
+
 	results.forEach((e) => {
 		app.get('/generate-pdf', (req, res) => {
 			const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
@@ -491,20 +495,17 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (er
 
 		app.get('/generate-pdf3', (req, res) => {
 			const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
-			doc.page.dictionary.data.Rotate = 90;
-			//doc.save(); // BİR ŞEY OLURSA cons doc ekle
-			
-			generateFrame();
+			doc.page.dictionary.data.Rotate = 90; // SAVELERSEK ÇİZGİLER DÜZ ROWLAR TERS
+
 			header();
 			Information();
 
 			function rowInformation(heigth) {
 				doc.lineJoin('miter').rect(-99, heigth, 747, 13).stroke();
-				
 			}
-			function rowLine( x1, y1, x2, y2) {
-				doc.lineCap('butt').moveTo(x1, y1).lineTo(x2, y2).stroke();
-				
+
+			function lineInformation(x1, y1, x2, y2) {
+				doc.lineCap('butt').moveTo(y1, x1).lineTo(y2, x2).stroke();
 			}
 
 			function generateFrame() {
@@ -541,7 +542,7 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (er
 					'#000000'
 				); // Sağ çerçeve
 			}
-			
+
 			function header() {
 				doc
 					.lineCap('butt')
@@ -571,9 +572,7 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (er
 					.lineTo(95, 200)
 					.moveTo(55, 150) // bu hakediş imalat R
 					.lineTo(95, 150)
-					.stroke();
-
-				doc
+					.stroke()
 					.rotate(-90, { origin: [350, 350] })
 					.font('Roboto-Bold.ttf')
 					.fontSize('6')
@@ -602,14 +601,13 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (er
 					.text('Önceki Hakediş Toplam İmalat Tutarı', 440, 69, { width: 50, align: 'center' })
 					.text('Bu Hakediş İmalat', 507, 69, { width: 40, align: 'center' })
 					.text('Bu Hakediş Tutarı', 575, 72, { width: 100 });
-					
 			}
-			
 			function Information() {
 				try {
 					let x = 0;
 					for (let i = 0; i < 5; i++) {
-						rowLine( 95 + x, 670, 108 + x, 670);
+						lineInformation(95 + x, -70, 108 + x, -70);
+						
 						rowInformation(95 + x);
 						x = x + 13;
 					}
@@ -617,8 +615,6 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (er
 					console.log(error);
 				}
 			}
-
-
 			doc.pipe(res);
 			console.log('Hakediş raporu-3 başarıyla oluşturuldu');
 			res.setHeader('Content-Type', 'application/pdf');
