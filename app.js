@@ -500,13 +500,14 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC ', (error, res
 			generateFrame();
 			header();
 			Information();
+			footer();
 
 			function para(number, fractionDigits = 2) {
 				return number.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺';
 			}
 
 			function rowInformation(heigth) {
-				doc.lineJoin('miter').rect(-99, heigth, 747, 13).stroke();
+				doc.lineJoin('miter').rect(-128, heigth, 805.5, 11).stroke();
 			}
 
 			function lineInformation(x1, y1, x2, y2) {
@@ -515,9 +516,9 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC ', (error, res
 
 			function generateFrame() {
 				const frameX = 15; // Çerçevenin sol kenarının X koordinatı
-				const frameY = 50; // Çerçevenin üst kenarının Y koordinatı
-				const frameWidth = 450; // Çerçevenin genişliği
-				const frameHeight = 750; // Çerçevenin yüksekliği
+				const frameY = 20; // Çerçevenin üst kenarının Y koordinatı
+				const frameWidth = 450; // Çerçevenin genişliği 50
+				const frameHeight = 810; // Çerçevenin yüksekliği
 				const frameThickness = 2; // Çerçevenin kalınlığı piksel cinsinden
 
 				const drawRect = (x, y, width, height, color) => {
@@ -551,44 +552,44 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC ', (error, res
 			function header() {
 				doc
 					.lineCap('butt')
-					.moveTo(40, 800)
-					.lineTo(40, 50)
-					.moveTo(55, 800)
-					.lineTo(55, 50)
-					.moveTo(95, 800)
-					.lineTo(95, 50)
-					.moveTo(65, 550)
-					.lineTo(65, 50)
+					.moveTo(40, 830)
+					.lineTo(40, 20)
+					.moveTo(55, 830)
+					.lineTo(55, 20)
+					.moveTo(95, 830)
+					.lineTo(95, 20)
+					.moveTo(65, 500)
+					.lineTo(65, 20)
 					.moveTo(40, 200)
 					.lineTo(55, 200)
-					.moveTo(55, 770) // sıra no R
-					.lineTo(95, 770)
-					.moveTo(55, 550) // işin tanımı R
-					.lineTo(95, 550)
-					.moveTo(55, 465) // sözleşme bedeli R
-					.lineTo(95, 465)
-					.moveTo(55, 405) //Gerçekleşen toplam imalat R
-					.lineTo(95, 405)
-					.moveTo(55, 345) //toplam İmalat Tutarı R
-					.lineTo(95, 345)
-					.moveTo(55, 265) //Önceki Hakediş Toplam İmalat R
-					.lineTo(95, 265)
-					.moveTo(55, 200) //önceki hakediş toplam imalat tutarı R
-					.lineTo(95, 200)
-					.moveTo(55, 150) // bu hakediş imalat R
+					.moveTo(55, 810) // sıra no R
+					.lineTo(95, 810)
+					.moveTo(55, 500) // işin tanımı R
+					.lineTo(95, 500)
+					.moveTo(55, 415) // sözleşme bedeli R
+					.lineTo(95, 415)
+					.moveTo(55, 355) //Gerçekleşen toplam imalat R
+					.lineTo(95, 355)
+					.moveTo(55, 280) //toplam İmalat Tutarı R
+					.lineTo(95, 280)
+					.moveTo(55, 215) //Önceki Hakediş Toplam İmalat R
+					.lineTo(95, 215)
+					.moveTo(55, 150) //önceki hakediş toplam imalat tutarı R
 					.lineTo(95, 150)
+					.moveTo(55, 100) // bu hakediş imalat R
+					.lineTo(95, 100)
 					.stroke()
 					.rotate(-90, { origin: [350, 350] })
 					.font('Roboto-Bold.ttf')
 					.fontSize('6')
-					.text(`${e.is_adi}`, -95, 45)
-					.text('A', 190, 57)
-					.text('B', 265, 57)
-					.text('C=(AxB)', 315, 57)
-					.text('D', 395, 57)
-					.text('E=(AxD)', 455, 57)
-					.text('F=(B-D)', 515, 57)
-					.text('G=(AxF)', 585, 57)
+					.text(`${e.is_adi}`, -125, 45)
+					.text('A', 240, 57)
+					.text('B', 315, 57)
+					.text('C=(AxB)', 365, 57)
+					.text('D', 445, 57)
+					.text('E=(AxD)', 505, 57)
+					.text('F=(B-D)', 565, 57,{width:100})
+					.text('G=(AxF)', 615, 57)
 					.fontSize('8')
 					.text('YAPILAN İŞLER LİSTESİ', 230, 20)
 					.font('Roboto.ttf')
@@ -597,41 +598,60 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC ', (error, res
 					.fontSize('6')
 					.text('Sayfa No:', 507, 44)
 					.text('Hakediş No:', 575, 44)
-					.text('Sıra No', -95, 72)
+					.text('Sıra No', -125, 67, {width:15, align:'left'})
 					.text('İşin Tanımı', 33, 72)
-					.text('Sözleşme Bedeli', 170, 72)
-					.text('Gerçekleşen Toplam İmalat', 250, 69, { width: 40, align: 'center' })
-					.text('Toplam İmalat Tutarı', 310, 69, { width: 40, align: 'center' })
-					.text('Önceki Hakediş Toplam İmalat', 375, 69, { width: 50, align: 'center' })
-					.text('Önceki Hakediş Toplam İmalat Tutarı', 440, 69, { width: 50, align: 'center' })
-					.text('Bu Hakediş İmalat', 507, 69, { width: 40, align: 'center' })
-					.text('Bu Hakediş Tutarı', 575, 72, { width: 100 });
+					.text('Sözleşme Bedeli', 220, 72)
+					.text('Gerçekleşen Toplam İmalat', 300, 69, { width: 40, align: 'center' })
+					.text('Toplam İmalat Tutarı', 360, 69, { width: 40, align: 'center' })
+					.text('Önceki Hakediş Toplam İmalat', 425, 69, { width: 50, align: 'center' })
+					.text('Önceki Hakediş Toplam İmalat Tutarı', 490, 69, { width: 50, align: 'center' })
+					.text('Bu Hakediş İmalat', 557, 69, { width: 40, align: 'center' })
+					.text('Bu Hakediş Tutarı', 615, 72, { width: 100 });
 			}
 
 			function Information() {
 				let x = 0;
 				results.reverse().forEach((e) => {
 					rowInformation(95 + x);
-					lineInformation(95 + x, -70, 108 + x, -70);
-					lineInformation(95 + x, 150, 108 + x, 150);
-					lineInformation(95 + x, 235, 108 + x, 235);
-					lineInformation(95 + x, 295, 108 + x, 295);
-					lineInformation(95 + x, 355, 108 + x, 355);
-					lineInformation(95 + x, 435, 108 + x, 435);
-					lineInformation(95 + x, 500, 108 + x, 500);
-					lineInformation(95 + x, 550, 108 + x, 550);
+					lineInformation(93 + x, -110, 106 + x, -110);
+					lineInformation(93 + x, 200, 106 + x, 200);
+					lineInformation(93 + x, 285, 106 + x, 285);
+					lineInformation(93 + x, 345, 106 + x, 345);
+					lineInformation(93 + x, 420, 106 + x, 420);
+					lineInformation(93 + x, 485, 106 + x, 485);
+					lineInformation(93 + x, 550, 106 + x, 550);
+					lineInformation(93 + x, 600, 106 + x, 600);
 					doc
-						.text('sıra no', -95, 97 + x)
-						.text(`${e.is_adi}`, -67, 97 + x)
-						.text(`${e.sozlesme_bedeli}`, 170, 97 + x)
-						.text(`${e.sozlesme_bedeli}`, 250, 97 + x)
-						.text(`${e.sozlesme_bedeli}`, 310, 97 + x)
-						.text(`${e.sozlesme_bedeli}`, 375, 97 + x)
-						.text(`${e.sozlesme_bedeli}`, 440, 97 + x)
-						.text(`${e.sozlesme_bedeli}`, 507, 97 + x)
-						.text(`${e.sozlesme_bedeli}`, 575, 97 + x);
-					x = x + 13;
+						.text(`${e.h_id}`, -125, 97 + x,)
+						.text(`${e.is_adi}`, -107, 97 + x)
+						.text(`${e.sozlesme_bedeli}`, 220, 97 + x)
+						.text(`${e.sozlesme_bedeli}`, 300, 97 + x)
+						.text(`${e.sozlesme_bedeli}`, 360, 97 + x)
+						.text(`${e.sozlesme_bedeli}`, 425, 97 + x)
+						.text(`${e.sozlesme_bedeli}`, 490, 97 + x)
+						.text(`${e.sozlesme_bedeli}`, 557, 97 + x,{width:100})
+						.text(`${e.sozlesme_bedeli}`, 615, 97 + x);
+					x = x + 11;
 				});
+			}
+			function footer(){
+				doc
+				.font('Roboto.ttf')
+				.fontSize('8')	
+				.text('|dismakamunvanad1|', 240, 420)	
+
+				.text('|makamtarih6|', -70, 490)
+				.text('|makam6|', -65, 520)
+				.text('|makamtarih5|', 70, 490)
+				.text('|makam5|', 75, 520)
+				.text('|makamtarih4|',255, 490)
+				.text('|makam4|', 260, 520)
+				.text('|makamtarih3|', 395, 490)
+				.text('|makam3|', 400, 520)
+				.text('|makamtarih2|', 520, 490,{width:100})
+				.text('|makam2|', 525, 520)
+				.font('Roboto-Bold.ttf')
+				.text('|dismakamtarih1|', 245, 390)
 			}
 
 			doc.pipe(res);
