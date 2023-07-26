@@ -2,10 +2,17 @@ const mysql = require('mysql');
 const express = require('express');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
-const { userInfo } = require('os');
+const session = require('express-session');
 const app = express();
 app.use('/assets', express.static('assets'));
 app.use(express.urlencoded({ extended: true }));
+app.use(
+  session({
+    secret: 'GIZLI', // Bu gizli anahtarı değiştirin
+    resave: false,
+    saveUninitialized: true
+  })
+);
 
 const connection = mysql.createConnection({
 	host: 'localhost',
@@ -36,11 +43,13 @@ app.get('/generate-pdf/:userId', (req,res)=>{
 if(useridInfo){generatePDF(res,useridInfo)}
 })
 
-app.get('/generate-pdf2', (req,res)=>{
-	generatePDF2(res)
+app.get('/generate-pdf2/:userId', (req,res)=>{
+	const useridInfo = req.params.userId;
+	if(useridInfo){generatePDF2(res,useridInfo)}
 })
-app.get('/generate-pdf3', (req,res)=>{
-	generatePDF3(res)
+app.get('/generate-pdf3/:userId', (req,res)=>{
+	const useridInfo = req.params.userId;
+	if(useridInfo){generatePDF3(res,useridInfo)}
 })
 
 app.post('/', (req, res) => {
@@ -54,6 +63,7 @@ app.post('/', (req, res) => {
 			if (results.length > 0) {
 				// Kullanıcı adı ve şifre doğru, kullanıcı kimliğini alalım
 				const userId = results[0].userId;
+				req.session.userId = userId;
 				res.redirect(`/welcome/${userId}`);
 			} else {
 				res.redirect('/');
@@ -84,7 +94,8 @@ app.post('/register', (req, res) => {
 		}
 	);
 });
-// RAPOR OLUŞTURMA - Kullanıcının kendi kimliğiyle rapor oluşturma
+
+
 app.post('/welcome/:userId', (req, res) => {
 	const userId = req.params.userId;
 	var no = req.body.no;
@@ -134,17 +145,39 @@ app.post('/welcome/:userId', (req, res) => {
 });
 
 app.post('/generate-pdf', (req,res)=>{
-	connection.query('select kullanici_id from hakedis_raporu',
+	const x = req.session.userId;
+	connection.query('select kullanici_id from hakedis_raporu where kullanici_id=?',[x],
 	function(error, results){
 		if(results.length>0){
 		const userId = results[0].kullanici_id;
 		res.redirect(`/generate-pdf/${userId}`)}
 		else{console.log(error)}
 		res.end();
-	}
-	)
+	})
 })
 
+app.post('/generate-pdf2', (req,res)=>{
+	const x = req.session.userId;
+	connection.query('select kullanici_id from hakedis_raporu where kullanici_id=?',[x], (error,results)=>{
+		if(results.length>0){
+			const userId = results[0].kullanici_id;
+			res.redirect(`/generate-pdf2/${userId}`)
+		}
+		else{console.log(error)}
+		res.end();
+	})
+})
+
+app.post('/generate-pdf3', (req,res)=>{
+	const x = req.session.userId;
+	connection.query('select kullanici_id from hakedis_raporu where kullanici_id=?',[x], (error,results)=>{
+		if(results.length >0){ 
+			const userId = results[0].kullanici_id;
+		res.redirect(`/generate-pdf3/${userId}`)}
+		else{console.log(error)}
+		res.end();
+	})
+})
 
 function generatePDF(res,useridInfo) {
 
@@ -300,10 +333,9 @@ function generatePDF(res,useridInfo) {
 	
 }
 
-
-
-function generatePDF2(res){
-	connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (error, results) => {
+function generatePDF2(res,useridInfo){
+	const params = useridInfo;
+	connection.query('SELECT * FROM hakedis_raporu WHERE kullanici_id=? ORDER BY h_id DESC LIMIT 1 ',[params], (error, results) => {
 		if (error) {
 			console.log(error);
 		}
@@ -528,25 +560,13 @@ function generatePDF2(res){
 	})
 }
 
-
-
-
-
-
-
-
-
-
-function generatePDF3(res){
-	connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC', (error, results)=>{
+function generatePDF3(res, useridInfo){
+	const sql = 'select * from hakedis_raporu where kullanici_id=? order by h_id desc';
+	const params = useridInfo;
+	connection.query(sql,params, (error, results)=>{
 		if (error) {
       console.log('Veritabanı hatası:', error);
       res.status(500).send('Veritabanı hatası');
-      return;
-    }
-    if (!results || results.length === 0) {
-      console.log('Veritabanında veri bulunamadı.');
-      res.status(404).send('Veritabanında veri bulunamadı.');
       return;
     }
 
