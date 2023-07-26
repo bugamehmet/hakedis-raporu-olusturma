@@ -2,6 +2,7 @@ const mysql = require('mysql');
 const express = require('express');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
+const { userInfo } = require('os');
 const app = express();
 app.use('/assets', express.static('assets'));
 app.use(express.urlencoded({ extended: true }));
@@ -25,12 +26,16 @@ app.get('/', (req, res) => {
 app.get('/register', (req, res) => {
 	res.sendFile(__dirname + '/register.html');
 });
+
 app.get('/welcome/:userId', (req, res) => {
 	res.sendFile(__dirname + '/welcome.html');
 });
-app.get('/generate-pdf', (req,res)=>{
-	generatePDF(res)
+
+app.get('/generate-pdf/:userId', (req,res)=>{
+	const useridInfo = req.params.userId;
+if(useridInfo){generatePDF(res,useridInfo)}
 })
+
 app.get('/generate-pdf2', (req,res)=>{
 	generatePDF2(res)
 })
@@ -79,7 +84,6 @@ app.post('/register', (req, res) => {
 		}
 	);
 });
-
 // RAPOR OLUŞTURMA - Kullanıcının kendi kimliğiyle rapor oluşturma
 app.post('/welcome/:userId', (req, res) => {
 	const userId = req.params.userId;
@@ -129,8 +133,24 @@ app.post('/welcome/:userId', (req, res) => {
 	);
 });
 
-function generatePDF(res) {
-	connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1', (error, results) => {
+app.post('/generate-pdf', (req,res)=>{
+	connection.query('select kullanici_id from hakedis_raporu',
+	function(error, results){
+		if(results.length>0){
+		const userId = results[0].kullanici_id;
+		res.redirect(`/generate-pdf/${userId}`)}
+		else{console.log(error)}
+		res.end();
+	}
+	)
+})
+
+
+function generatePDF(res,useridInfo) {
+
+	const sql = 'SELECT * FROM hakedis_raporu WHERE kullanici_id = ? ORDER BY h_id DESC LIMIT 1';
+	const params = useridInfo;
+	connection.query(sql,params, (error, results) => {
 		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
 
 		results.forEach((e) => {		
@@ -278,9 +298,10 @@ function generatePDF(res) {
 	});
 
 	
-
-
 }
+
+
+
 function generatePDF2(res){
 	connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (error, results) => {
 		if (error) {
@@ -506,30 +527,45 @@ function generatePDF2(res){
 		doc.end();
 	})
 }
+
+
+
+
+
+
+
+
+
+
 function generatePDF3(res){
-	connection.query('SELECT * FROM hakedis_raporu ORDER BY DISC LIMIT 1', (error, results)=>{
+	connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC', (error, results)=>{
+		if (error) {
+      console.log('Veritabanı hatası:', error);
+      res.status(500).send('Veritabanı hatası');
+      return;
+    }
+    if (!results || results.length === 0) {
+      console.log('Veritabanında veri bulunamadı.');
+      res.status(404).send('Veritabanında veri bulunamadı.');
+      return;
+    }
+
 		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
 		doc.page.dictionary.data.Rotate = 90;
 
-		results.forEach(e => {
-	
 			generateFrame();
-			header();
-			Information();
+			header(results);
+			Information(results);
 			footer();
-
 			function para(number, fractionDigits = 2) {
 				return number.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺';
 			}
-
 			function rowInformation(heigth) {
 				doc.lineJoin('miter').rect(-128, heigth, 805.5, 11).stroke();
 			}
-
 			function lineInformation(x1, y1, x2, y2) {
 				doc.lineCap('butt').moveTo(y1, x1).lineTo(y2, x2).stroke();
 			}
-
 			function generateFrame() {
 				const frameX = 15; // Çerçevenin sol kenarının X koordinatı
 				const frameY = 20; // Çerçevenin üst kenarının Y koordinatı
@@ -564,8 +600,7 @@ function generatePDF3(res){
 					'#000000'
 				); // Sağ çerçeve
 			}
-
-			function header() {
+			function header(results) {
 				doc
 					.lineCap('butt')
 					.moveTo(40, 830)
@@ -598,7 +633,7 @@ function generatePDF3(res){
 					.rotate(-90, { origin: [350, 350] })
 					.font('Roboto-Bold.ttf')
 					.fontSize('6')
-					.text(`${e.is_adi}`, -125, 45)
+					.text(`${results[0].is_adi}`, -125, 45)
 					.text('A', 240, 57)
 					.text('B', 315, 57)
 					.text('C=(AxB)', 365, 57)
@@ -624,8 +659,7 @@ function generatePDF3(res){
 					.text('Bu Hakediş İmalat', 557, 69, { width: 40, align: 'center' })
 					.text('Bu Hakediş Tutarı', 615, 72, { width: 100 });
 			}
-
-			function Information() {
+			function Information(results) {
 				let x = 0;
 				results.reverse().forEach((e) => {
 					rowInformation(95 + x);
@@ -669,7 +703,6 @@ function generatePDF3(res){
 					.font('Roboto-Bold.ttf')
 					.text('|dismakamtarih1|', 245, 390);
 			}
-		});
 		doc.pipe(res);
 		console.log('Hakediş raporu-3 başarıyla oluşturuldu');
 		res.setHeader('Content-Type', 'application/pdf');
