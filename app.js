@@ -24,8 +24,6 @@ connection.connect((error) => {
 	if (error) throw error;
 	else console.log('bağlanıldı!');
 });
-// body-parser yerine kullandığımız middleware
-// HTML form verilerini veri tabanına yollamadan önce işlemek için
 
 app.get('/', (req, res) => {
 	res.sendFile(__dirname + '/index.html');
@@ -33,7 +31,6 @@ app.get('/', (req, res) => {
 app.get('/register', (req, res) => {
 	res.sendFile(__dirname + '/register.html');
 });
-
 app.get('/welcome/:userId', (req, res) => {
 	res.sendFile(__dirname + '/welcome.html');
 });
@@ -42,7 +39,6 @@ app.get('/generate-pdf/:userId', (req,res)=>{
 	const useridInfo = req.params.userId;
 if(useridInfo){generatePDF(res,useridInfo)}
 })
-
 app.get('/generate-pdf2/:userId', (req,res)=>{
 	const useridInfo = req.params.userId;
 	if(useridInfo){generatePDF2(res,useridInfo)}
@@ -72,7 +68,6 @@ app.post('/', (req, res) => {
 		}
 	);
 });
-
 app.post('/register', (req, res) => {
 	var username = req.body.username;
 	var password = req.body.password;
@@ -94,10 +89,8 @@ app.post('/register', (req, res) => {
 		}
 	);
 });
-
-
-app.post('/welcome/:userId', (req, res) => {
-	const userId = req.params.userId;
+app.post('/welcome', (req, res) => {
+	const userId = req.session.userId;
 	var no = req.body.no;
 	var uygulama_yili = req.body.uygulama_yili;
 	var tarih = req.body.tarih;
@@ -113,7 +106,7 @@ app.post('/welcome/:userId', (req, res) => {
 	var is_bitim_tarihi = req.body.is_bitim_tarihi;
 
 	connection.query(
-		'INSERT INTO hakedis_raporu (kullanici_id, no, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+		'INSERT INTO hakedis_raporu (kullanici_id, no, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 		[
 			userId,
 			no,
@@ -134,9 +127,14 @@ app.post('/welcome/:userId', (req, res) => {
 			if (error) {
 				console.log('Belge Kaydedilemedi');
 				console.log(error);
-				const userId = results.kullanici_id;
+				const userId = req.session.userId;
 				res.redirect(`/welcome/${userId}`);
-			} else {
+
+
+			} 
+			else {
+				console.log('Belge Kaydedildi')
+				const userId = req.session.userId;
 				res.redirect(`/welcome/${userId}`);
 			}
 			res.end();
@@ -155,7 +153,6 @@ app.post('/generate-pdf', (req,res)=>{
 		res.end();
 	})
 })
-
 app.post('/generate-pdf2', (req,res)=>{
 	const x = req.session.userId;
 	connection.query('select kullanici_id from hakedis_raporu where kullanici_id=?',[x], (error,results)=>{
@@ -167,7 +164,6 @@ app.post('/generate-pdf2', (req,res)=>{
 		res.end();
 	})
 })
-
 app.post('/generate-pdf3', (req,res)=>{
 	const x = req.session.userId;
 	connection.query('select kullanici_id from hakedis_raporu where kullanici_id=?',[x], (error,results)=>{
