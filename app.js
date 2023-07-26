@@ -6,15 +6,12 @@ const app = express();
 app.use('/assets', express.static('assets'));
 app.use(express.urlencoded({ extended: true }));
 
-//Veri tabanına bağlanmak için bir bağlantı nesnesi oluşturmak
 const connection = mysql.createConnection({
 	host: 'localhost',
 	user: 'root',
 	password: '12345678',
 	database: 'userDB',
 });
-
-//Sunucuya bağlanmak
 connection.connect((error) => {
 	if (error) throw error;
 	else console.log('bağlanıldı!');
@@ -25,18 +22,22 @@ connection.connect((error) => {
 app.get('/', (req, res) => {
 	res.sendFile(__dirname + '/index.html');
 });
-
-// KULLANICI GİRİŞ SAYFASI
-app.get('/welcome/:userId', (req, res) => {
-	res.sendFile(__dirname + '/welcome.html');
-});
-
-// KULLANICI KAYIT SAYFASI
 app.get('/register', (req, res) => {
 	res.sendFile(__dirname + '/register.html');
 });
+app.get('/welcome/:userId', (req, res) => {
+	res.sendFile(__dirname + '/welcome.html');
+});
+app.get('/generate-pdf', (req,res)=>{
+	generatePDF(res)
+})
+app.get('/generate-pdf2', (req,res)=>{
+	generatePDF2(res)
+})
+app.get('/generate-pdf3', (req,res)=>{
+	generatePDF3(res)
+})
 
-// KULLANICI GİRİŞ KONTROLÜ
 app.post('/', (req, res) => {
 	var username = req.body.username;
 	var password = req.body.password;
@@ -48,7 +49,7 @@ app.post('/', (req, res) => {
 			if (results.length > 0) {
 				// Kullanıcı adı ve şifre doğru, kullanıcı kimliğini alalım
 				const userId = results[0].userId;
-				res.redirect('/welcome/' + userId);
+				res.redirect(`/welcome/${userId}`);
 			} else {
 				res.redirect('/');
 			}
@@ -57,7 +58,6 @@ app.post('/', (req, res) => {
 	);
 });
 
-// KULLANICI KAYDI
 app.post('/register', (req, res) => {
 	var username = req.body.username;
 	var password = req.body.password;
@@ -82,8 +82,7 @@ app.post('/register', (req, res) => {
 
 // RAPOR OLUŞTURMA - Kullanıcının kendi kimliğiyle rapor oluşturma
 app.post('/welcome/:userId', (req, res) => {
-	const userId = req.params.userId; // Kullanıcının kimliğini alalım
-
+	const userId = req.params.userId;
 	var no = req.body.no;
 	var uygulama_yili = req.body.uygulama_yili;
 	var tarih = req.body.tarih;
@@ -98,11 +97,10 @@ app.post('/welcome/:userId', (req, res) => {
 	var isin_suresi = req.body.isin_suresi;
 	var is_bitim_tarihi = req.body.is_bitim_tarihi;
 
-	// Verileri veritabanına kaydedin ve kullanıcı kimliğiyle ilişkilendirin
 	connection.query(
-		'INSERT INTO hakedis_raporu (user_id, no, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+		'INSERT INTO hakedis_raporu (kullanici_id, no, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 		[
-			userId, // Kullanıcının kimliği
+			userId,
 			no,
 			uygulama_yili,
 			tarih,
@@ -121,169 +119,176 @@ app.post('/welcome/:userId', (req, res) => {
 			if (error) {
 				console.log('Belge Kaydedilemedi');
 				console.log(error);
-				res.redirect('/welcome/' + userId); // Hata durumunda yine hoşgeldiniz sayfasına yönlendirme
+				const userId = results.kullanici_id;
+				res.redirect(`/welcome/${userId}`);
 			} else {
-				res.redirect('/welcome/' + userId); // Başarılı kayıt durumunda yine hoşgeldiniz sayfasına yönlendirme
+				res.redirect(`/welcome/${userId}`);
 			}
 			res.end();
 		}
 	);
 });
 
+function generatePDF(res) {
+	connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1', (error, results) => {
+		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
 
+		results.forEach((e) => {		
+				reportFrame();
+				reportHeader();
+				reportInformation();
+				reportTable();
+				reportFooter();
 
-connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC ', (error, results) => {
-	if (error) {
-		console.log(error);
-	}
+				function reportFrame() {
+					const frameX = 15; // Çerçevenin sol kenarının X koordinatı
+					const frameY = 30; // Çerçevenin üst kenarının Y koordinatı
+					const frameWidth = 570; // Çerçevenin genişliği
+					const frameHeight = 750; // Çerçevenin yüksekliği
+					const frameThickness = 2; // Çerçevenin kalınlığı piksel cinsinden
 
-	results.forEach((e) => {
-		app.get('/generate-pdf', (req, res) => {
-			const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
-			reportFrame();
-			reportHeader();
-			reportInformation();
-			reportTable();
-			reportFooter();
+					const drawRect = (x, y, width, height, color) => {
+						doc.rect(x, y, width, height).fill(color);
+					};
 
-			function reportFrame() {
-				const frameX = 15; // Çerçevenin sol kenarının X koordinatı
-				const frameY = 30; // Çerçevenin üst kenarının Y koordinatı
-				const frameWidth = 570; // Çerçevenin genişliği
-				const frameHeight = 750; // Çerçevenin yüksekliği
-				const frameThickness = 2; // Çerçevenin kalınlığı piksel cinsinden
+					drawRect(frameX, frameY, frameWidth, frameThickness, '#000000'); // Üst çerçeve
+					drawRect(
+						frameX,
+						frameY + frameHeight - frameThickness,
+						frameWidth,
+						frameThickness,
+						'#000000'
+					); // Alt çerçeve
+					drawRect(
+						frameX,
+						frameY + frameThickness,
+						frameThickness,
+						frameHeight - 2 * frameThickness,
+						'#000000'
+					); // Sol çerçeve
+					drawRect(
+						frameX + frameWidth - frameThickness,
+						frameY + frameThickness,
+						frameThickness,
+						frameHeight - 2 * frameThickness,
+						'#000000'
+					); // Sağ çerçeve
+				}
+				function rowReport(doc, heigth) {
+					doc.lineJoin('miter').rect(30, heigth, 550, 85).stroke();
+					return doc;
+				}
+				function para(number, fractionDigits = 2) {
+					return number.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺';
+				}
+				function reportHeader() {
+					const logoLeft = 'assets/gorseller/logo_left.png';
+					const logoRight = 'assets/gorseller/logo_right.png';
+					doc
+						.image(logoLeft, 20, 50, { width: 60, height: 80 })
+						.image(logoRight, 500, 50, { width: 60, height: 80 })
+						.fontSize(12)
+						.text('T.C', 100, 30, { align: 'center' })
+						.text('SAMSUN BÜYÜK ŞEHİR BELEDİYESİ', 100, 50, { align: 'center' })
+						.text('SAMSUN SU VE KANALİZASYON GENEL MÜDÜRLÜĞÜ', 100, 70, { align: 'center' })
+						.text('BİLGİ İŞLEM DAİRESİ BAŞKANLIĞI', 100, 90, { align: 'center' })
+						.fontSize(16)
+						.text('Hakediş Raporu', 100, 150, { align: 'center' })
+						.moveDown();
+				}
+				function reportInformation() {
+					doc
+						.fontSize(12)
+						.text(`Tarihi: ${e.tarih}`, 100, 180, { align: 'center' })
+						.text(`No su: ${e.no}`, 100, 200, { align: 'center' })
+						.text(`Uygulama Yılı: ${e.uygulama_yili}`, 100, 220, { align: 'center' })
+						.text('Yapılan işin / Hizmetin Adı :', 35, 270)
+						.text(`${e.is_adi}`, 275, 270, { align: 'left' })
+						.text('Yapılan İsin / Hizmetin Etüd / Proje No su :', 35, 330)
+						.text(`${e.proje_no}`, 275, 330, { align: 'left' })
+						.text('Yüklenicinin Adi / Ticari Unvanı :', 35, 370)
+						.text(`${e.yuklenici_adi}`, 275, 370, { align: 'left' })
+						.text('Sözleşme Bedeli :', 35, 420)
+						.text(`${para(e.sozlesme_bedeli)}`, 275, 420, { align: 'left' })
+						.text('İhale Tarihi :', 35, 440)
+						.text(`${e.ihale_tarihi}`, 275, 440, { align: 'left' })
+						.text('Kayıt no :', 35, 460)
+						.text(`${e.kayit_no}`, 275, 460, { align: 'left' })
+						.text('Sözleşme Tarihi :', 35, 480)
+						.text(`${e.sozlesme_tarih}`, 275, 480, { align: 'left' })
+						.text('İşyeri Teslim Tarihi :', 35, 500)
+						.text(`${e.isyeri_teslim_tarihi}`, 275, 500, { align: 'left' })
+						.text('Sözleşmeye Göre İşin Süresi :', 35, 520)
+						.text(`${e.isin_suresi}`, 275, 520, { align: 'left' })
+						.text('Sözleşmeye Göre İş Bitim Tarihi :', 35, 540)
+						.text(`${e.is_bitim_tarihi}`, 275, 540, { align: 'left' })
+						.moveDown();
+				}
+				function reportTable() {
+					doc
+						.lineCap('butt')
+						.moveTo(135, 580)
+						.lineTo(135, 665)
+						.moveTo(600, 580)
+						.lineTo(600, 665)
+						.moveTo(405, 580)
+						.lineTo(405, 665)
+						.moveTo(30, 615)
+						.lineTo(580, 615)
+						.stroke();
 
-				const drawRect = (x, y, width, height, color) => {
-					doc.rect(x, y, width, height).fill(color);
-				};
+					rowReport(doc, 580);
 
-				drawRect(frameX, frameY, frameWidth, frameThickness, '#000000'); // Üst çerçeve
-				drawRect(
-					frameX,
-					frameY + frameHeight - frameThickness,
-					frameWidth,
-					frameThickness,
-					'#000000'
-				); // Alt çerçeve
-				drawRect(
-					frameX,
-					frameY + frameThickness,
-					frameThickness,
-					frameHeight - 2 * frameThickness,
-					'#000000'
-				); // Sol çerçeve
-				drawRect(
-					frameX + frameWidth - frameThickness,
-					frameY + frameThickness,
-					frameThickness,
-					frameHeight - 2 * frameThickness,
-					'#000000'
-				); // Sağ çerçeve
-			}
-			function rowReport(doc, heigth) {
-				doc.lineJoin('miter').rect(30, heigth, 550, 85).stroke();
-				return doc;
-			}
-			function para(number, fractionDigits = 2) {
-				return number.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺';
-			}
-			function reportHeader() {
-				const logoLeft = 'assets/gorseller/logo_left.png';
-				const logoRight = 'assets/gorseller/logo_right.png';
-				doc
-					.image(logoLeft, 20, 50, { width: 60, height: 80 })
-					.image(logoRight, 500, 50, { width: 60, height: 80 })
-					.fontSize(12)
-					.text('T.C', 100, 30, { align: 'center' })
-					.text('SAMSUN BÜYÜK ŞEHİR BELEDİYESİ', 100, 50, { align: 'center' })
-					.text('SAMSUN SU VE KANALİZASYON GENEL MÜDÜRLÜĞÜ', 100, 70, { align: 'center' })
-					.text('BİLGİ İŞLEM DAİRESİ BAŞKANLIĞI', 100, 90, { align: 'center' })
-					.fontSize(16)
-					.text('Hakediş Raporu', 100, 150, { align: 'center' })
-					.moveDown();
-			}
-			function reportInformation() {
-				doc
-					.fontSize(12)
-					.text(`Tarihi: ${e.tarih}`, 100, 180, { align: 'center' })
-					.text(`No su: ${e.no}`, 100, 200, { align: 'center' })
-					.text(`Uygulama Yılı: ${e.uygulama_yili}`, 100, 220, { align: 'center' })
-					.text('Yapılan işin / Hizmetin Adı :', 35, 270)
-					.text(`${e.is_adi}`, 275, 270, { align: 'left' })
-					.text('Yapılan İsin / Hizmetin Etüd / Proje No su :', 35, 330)
-					.text(`${e.proje_no}`, 275, 330, { align: 'left' })
-					.text('Yüklenicinin Adi / Ticari Unvanı :', 35, 370)
-					.text(`${e.yuklenici_adi}`, 275, 370, { align: 'left' })
-					.text('Sözleşme Bedeli :', 35, 420)
-					.text(`${para(e.sozlesme_bedeli)}`, 275, 420, { align: 'left' })
-					.text('İhale Tarihi :', 35, 440)
-					.text(`${e.ihale_tarihi}`, 275, 440, { align: 'left' })
-					.text('Kayıt no :', 35, 460)
-					.text(`${e.kayit_no}`, 275, 460, { align: 'left' })
-					.text('Sözleşme Tarihi :', 35, 480)
-					.text(`${e.sozlesme_tarih}`, 275, 480, { align: 'left' })
-					.text('İşyeri Teslim Tarihi :', 35, 500)
-					.text(`${e.isyeri_teslim_tarihi}`, 275, 500, { align: 'left' })
-					.text('Sözleşmeye Göre İşin Süresi :', 35, 520)
-					.text(`${e.isin_suresi}`, 275, 520, { align: 'left' })
-					.text('Sözleşmeye Göre İş Bitim Tarihi :', 35, 540)
-					.text(`${e.is_bitim_tarihi}`, 275, 540, { align: 'left' })
-					.moveDown();
-			}
-			function reportTable() {
-				doc
-					.lineCap('butt')
-					.moveTo(135, 580)
-					.lineTo(135, 665)
-					.moveTo(600, 580)
-					.lineTo(600, 665)
-					.moveTo(405, 580)
-					.lineTo(405, 665)
-					.moveTo(30, 615)
-					.lineTo(580, 615)
-					.stroke();
+					doc
+						.text('Sözleşme Bedeli', 35, 590)
+						.text(`${para(e.sozlesme_bedeli)}`, 40, 630, { align: 'left' })
+						.text('Sözleşme Artış', 175, 580)
+						.text('Onayının Tarihi / No su', 155, 592)
+						.text('Ek Sözleşme Bedeli', 295, 590)
+						.text('Toplam Sözleşme Bedeli', 435, 580)
+						.text(`${para(e.sozlesme_bedeli)}`, 435, 630, { align: 'left' });
+				}
+				function reportFooter() {
+					doc
+						.lineCap('butt')
+						.moveTo(175, 670)
+						.lineTo(175, 755)
+						.moveTo(600, 670)
+						.lineTo(600, 755)
+						.moveTo(385, 670)
+						.lineTo(385, 755)
+						.moveTo(30, 700)
+						.lineTo(580, 700)
+						.stroke();
 
-				rowReport(doc, 580);
+					rowReport(doc, 670);
 
-				doc
-					.text('Sözleşme Bedeli', 35, 590)
-					.text(`${para(e.sozlesme_bedeli)}`, 40, 630, { align: 'left' })
-					.text('Sözleşme Artış', 175, 580)
-					.text('Onayının Tarihi / No su', 155, 592)
-					.text('Ek Sözleşme Bedeli', 295, 590)
-					.text('Toplam Sözleşme Bedeli', 435, 580)
-					.text(`${para(e.sozlesme_bedeli)}`, 435, 630, { align: 'left' });
-			}
-			function reportFooter() {
-				doc
-					.lineCap('butt')
-					.moveTo(175, 670)
-					.lineTo(175, 755)
-					.moveTo(600, 670)
-					.lineTo(600, 755)
-					.moveTo(385, 670)
-					.lineTo(385, 755)
-					.moveTo(30, 700)
-					.lineTo(580, 700)
-					.stroke();
-
-				rowReport(doc, 670);
-
-				doc
-					.text('Süre uzatım kararı Tarih', 35, 675)
-					.text('Sayı', 205, 675)
-					.text('Verilen Süre', 305, 675)
-					.text('İş Bitim Tarihi', 435, 675);
-			}
-			doc.pipe(res);
-			console.log('Hakediş raporu başarıyla oluşturuldu');
-			res.setHeader('Content-Type', 'application/pdf');
-			res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu.pdf');
-			doc.end();
+					doc
+						.text('Süre uzatım kararı Tarih', 35, 675)
+						.text('Sayı', 205, 675)
+						.text('Verilen Süre', 305, 675)
+						.text('İş Bitim Tarihi', 435, 675);
+				}			
 		});
+		doc.pipe(res);
+		console.log('Hakediş raporu başarıyla oluşturuldu');
+		res.setHeader('Content-Type', 'application/pdf');
+		res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu.pdf');
+		doc.end();
+	});
 
-		app.get('/generate-pdf2', (req, res) => {
-			const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
+	
+
+
+}
+function generatePDF2(res){
+	connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC LIMIT 1 ', (error, results) => {
+		if (error) {
+			console.log(error);
+		}
+		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
+
+		results.forEach((e)=>{
 
 			function progressFrame() {
 				const frameX = 15; // Çerçevenin sol kenarının X koordinatı
@@ -493,18 +498,21 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC ', (error, res
 					.text('|makam2|', 475, 705)
 					.text('|makam1|', 265, 765);
 			}
+		})
+		doc.pipe(res);
+		console.log('Hakediş raporu-2 başarıyla oluşturuldu');
+		res.setHeader('Content-Type', 'application/pdf');
+		res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu2.pdf');
+		doc.end();
+	})
+}
+function generatePDF3(res){
+	connection.query('SELECT * FROM hakedis_raporu ORDER BY DISC LIMIT 1', (error, results)=>{
+		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
+		doc.page.dictionary.data.Rotate = 90;
 
-			doc.pipe(res);
-			console.log('Hakediş raporu-2 başarıyla oluşturuldu');
-			res.setHeader('Content-Type', 'application/pdf');
-			res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu2.pdf');
-			doc.end();
-		});
-
-		app.get('/generate-pdf3', (req, res) => {
-			const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
-			doc.page.dictionary.data.Rotate = 90;
-
+		results.forEach(e => {
+	
 			generateFrame();
 			header();
 			Information();
@@ -596,7 +604,7 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC ', (error, res
 					.text('C=(AxB)', 365, 57)
 					.text('D', 445, 57)
 					.text('E=(AxD)', 505, 57)
-					.text('F=(B-D)', 565, 57,{width:100})
+					.text('F=(B-D)', 565, 57, { width: 100 })
 					.text('G=(AxF)', 615, 57)
 					.fontSize('8')
 					.text('YAPILAN İŞLER LİSTESİ', 230, 20)
@@ -606,7 +614,7 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC ', (error, res
 					.fontSize('6')
 					.text('Sayfa No:', 507, 44)
 					.text('Hakediş No:', 575, 44)
-					.text('Sıra No', -125, 67, {width:15, align:'left'})
+					.text('Sıra No', -125, 67, { width: 15, align: 'left' })
 					.text('İşin Tanımı', 33, 72)
 					.text('Sözleşme Bedeli', 220, 72)
 					.text('Gerçekleşen Toplam İmalat', 300, 69, { width: 40, align: 'center' })
@@ -630,47 +638,49 @@ connection.query('SELECT * FROM hakedis_raporu ORDER BY h_id DESC ', (error, res
 					lineInformation(93 + x, 550, 106 + x, 550);
 					lineInformation(93 + x, 600, 106 + x, 600);
 					doc
-						.text(`${e.h_id}`, -125, 97 + x,)
+						.text(`${e.h_id}`, -125, 97 + x)
 						.text(`${e.is_adi}`, -107, 97 + x)
 						.text(`${e.sozlesme_bedeli}`, 220, 97 + x)
 						.text(`${e.sozlesme_bedeli}`, 300, 97 + x)
 						.text(`${e.sozlesme_bedeli}`, 360, 97 + x)
 						.text(`${e.sozlesme_bedeli}`, 425, 97 + x)
 						.text(`${e.sozlesme_bedeli}`, 490, 97 + x)
-						.text(`${e.sozlesme_bedeli}`, 557, 97 + x,{width:100})
+						.text(`${e.sozlesme_bedeli}`, 557, 97 + x, { width: 100 })
 						.text(`${e.sozlesme_bedeli}`, 615, 97 + x);
 					x = x + 11;
 				});
 			}
-			function footer(){
+			function footer() {
 				doc
-				.font('Roboto.ttf')
-				.fontSize('8')	
-				.text('|dismakamunvanad1|', 240, 420)	
+					.font('Roboto.ttf')
+					.fontSize('8')
+					.text('|dismakamunvanad1|', 240, 420)
 
-				.text('|makamtarih6|', -70, 490)
-				.text('|makam6|', -65, 520)
-				.text('|makamtarih5|', 70, 490)
-				.text('|makam5|', 75, 520)
-				.text('|makamtarih4|',255, 490)
-				.text('|makam4|', 260, 520)
-				.text('|makamtarih3|', 395, 490)
-				.text('|makam3|', 400, 520)
-				.text('|makamtarih2|', 520, 490,{width:100})
-				.text('|makam2|', 525, 520)
-				.font('Roboto-Bold.ttf')
-				.text('|dismakamtarih1|', 245, 390)
+					.text('|makamtarih6|', -70, 490)
+					.text('|makam6|', -65, 520)
+					.text('|makamtarih5|', 70, 490)
+					.text('|makam5|', 75, 520)
+					.text('|makamtarih4|', 255, 490)
+					.text('|makam4|', 260, 520)
+					.text('|makamtarih3|', 395, 490)
+					.text('|makam3|', 400, 520)
+					.text('|makamtarih2|', 520, 490, { width: 100 })
+					.text('|makam2|', 525, 520)
+					.font('Roboto-Bold.ttf')
+					.text('|dismakamtarih1|', 245, 390);
 			}
-
-			doc.pipe(res);
-			console.log('Hakediş raporu-3 başarıyla oluşturuldu');
-			res.setHeader('Content-Type', 'application/pdf');
-			res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu3.pdf');
-			doc.end();
 		});
-	});
-});
+		doc.pipe(res);
+		console.log('Hakediş raporu-3 başarıyla oluşturuldu');
+		res.setHeader('Content-Type', 'application/pdf');
+		res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu3.pdf');
+		doc.end();
+	})
+}
+
 
 // MySQL bağlantısını kapat
 // connection.end();
-app.listen(5001);
+app.listen(5001, () => {
+  console.log('Server http://localhost:5001 adresinde başladı');
+});
