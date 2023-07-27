@@ -89,8 +89,8 @@ app.post('/register', (req, res) => {
 		}
 	);
 });
-app.post('/welcome', (req, res) => {
-	const userId = req.session.userId;
+
+app.post('/welcome', async (req, res) => {
 	var no = req.body.no;
 	var uygulama_yili = req.body.uygulama_yili;
 	var tarih = req.body.tarih;
@@ -104,40 +104,84 @@ app.post('/welcome', (req, res) => {
 	var isyeri_teslim_tarihi = req.body.isyeri_teslim_tarihi;
 	var isin_suresi = req.body.isin_suresi;
 	var is_bitim_tarihi = req.body.is_bitim_tarihi;
+	var Gas = (sozlesme_bedeli/isin_suresi);
+	var Cas = (Gas);
 
-	connection.query(
-		'INSERT INTO hakedis_raporu (kullanici_id, no, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-		[
-			userId,
-			no,
-			uygulama_yili,
-			tarih,
-			is_adi,
-			proje_no,
-			yuklenici_adi,
-			sozlesme_bedeli,
-			ihale_tarihi,
-			kayit_no,
-			sozlesme_tarih,
-			isyeri_teslim_tarihi,
-			isin_suresi,
-			is_bitim_tarihi,
-		],
-		function (error, results, fields) {
-			if (error) {
-				console.log('Belge Kaydedilemedi');
-				console.log(error);
-				const userId = req.session.userId;
-				res.redirect(`/welcome/${userId}`);
-			} else {
-				console.log('Belge Kaydedildi');
-				const userId = req.session.userId;
-				res.redirect(`/welcome/${userId}`);
-			}
-			res.end();
-		}
-	);
+
+	try{
+		await insertHakedis_1(req, no, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi);
+
+		await insertHakedis_3(req, Gas, Cas, sozlesme_bedeli, is_adi, isin_suresi);
+
+		console.log('Veriler başarıyla eklendi');
+		const userId = req.session.userId;
+		res.redirect(`/welcome/${userId}`);
+	} catch(error){
+		console.log('Veriler eklenirken bir hata oluştu');
+		console.log(error);
+		const userId = req.session.userId;
+		res.redirect(`/welcome/${userId}`);
+	}
 });
+
+function insertHakedis_1(req, no, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi){
+
+	return new Promise((resolve,reject)=>{
+		const userId = req.session.userId;
+		connection.query(
+			'INSERT INTO hakedis_raporu (kullanici_id, no, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+			[
+				userId,
+				no,
+				uygulama_yili,
+				tarih,
+				is_adi,
+				proje_no,
+				yuklenici_adi,
+				sozlesme_bedeli,
+				ihale_tarihi,
+				kayit_no,
+				sozlesme_tarih,
+				isyeri_teslim_tarihi,
+				isin_suresi,
+				is_bitim_tarihi,
+			],
+			function (error, results, fields) {
+				if (error) {
+					reject(error)
+				} else {
+					resolve();
+				}
+			}
+		);
+	})
+}
+
+function insertHakedis_3(req, Gas, Cas, sozlesme_bedeli, is_adi, isin_suresi){
+	const userId = req.session.userId;
+	return new Promise((resolve, reject)=>{
+		connection.query(
+			'INSERT INTO hakedis_3 (kullanici_id, isin_adi, sozlesme_bedeli, isin_suresi, Gas, Cas) VALUES (?, ?, ?, ?, ?, ?)',
+			[
+				userId,
+				is_adi,
+				sozlesme_bedeli,
+				isin_suresi,
+				Gas,
+				Cas,
+			],
+			function (error, results, fields) {
+				if (error) {
+					reject(error)
+				} else {
+					resolve();
+				}
+			}
+		);
+	})
+}
+
+
 
 app.post('/generate-pdf', (req, res) => {
 	const x = req.session.userId;
@@ -194,12 +238,11 @@ function generatePDF(res, useridInfo) {
 	connection.query(sql, params, (error, results) => {
 		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
 
-		results.forEach((e) => {
 			reportFrame();
 			reportHeader();
-			reportInformation();
-			reportTable();
-			reportFooter();
+			reportInformation(results);
+			reportTable(results);
+			reportFooter(results);
 
 			function reportFrame() {
 				const frameX = 15; // Çerçevenin sol kenarının X koordinatı
@@ -257,35 +300,35 @@ function generatePDF(res, useridInfo) {
 					.text('Hakediş Raporu', 100, 150, { align: 'center' })
 					.moveDown();
 			}
-			function reportInformation() {
+			function reportInformation(results) {
 				doc
 					.fontSize(12)
-					.text(`Tarihi: ${e.tarih}`, 100, 180, { align: 'center' })
-					.text(`No su: ${e.no}`, 100, 200, { align: 'center' })
-					.text(`Uygulama Yılı: ${e.uygulama_yili}`, 100, 220, { align: 'center' })
+					.text(`Tarihi: ${results[0].tarih}`, 100, 180, { align: 'center' })
+					.text(`No su: ${results[0].no}`, 100, 200, { align: 'center' })
+					.text(`Uygulama Yılı: ${results[0].uygulama_yili}`, 100, 220, { align: 'center' })
 					.text('Yapılan işin / Hizmetin Adı :', 35, 270)
-					.text(`${e.is_adi}`, 275, 270, { align: 'left' })
+					.text(`${results[0].is_adi}`, 275, 270, { align: 'left' })
 					.text('Yapılan İsin / Hizmetin Etüd / Proje No su :', 35, 330)
-					.text(`${e.proje_no}`, 275, 330, { align: 'left' })
+					.text(`${results[0].proje_no}`, 275, 330, { align: 'left' })
 					.text('Yüklenicinin Adi / Ticari Unvanı :', 35, 370)
-					.text(`${e.yuklenici_adi}`, 275, 370, { align: 'left' })
+					.text(`${results[0].yuklenici_adi}`, 275, 370, { align: 'left' })
 					.text('Sözleşme Bedeli :', 35, 420)
-					.text(`${para(e.sozlesme_bedeli)}`, 275, 420, { align: 'left' })
+					.text(`${para(results[0].sozlesme_bedeli)}`, 275, 420, { align: 'left' })
 					.text('İhale Tarihi :', 35, 440)
-					.text(`${e.ihale_tarihi}`, 275, 440, { align: 'left' })
+					.text(`${results[0].ihale_tarihi}`, 275, 440, { align: 'left' })
 					.text('Kayıt no :', 35, 460)
-					.text(`${e.kayit_no}`, 275, 460, { align: 'left' })
+					.text(`${results[0].kayit_no}`, 275, 460, { align: 'left' })
 					.text('Sözleşme Tarihi :', 35, 480)
-					.text(`${e.sozlesme_tarih}`, 275, 480, { align: 'left' })
+					.text(`${results[0].sozlesme_tarih}`, 275, 480, { align: 'left' })
 					.text('İşyeri Teslim Tarihi :', 35, 500)
-					.text(`${e.isyeri_teslim_tarihi}`, 275, 500, { align: 'left' })
+					.text(`${results[0].isyeri_teslim_tarihi}`, 275, 500, { align: 'left' })
 					.text('Sözleşmeye Göre İşin Süresi :', 35, 520)
-					.text(`${e.isin_suresi}`, 275, 520, { align: 'left' })
+					.text(`${results[0].isin_suresi}`, 275, 520, { align: 'left' })
 					.text('Sözleşmeye Göre İş Bitim Tarihi :', 35, 540)
-					.text(`${e.is_bitim_tarihi}`, 275, 540, { align: 'left' })
+					.text(`${results[0].is_bitim_tarihi}`, 275, 540, { align: 'left' })
 					.moveDown();
 			}
-			function reportTable() {
+			function reportTable(results) {
 				doc
 					.lineCap('butt')
 					.moveTo(135, 580)
@@ -302,12 +345,12 @@ function generatePDF(res, useridInfo) {
 
 				doc
 					.text('Sözleşme Bedeli', 35, 590)
-					.text(`${para(e.sozlesme_bedeli)}`, 40, 630, { align: 'left' })
+					.text(`${para(results[0].sozlesme_bedeli)}`, 40, 630, { align: 'left' })
 					.text('Sözleşme Artış', 175, 580)
 					.text('Onayının Tarihi / No su', 155, 592)
 					.text('Ek Sözleşme Bedeli', 295, 590)
 					.text('Toplam Sözleşme Bedeli', 435, 580)
-					.text(`${para(e.sozlesme_bedeli)}`, 435, 630, { align: 'left' });
+					.text(`${para(results[0].sozlesme_bedeli)}`, 435, 630, { align: 'left' });
 			}
 			function reportFooter() {
 				doc
@@ -330,7 +373,7 @@ function generatePDF(res, useridInfo) {
 					.text('Verilen Süre', 305, 675)
 					.text('İş Bitim Tarihi', 435, 675);
 			}
-		});
+	
 		doc.pipe(res);
 		console.log('Hakediş raporu başarıyla oluşturuldu');
 		res.setHeader('Content-Type', 'application/pdf');
@@ -587,7 +630,7 @@ function generatePDF3(res, useridInfo) {
 		Information(results);
 		footer();
 		updateData(results);
-		
+
 		function para(number, fractionDigits = 2) {
 			return number.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺';
 		}
@@ -773,3 +816,55 @@ function generatePDF3(res, useridInfo) {
 app.listen(5001, () => {
 	console.log('Server http://localhost:5001 adresinde başladı');
 });
+
+
+
+/*app.post('/welcome',(req, res) => {
+	const userId = req.session.userId;
+	var no = req.body.no;
+	var uygulama_yili = req.body.uygulama_yili;
+	var tarih = req.body.tarih;
+	var is_adi = req.body.is_adi;
+	var proje_no = req.body.proje_no;
+	var yuklenici_adi = req.body.yuklenici_adi;
+	var sozlesme_bedeli = req.body.sozlesme_bedeli;
+	var ihale_tarihi = req.body.ihale_tarihi;
+	var kayit_no = req.body.kayit_no;
+	var sozlesme_tarih = req.body.sozlesme_tarih;
+	var isyeri_teslim_tarihi = req.body.isyeri_teslim_tarihi;
+	var isin_suresi = req.body.isin_suresi;
+	var is_bitim_tarihi = req.body.is_bitim_tarihi;
+
+	connection.query(
+		'INSERT INTO hakedis_raporu (kullanici_id, no, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+		[
+			userId,
+			no,
+			uygulama_yili,
+			tarih,
+			is_adi,
+			proje_no,
+			yuklenici_adi,
+			sozlesme_bedeli,
+			ihale_tarihi,
+			kayit_no,
+			sozlesme_tarih,
+			isyeri_teslim_tarihi,
+			isin_suresi,
+			is_bitim_tarihi,
+		],
+		function (error, results, fields) {
+			if (error) {
+				console.log('Belge Kaydedilemedi');
+				console.log(error);
+				const userId = req.session.userId;
+				res.redirect(`/welcome/${userId}`);
+			} else {
+				console.log('Belge Kaydedildi');
+				const userId = req.session.userId;
+				res.redirect(`/welcome/${userId}`);
+			}
+			res.end();
+		}
+	);
+});*/
