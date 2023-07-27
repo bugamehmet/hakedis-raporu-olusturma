@@ -60,7 +60,7 @@ button[type="submit"]:hover {
   background-color: rgb(106, 109, 206);
 }
 input:focus {
-  outline: none;
+  outline-color:rgb(46, 48, 120) ;
   box-shadow: 0 0 0 4px hsl(213, 90%, 70%);
 }
 button:focus {
