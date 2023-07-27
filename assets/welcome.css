@@ -1,35 +1,71 @@
-.form-container {
-    width: 300px;
-    margin: 0 auto;
-  }
+body {
+  margin: 0;
+  background-color: hsl(0, 0%, 98%);
+  color: #333;
+}
+main {
+  margin: 0 auto;
+  padding: 4rem 0;
+  width: 90%;
+  max-width: 60rem;
+}
+h2{
+  margin-left: 10px;
+  color: rgb(46, 48, 120);
+}
 
-  .form-container label {
-    color:rgb(46, 48, 120);
-    display: block;
-    margin-bottom: 10px;
-  }
+.login-1{
+  box-sizing: border-box;
+  padding: 2rem;
+  border-radius: 1rem;
+  background-color: hsl(0, 0%, 100%);
+  border: 4px solid rgb(46, 48, 120);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
 
-  .form-container input[type="text"],
-  .form-container input[type="number"],
-  .form-container input[type="date"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-  }
-  button {
-    margin-bottom: 10px;
-    width: 108%;
-    padding: 10px;
-    background-color:rgb(46, 48, 120);
-    color: #fff;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-  }
+.full-width {
+  display: flex;
+  gap: 10px;
+  grid-column: span 2;
+  padding: 1rem;
+}
+
+input[type="text"],
+input[type="email"]
+{
+  font: 1rem  sans-serif;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.2rem 0.75rem;
+}
+
+button {
+  font: 1.25rem sans-serif;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  padding: 0.5rem 1.95rem;
+  border: none;
+  border-radius: 3px;
+  background-color:rgb(46, 48, 120);
+  color: #fff;
+}
+button[type="submit"] {
+  background-color: rgb(46, 48, 120);
+  color: white;
+}
+button[type="submit"]:hover {
+  background-color: rgb(106, 109, 206);
+}
+input:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px hsl(213, 90%, 70%);
+}
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px black;
+}
+
   
-  button:hover {
-    background-color: rgb(106, 109, 206);
-  }
-  h2{
-    color:rgb(46, 48, 120);
-  }

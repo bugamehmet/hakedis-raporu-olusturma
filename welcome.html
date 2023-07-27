@@ -6,71 +6,130 @@
     <link rel="stylesheet" href="/assets/welcome.css">
     <title>HAKEDİS Bilgileri</title>
 </head>
-<script>
-  function downloadPDF() {
-    window.location.href = '/generate-pdf'
-  }
-  function downloadPDF2(){
-    window.location.href = '/generate-pdf2'
-  }
-  function downloadPDF3(){
-    window.location.href ='/generate-pdf3'
-  }
-</script>
-
 <body>
-  <div class="form-container">
+  <!--
+  <div class="grid-container">
     <h2>Sözleşme Bilgileri</h2>
+
     <form action="/welcome" method="post">
-      <label for="no">No:</label>
-      <input type="text" id="no" name="no" required>
+      <div class="input-group">
+        <label for="no">No:</label>
+        <input type="text" id="no" name="no" required>
 
-      <label for="tarih">Tarih:</label>
-      <input type="text" id="tarih" name="tarih" required>
+        <label for="tarih">Tarih:</label>
+        <input type="text" id="tarih" name="tarih" required>
 
-      <label for="uygulama_yili">Uygulama Yılı :</label>
-      <input type="text" id="uygulama_yili" name="uygulama_yili" required>
+        <label for="uygulama_yili">Uygulama Yılı :</label>
+        <input type="text" id="uygulama_yili" name="uygulama_yili" required>
+      </div>
 
-      <label for="is_adi">Yapılan işin / Hizmetin Adı :</label>
-      <input type="text" id="is_adi" name="is_adi" required>
+      <div class="input-group">
+        <label for="is_adi">Yapılan işin / Hizmetin Adı :</label>
+        <input type="text" id="is_adi" name="is_adi" required>
 
-      <label for="proje_no">Proje No:</label>
-      <input type="text" id="proje_no" name="proje_no" required>
+        <label for="proje_no">Proje No:</label>
+        <input type="text" id="proje_no" name="proje_no" required>
 
-      <label for="yuklenici_adi">Yüklenicinin Adı / Ticari Ünvan :</label>
-      <input type="text" id="yuklenici_adi" name="yuklenici_adi" required>
+        <label for="yuklenici_adi">Yüklenicinin Adı / Ticari Ünvan :</label>
+        <input type="text" id="yuklenici_adi" name="yuklenici_adi" required>
+      </div>
 
-      <label for="sozlesme_bedeli">Sözleşme Bedeli:</label>
-      <input type="number" id="sozlesme_bedeli" name="sozlesme_bedeli" required>
+      <div class="input-group">
+        <label for="sozlesme_bedeli">Sözleşme Bedeli:</label>
+        <input type="text" id="sozlesme_bedeli" name="sozlesme_bedeli" required>
 
-      <label for="ihale_tarihi">İhale Tarihi :</label>
-      <input type="text" id="ihale_tarihi" name="ihale_tarihi" required> 
+        <label for="ihale_tarihi">İhale Tarihi :</label>
+        <input type="text" id="ihale_tarihi" name="ihale_tarihi" required> 
 
-      <label for="kayit_no">Kayıt No :</label>
-      <input type="text" id="kayit_no" name="kayit_no" required>
+        <label for="kayit_no">Kayıt No :</label>
+        <input type="text" id="kayit_no" name="kayit_no" required>
+      </div>
 
-      <label for="sozlesme_tarih">Sözleşme Tarihi:</label>
-      <input type="text" id="sozlesme_tarih" name="sozlesme_tarih" required>
+      <div class="input-group">
+        <label for="sozlesme_tarih">Sözleşme Tarihi:</label>
+        <input type="text" id="sozlesme_tarih" name="sozlesme_tarih" required>
 
-      <label for="isyeri_teslim_tarihi">İşyeri Teslim Tarihi :</label>
-      <input type="text" id="isyeri_teslim_tarihi" name="isyeri_teslim_tarihi" required>
+        <label for="isyeri_teslim_tarihi">İşyeri Teslim Tarihi :</label>
+        <input type="text" id="isyeri_teslim_tarihi" name="isyeri_teslim_tarihi" required>
 
-      <label for="isin_suresi">Sözleşmeye Göre İşin Süresi :</label>
-      <input type="text" id="isin_suresi" name="isin_suresi" required>
+        <label for="isin_suresi">Sözleşmeye Göre İşin Süresi :</label>
+        <input type="text" id="isin_suresi" name="isin_suresi" required>
+      </div>
 
-      <label for="is_bitim_tarihi">Sözleşmeye Göre İşin Bitim Süresi</label>
-
-      <input type="text" id="is_bitim_tarihi" name="is_bitim_tarihi" required>
+      <div class="input-group">
+        <label for="is_bitim_tarihi">Sözleşmeye Göre İşin Bitim Süresi</label>
+        <input type="text" id="is_bitim_tarihi" name="is_bitim_tarihi" required> 
+      </div>
 
       <button type="submit" value="LOGIN">KAYDET</button>
-      <button onclick="downloadPDF()">PDF'i İndir</button>
-      <button onclick="downloadPDF2()">PDF2'i İndir</button>
-      <button onclick="downloadPDF3()">PDF3'i İndir</button>
-      
-    
     </form>
+
+    <div class="button-container">
+      <form action="/generate-pdf" method="post">
+        <button type="submit">PDF1</button>
+      </form>
+      <form action="/generate-pdf2" method="post">
+        <button type="submit">PDF2</button>
+      </form>
+      <form action="/generate-pdf3" method="post">
+        <button type="submit">PDF3</button>
+      </form>
+    </div>
   </div>
-</head>
+-->
+<main>
+  <h2>Sözleşme Bilgileri</h2>
+  <form class="login-1" action="/welcome" method="post">
+    <div>
+      <input type="text" id="no" name="no" required/>
+    </div>
+    <div>
+      <input type="text" id="no" name="no" required/>
+    </div>
+    <div>
+      <input type="text" id="no" name="no" required/>
+    </div>
+    <div>
+      <input type="text" id="no" name="no" required/>
+    </div>
+    <div>
+      <input type="text" id="no" name="no" required/>
+    </div>
+    <div>
+      <input type="text" id="no" name="no" placeholder="no girin vvsvs" required/>
+    </div>
+    <div>
+      <input type="text" id="no" name="no" required/>
+    </div>
+    <div>
+      <input type="text" id="no" name="no" required/>
+    </div>
+    <div>
+      <input type="text" id="no" name="no" required/>
+    </div>
+    <div>
+      <input type="text" id="no" name="no" required/>
+    </div>
+    <div>
+      <input type="text" id="no" name="no" required/>
+    </div>
+  </form>
+
+    <div class="full-width">
+      <button type="submit" value="LOGIN">KAYDET</button>
+
+      <form action="/generate-pdf" method="post">
+        <button type="submit">PDF1</button>
+      </form>
+      <form action="/generate-pdf2" method="post">
+        <button type="submit">PDF2</button>
+      </form>
+      <form action="/generate-pdf3" method="post">
+        <button type="submit">PDF3</button>
+      </form>
+    </div>
+
+</main>
 </body>
 </html>
 

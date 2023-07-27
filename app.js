@@ -174,7 +174,7 @@ app.post('/generate-pdf2', (req, res) => {
 app.post('/generate-pdf3', (req, res) => {
 	const x = req.session.userId;
 	connection.query(
-		'select kullanici_id from hakedis_raporu where kullanici_id=?',
+		'select kullanici_id from hakedis_3 where kullanici_id=?',
 		[x],
 		(error, results) => {
 			if (results.length > 0) {
@@ -570,7 +570,7 @@ function generatePDF2(res, useridInfo) {
 }
 
 function generatePDF3(res, useridInfo) {
-	const sql = 'select * from hakedis_raporu where kullanici_id=? order by h_id desc';
+	const sql = 'select * from hakedis_3 where kullanici_id=? order by h_id_3 desc';
 	const params = useridInfo;
 	connection.query(sql, params, (error, results) => {
 		if (error) {
@@ -578,7 +578,7 @@ function generatePDF3(res, useridInfo) {
 			res.status(500).send('Veritabanı hatası');
 			return;
 		}
-
+		console.log(results);
 		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
 		doc.page.dictionary.data.Rotate = 90;
 
@@ -586,6 +586,8 @@ function generatePDF3(res, useridInfo) {
 		header(results);
 		Information(results);
 		footer();
+		updateData(results);
+		
 		function para(number, fractionDigits = 2) {
 			return number.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺';
 		}
@@ -662,7 +664,7 @@ function generatePDF3(res, useridInfo) {
 				.rotate(-90, { origin: [350, 350] })
 				.font('Roboto-Bold.ttf')
 				.fontSize('6')
-				.text(`${results[0].is_adi}`, -125, 45)
+				.text(`${results[0].isin_adi}`, -125, 45)
 				.text('A', 240, 57)
 				.text('B', 315, 57)
 				.text('C=(AxB)', 365, 57)
@@ -701,15 +703,15 @@ function generatePDF3(res, useridInfo) {
 				lineInformation(93 + x, 550, 106 + x, 550);
 				lineInformation(93 + x, 600, 106 + x, 600);
 				doc
-					.text(`${e.h_id}`, -125, 97 + x)
-					.text(`${e.is_adi}`, -107, 97 + x)
+					.text(`${e.h_id_3}`, -125, 97 + x)
+					.text(`${e.isin_adi}`, -107, 97 + x)
 					.text(`${e.sozlesme_bedeli}`, 220, 97 + x)
-					.text(`${e.sozlesme_bedeli}`, 300, 97 + x)
-					.text(`${e.sozlesme_bedeli}`, 360, 97 + x)
-					.text(`${e.sozlesme_bedeli}`, 425, 97 + x)
-					.text(`${e.sozlesme_bedeli}`, 490, 97 + x)
-					.text(`${e.sozlesme_bedeli}`, 557, 97 + x, { width: 100 })
-					.text(`${e.sozlesme_bedeli}`, 615, 97 + x);
+					.text(`${e.Bas}`, 300, 97 + x)
+					.text(`${e.Cas}`, 360, 97 + x)
+					.text(`${e.Das}`, 425, 97 + x)
+					.text(`${e.Eas}`, 490, 97 + x)
+					.text(`${e.Fas}`, 557, 97 + x, { width: 100 })
+					.text(`${e.Gas}`, 615, 97 + x);
 				x = x + 11;
 			});
 		}
@@ -732,11 +734,37 @@ function generatePDF3(res, useridInfo) {
 				.font('Roboto-Bold.ttf')
 				.text('|dismakamtarih1|', 245, 390);
 		}
+		function updateData(results){
+			let lastIndex = results.length - 1;
+			let kul_id = results[lastIndex].kullanici_id;
+			let is_ad = results[lastIndex].isin_adi;
+			let soz_bed = results[lastIndex].sozlesme_bedeli;
+			let is_sure = results[lastIndex].isin_suresi;
+			let no = results[lastIndex].no + 1;
+			let Gas = soz_bed / is_sure;
+			let Bas = results[lastIndex].Bas + 1;
+			let Cas = Bas * Gas;
+			let Das = results[lastIndex].Das + 1;
+			let Eas = Gas * Das;
+			let Fas = Bas - Das;
+	
+			let sql = `INSERT INTO haz_hakedis_3_update (kullanici_id, isin_adi, sozlesme_bedeli, isin_suresi, no, Gas, Bas, Cas, Das, Eas, Fas)
+						 VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+			let values = [ kul_id, is_ad, soz_bed, is_sure, no, Gas, Bas, Cas, Das, Eas, Fas];
+			connection.query(sql, values, (err, result) => {
+				if (err) throw err;
+				console.log("Değerler başarıyla eklendi.");
+			});
+		}
+
 		doc.pipe(res);
 		console.log('Hakediş raporu-3 başarıyla oluşturuldu');
 		res.setHeader('Content-Type', 'application/pdf');
 		res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu3.pdf');
 		doc.end();
+
+		
+		
 	});
 }
 
