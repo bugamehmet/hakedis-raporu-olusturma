@@ -81,43 +81,48 @@
   <h2>Sözleşme Bilgileri</h2>
   <form class="login-1" action="/welcome" method="post">
     <div>
-      <input type="text" id="no" name="no" required/>
+      <input type="text" id="no" name="no" placeholder="No Girin" required/>
     </div>
     <div>
-      <input type="text" id="no" name="no" required/>
+      <input type="text" id="tarih" name="tarih"placeholder="Tarih" required/>
     </div>
     <div>
-      <input type="text" id="no" name="no" required/>
+      <input type="text" id="uygulama_yili" name="uygulama_yili" placeholder="Uygulama Yılı" required/>
     </div>
     <div>
-      <input type="text" id="no" name="no" required/>
+      <input type="text" id="is_adi" name="is_adi"  placeholder="Yapılan işin / Hizmetin Adı" required/>
     </div>
     <div>
-      <input type="text" id="no" name="no" required/>
+      <input type="text" id="proje_no" name="proje_no"  placeholder="Proje No"required/>
     </div>
     <div>
-      <input type="text" id="no" name="no" placeholder="no girin vvsvs" required/>
+      <input type="text" id="yuklenici_adi" name="yuklenici_adi" placeholder="Yüklenicinin Adı / Ticari Ünvan" required/>
     </div>
     <div>
-      <input type="text" id="no" name="no" required/>
+      <input type="text" id="sozlesme_bedeli" name="sozlesme_bedeli"  placeholder="Sözleşme Bedeli" required/>
     </div>
     <div>
-      <input type="text" id="no" name="no" required/>
+      <input type="text" id="ihale_tarihi" name="ihale_tarihi" placeholder="İhale Tarihi" required/>
     </div>
     <div>
-      <input type="text" id="no" name="no" required/>
+      <input type="text" id="kayit_no" name="kayit_no"placeholder="Kayıt No" required/>
     </div>
     <div>
-      <input type="text" id="no" name="no" required/>
+      <input type="text" id="sozlesme_tarih" name="sozlesme_tarih"  placeholder="Sözleşme Tarihi" required/>
     </div>
     <div>
-      <input type="text" id="no" name="no" required/>
+      <input type="text" id="isyeri_teslim_tarihi" name="isyeri_teslim_tarihi"placeholder="İşyeri Teslim Tarihi " required/>
     </div>
+    <div>
+      <input type="text" id="isin_suresi" name="isin_suresi" placeholder="Sözleşmeye Göre İşin Süresi " required/>
+    </div>
+    <div>
+      <input type="text" id="is_bitim_tarihi" name="is_bitim_tarihi" placeholder="Sözleşmeye Göre İşin Bitim Süresi" required/>
+    </div>
+    <button type="submit" value="LOGIN">KAYDET</button>
   </form>
 
     <div class="full-width">
-      <button type="submit" value="LOGIN">KAYDET</button>
-
       <form action="/generate-pdf" method="post">
         <button type="submit">PDF1</button>
       </form>
