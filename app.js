@@ -91,7 +91,7 @@ app.post('/register', (req, res) => {
 });
 
 app.post('/welcome', async (req, res) => {
-	var no = req.body.no;
+	const userId = req.session.userId;
 	var uygulama_yili = req.body.uygulama_yili;
 	var tarih = req.body.tarih;
 	var is_adi = req.body.is_adi;
@@ -109,79 +109,18 @@ app.post('/welcome', async (req, res) => {
 
 
 	try{
-		await insertHakedis_1(req, no, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi);
+		await insertHakedis_1(userId, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi);
 
-		await insertHakedis_3(req, Gas, Cas, sozlesme_bedeli, is_adi, isin_suresi);
+		await insertHakedis_3(userId, is_adi, sozlesme_bedeli, isin_suresi, Gas, Cas);
 
 		console.log('Veriler başarıyla eklendi');
-		const userId = req.session.userId;
 		res.redirect(`/welcome/${userId}`);
 	} catch(error){
 		console.log('Veriler eklenirken bir hata oluştu');
 		console.log(error);
-		const userId = req.session.userId;
 		res.redirect(`/welcome/${userId}`);
 	}
 });
-
-function insertHakedis_1(req, no, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi){
-
-	return new Promise((resolve,reject)=>{
-		const userId = req.session.userId;
-		connection.query(
-			'INSERT INTO hakedis_raporu (kullanici_id, no, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-			[
-				userId,
-				no,
-				uygulama_yili,
-				tarih,
-				is_adi,
-				proje_no,
-				yuklenici_adi,
-				sozlesme_bedeli,
-				ihale_tarihi,
-				kayit_no,
-				sozlesme_tarih,
-				isyeri_teslim_tarihi,
-				isin_suresi,
-				is_bitim_tarihi,
-			],
-			function (error, results, fields) {
-				if (error) {
-					reject(error)
-				} else {
-					resolve();
-				}
-			}
-		);
-	})
-}
-
-function insertHakedis_3(req, Gas, Cas, sozlesme_bedeli, is_adi, isin_suresi){
-	const userId = req.session.userId;
-	return new Promise((resolve, reject)=>{
-		connection.query(
-			'INSERT INTO hakedis_3 (kullanici_id, isin_adi, sozlesme_bedeli, isin_suresi, Gas, Cas) VALUES (?, ?, ?, ?, ?, ?)',
-			[
-				userId,
-				is_adi,
-				sozlesme_bedeli,
-				isin_suresi,
-				Gas,
-				Cas,
-			],
-			function (error, results, fields) {
-				if (error) {
-					reject(error)
-				} else {
-					resolve();
-				}
-			}
-		);
-	})
-}
-
-
 
 app.post('/generate-pdf', (req, res) => {
 	const x = req.session.userId;
@@ -231,6 +170,61 @@ app.post('/generate-pdf3', (req, res) => {
 		}
 	);
 });
+
+function insertHakedis_1(userId, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi){
+	
+	return new Promise((resolve,reject)=>{
+		
+		connection.query(
+			'INSERT INTO hakedis_raporu (kullanici_id, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+			[
+				userId,
+				uygulama_yili,
+				tarih,
+				is_adi,
+				proje_no,
+				yuklenici_adi,
+				sozlesme_bedeli,
+				ihale_tarihi,
+				kayit_no,
+				sozlesme_tarih,
+				isyeri_teslim_tarihi,
+				isin_suresi,
+				is_bitim_tarihi,
+			],
+			function (error, results, fields) {
+				if (error) {
+					reject(error)
+				} else {
+					resolve();
+				}
+			}
+		);
+	})
+}
+
+function insertHakedis_3(userId, is_adi, sozlesme_bedeli, isin_suresi, Gas, Cas){
+	return new Promise((resolve, reject)=>{
+		connection.query(
+			'INSERT INTO hakedis_3 (kullanici_id, isin_adi, sozlesme_bedeli, isin_suresi, Gas, Cas) VALUES (?, ?, ?, ?, ?, ?)',
+			[
+				userId,
+				is_adi,
+				sozlesme_bedeli,
+				isin_suresi,
+				Gas,
+				Cas,
+			],
+			function (error, results, fields) {
+				if (error) {
+					reject(error)
+				} else {
+					resolve();
+				}
+			}
+		);
+	})
+}
 
 function generatePDF(res, useridInfo) {
 	const sql = 'SELECT * FROM hakedis_raporu WHERE kullanici_id = ? ORDER BY h_id DESC LIMIT 1';
@@ -621,7 +615,6 @@ function generatePDF3(res, useridInfo) {
 			res.status(500).send('Veritabanı hatası');
 			return;
 		}
-		console.log(results);
 		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
 		doc.page.dictionary.data.Rotate = 90;
 
@@ -746,7 +739,7 @@ function generatePDF3(res, useridInfo) {
 				lineInformation(93 + x, 550, 106 + x, 550);
 				lineInformation(93 + x, 600, 106 + x, 600);
 				doc
-					.text(`${e.h_id_3}`, -125, 97 + x)
+					.text(`${e.no}`, -125, 97 + x)
 					.text(`${e.isin_adi}`, -107, 97 + x)
 					.text(`${e.sozlesme_bedeli}`, 220, 97 + x)
 					.text(`${e.Bas}`, 300, 97 + x)
@@ -783,7 +776,6 @@ function generatePDF3(res, useridInfo) {
 			let is_ad = results[lastIndex].isin_adi;
 			let soz_bed = results[lastIndex].sozlesme_bedeli;
 			let is_sure = results[lastIndex].isin_suresi;
-			let no = results[lastIndex].no + 1;
 			let Gas = soz_bed / is_sure;
 			let Bas = results[lastIndex].Bas + 1;
 			let Cas = Bas * Gas;
@@ -791,9 +783,9 @@ function generatePDF3(res, useridInfo) {
 			let Eas = Gas * Das;
 			let Fas = Bas - Das;
 	
-			let sql = `INSERT INTO haz_hakedis_3_update (kullanici_id, isin_adi, sozlesme_bedeli, isin_suresi, no, Gas, Bas, Cas, Das, Eas, Fas)
-						 VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-			let values = [ kul_id, is_ad, soz_bed, is_sure, no, Gas, Bas, Cas, Das, Eas, Fas];
+			let sql = `INSERT INTO haz_hakedis_3_update (kullanici_id, isin_adi, sozlesme_bedeli, isin_suresi, Gas, Bas, Cas, Das, Eas, Fas)
+						 VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+			let values = [ kul_id, is_ad, soz_bed, is_sure, Gas, Bas, Cas, Das, Eas, Fas];
 			connection.query(sql, values, (err, result) => {
 				if (err) throw err;
 				console.log("Değerler başarıyla eklendi.");
