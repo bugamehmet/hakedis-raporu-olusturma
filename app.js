@@ -115,7 +115,7 @@ app.post('/welcome', async (req, res) => {
 	var A_soz_tutari = E_hakedis_tutari;
 	var B_fiyat_farki = 0;
 	var C_toplam = A_soz_tutari + B_fiyat_farki;
-	var D_onceki_toplam = 0;
+	var D_onceki_toplam = E_hakedis_tutari*0;
 	// var ı_para_cezasi = (sozlesme_bedeli*0.001)*(gecikme günü)
 	var H_kesintiler = c_kdv_tev;
 	var I_odenecek_tutar = G_tahakkuk_tutari - H_kesintiler;
@@ -707,7 +707,10 @@ function generatePDF2(res, useridInfo) {
 			let soz_bed1 = results[0].sozlesme_bedeli;
 			let is_sure1 = results[0].is_sure;
 			let ceza = results[0].i_para_cezasi;
-			//let D_o = results[0].D_onceki_topla
+			let D_o = results[0].D_onceki_topla
+
+			console.log(typeof results[0].D_onceki_topla);
+
 
 			let E_hakedis_tutari = (soz_bed1 / is_sure1);
 			let F_kdv_20 = ((E_hakedis_tutari * 20) / 100);
@@ -716,7 +719,7 @@ function generatePDF2(res, useridInfo) {
 			let A_soz_tutari = (E_hakedis_tutari*no);
 			let B_fiyat_farki = results[0].B_fiyat_farki;
 			let C_toplam = (A_soz_tutari + B_fiyat_farki);
-			let D_onceki_toplam = results[0].D_onceki_topla*(no-1);
+			let D_onceki_toplam = E_hakedis_tutari*(no-1);
 			let H_kesintiler = (c_kdv_tev + ceza);
 			let I_odenecek_tutar = (G_tahakkuk_tutari - H_kesintiler);
 		// var ı_para_cezasi = (sozlesme_bedeli*0.001)*(gecikme günü)
