@@ -6,11 +6,12 @@ body {
 }
 
 .register-container {
-  width: 300px;
+  width: 40%;
   margin: 100px auto;
   background-color: #fff;
   padding: 35px;
-  border-radius: 5px;
+  border-radius: 20px;
+  border: 4px solid rgb(46, 48, 120);
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -29,24 +30,24 @@ input[type="password"],
 input[type="email"],
 input[type="tel"],
 textarea {
-  width: 100%;
+  width: 95%;
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
-  border-radius: 3px;
+  border-radius: 10px;
 }
 
 button {
-  width: 107%;
+  width: 102%;
   padding: 10px;
   background-color: rgb(46, 48, 120);
   color: #fff;
   border: none;
-  border-radius: 3px;
+  border-radius: 10px;
   cursor: pointer;
   
 }
 
 button:hover {
-  background-color:rgb(106, 109, 206);;
+  background-color:rgb(106, 109, 206);
 }

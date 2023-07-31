@@ -71,11 +71,16 @@ app.post('/', (req, res) => {
 app.post('/register', (req, res) => {
 	var username = req.body.username;
 	var password = req.body.password;
+	var isim = req.body.password;
+	var soyisim = req.body.password;
+	var eposta = req.body.password;
+	var telefon = req.body.password;
+	var adres = req.body.password;
 
 	// Veritabanına kullanıcıyı kaydetme işlemi
 	connection.query(
-		'INSERT INTO userTable (username, password) VALUES (?, ?)',
-		[username, password],
+		'INSERT INTO userTable (username, password, isim, soyisim, eposta, telefon, adres) VALUES (?, ?, ?, ?, ?, ?, ?)',
+		[username, password, isim, soyisim, eposta, telefon, adres],
 		function (error, results, fields) {
 			if (error) {
 				console.log('Kayıt olma hatası:', error);

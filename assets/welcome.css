@@ -35,9 +35,11 @@ h2{
 input[type="text"],
 input[type="email"]
 {
+  
   font: 1rem  sans-serif;
   display: block;
   box-sizing: border-box;
+  border-radius: 10px;
   width: 100%;
   padding: 0.2rem 0.75rem;
 }
@@ -48,7 +50,7 @@ button {
   cursor: pointer;
   padding: 0.5rem 1.95rem;
   border: none;
-  border-radius: 3px;
+  border-radius: 10px;
   background-color:rgb(46, 48, 120);
   color: #fff;
 }
