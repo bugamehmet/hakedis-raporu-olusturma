@@ -115,7 +115,7 @@ app.post('/welcome', async (req, res) => {
 	var A_soz_tutari = E_hakedis_tutari;
 	var B_fiyat_farki = 0;
 	var C_toplam = A_soz_tutari + B_fiyat_farki;
-	var D_onceki_toplam = E_hakedis_tutari*0;
+	var D_onceki_toplam = E_hakedis_tutari * 0;
 	// var ı_para_cezasi = (sozlesme_bedeli*0.001)*(gecikme günü)
 	var H_kesintiler = c_kdv_tev;
 	var I_odenecek_tutar = G_tahakkuk_tutari - H_kesintiler;
@@ -501,7 +501,7 @@ function generatePDF2(res, useridInfo) {
 			const frameY = 50; // Çerçevenin üst kenarının Y koordinatı
 			const frameWidth = 570; // Çerçevenin genişliği
 			const frameHeight = 750; // Çerçevenin yüksekliği
-			const frameThickness = 2; // Çerçevenin kalınlığı piksel cinsinden
+			const frameThickness = 1.3; // Çerçevenin kalınlığı piksel cinsinden
 
 			const drawRect = (x, y, width, height, color) => {
 				doc.rect(x, y, width, height).fill(color);
@@ -551,11 +551,9 @@ function generatePDF2(res, useridInfo) {
 			progressRow(doc, 190);
 			progressRow(doc, 210);
 
-			results.forEach(e => {
-				doc
+			doc
 				.font('Roboto-Bold.ttf')
 				.text('HAKEDİŞ RAPORU', { align: 'center' })
-				.fontSize('14')
 				.fontSize('10')
 				.text(`${results[0].isin_adi}`, 25, 65, { align: 'left' })
 
@@ -571,6 +569,11 @@ function generatePDF2(res, useridInfo) {
 				.text('Tahakkuk Tutarı', 45, 215)
 				.text(`${para(results[0].G_tahakkuk_tutari)}`, 455, 215, { align: 'left' })
 				.font('Roboto.ttf')
+				.fontSize('9')
+				.text('Sayfa No :', 452, 55)
+				.text('1', 562, 55)
+				.text('Hakediş No :', 452, 77)
+				.text(`${results[0].no}`, 562, 77,{width:'100'})
 				.fontSize('11')
 				.text('A', 25, 95)
 				.text('Sözleşme Fiyatları ile Yapılan Hizmet Tutarı :', 45, 95)
@@ -582,7 +585,7 @@ function generatePDF2(res, useridInfo) {
 				.text('E', 25, 175)
 				.text('Bu Hakedişin Tutarı', 45, 175)
 				.text('F', 25, 195)
-				.text('KDV ( E x %18 )', 45, 195);
+				.text('KDV ( E x %20 )', 45, 195);
 
 			doc // SOL DİK
 				.lineCap('butt')
@@ -594,8 +597,6 @@ function generatePDF2(res, useridInfo) {
 				.moveTo(445, 50)
 				.lineTo(445, 450)
 				.stroke();
-				
-			});
 		}
 		function progressMiddle() {
 			progressRow2(doc, 230);
@@ -618,11 +619,12 @@ function generatePDF2(res, useridInfo) {
 				.restore() // Dökümanı önceki durumuna geri getir
 
 				.font('Roboto-Bold.ttf')
+				.fontSize('10')
 				.text(`${para(results[0].c_kdv_tev)}`, 455, 275, { align: 'left' })
 				.text(`${para(results[0].i_para_cezasi)}`, 455, 395, { align: 'left' })
 
 				.font('Roboto.ttf')
-				.fontSize('11')
+				.fontSize('10')
 				.text('a) Gelir/ Kurumlar Vergisi ( E x % .. )', 60, 235)
 				.text(`${para(results[0].kullanilmayan)}`, 455, 235, { align: 'left' })
 				.text('b) Damga Vergisi ( E - g x % ..)0,00825', 60, 255)
@@ -659,7 +661,7 @@ function generatePDF2(res, useridInfo) {
 				.moveTo(40, 410)
 				.lineTo(40, 450)
 
-				.lineWidth('2')
+				.lineWidth('1.5')
 				.lineCap('butt')
 				.moveTo(15, 525)
 				.lineTo(585, 525)
@@ -707,22 +709,21 @@ function generatePDF2(res, useridInfo) {
 			let soz_bed1 = results[0].sozlesme_bedeli;
 			let is_sure1 = results[0].is_sure;
 			let ceza = results[0].i_para_cezasi;
-			let D_o = results[0].D_onceki_topla
+			let D_o = results[0].D_onceki_topla;
 
 			console.log(typeof results[0].D_onceki_topla);
 
-
-			let E_hakedis_tutari = (soz_bed1 / is_sure1);
-			let F_kdv_20 = ((E_hakedis_tutari * 20) / 100);
-			let G_tahakkuk_tutari = (E_hakedis_tutari + F_kdv_20);
-			let c_kdv_tev = (F_kdv_20 * 0.7);
-			let A_soz_tutari = (E_hakedis_tutari*no);
+			let E_hakedis_tutari = soz_bed1 / is_sure1;
+			let F_kdv_20 = (E_hakedis_tutari * 20) / 100;
+			let G_tahakkuk_tutari = E_hakedis_tutari + F_kdv_20;
+			let c_kdv_tev = F_kdv_20 * 0.7;
+			let A_soz_tutari = E_hakedis_tutari * no;
 			let B_fiyat_farki = results[0].B_fiyat_farki;
-			let C_toplam = (A_soz_tutari + B_fiyat_farki);
-			let D_onceki_toplam = E_hakedis_tutari*(no-1);
-			let H_kesintiler = (c_kdv_tev + ceza);
-			let I_odenecek_tutar = (G_tahakkuk_tutari - H_kesintiler);
-		// var ı_para_cezasi = (sozlesme_bedeli*0.001)*(gecikme günü)
+			let C_toplam = A_soz_tutari + B_fiyat_farki;
+			let D_onceki_toplam = E_hakedis_tutari * (no - 1);
+			let H_kesintiler = c_kdv_tev + ceza;
+			let I_odenecek_tutar = G_tahakkuk_tutari - H_kesintiler;
+			// var ı_para_cezasi = (sozlesme_bedeli*0.001)*(gecikme günü)
 
 			let sql = `INSERT INTO haz_hakedis_2 (kullanici_id, isin_adi, sozlesme_bedeli, is_sure, A_soz_tutari, B_fiyat_farki, C_toplam, D_onceki_toplam, E_hakedis_tutari, F_kdv_20, G_tahakkuk_tutari, c_kdv_tev, H_kesintiler, I_odenecek_tutar)
 								 VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
@@ -757,7 +758,7 @@ function generatePDF2(res, useridInfo) {
 }
 
 function generatePDF3(res, useridInfo) {
-	const sql = 'select * from hakedis_3 where kullanici_id=? order by h_id_3 desc limit 1';
+	const sql = 'select * from hakedis_3 where kullanici_id=? order by h_id_3 desc';
 	const params = useridInfo;
 	connection.query(sql, params, (error, results) => {
 		if (error) {
@@ -775,7 +776,8 @@ function generatePDF3(res, useridInfo) {
 		updateData();
 
 		function para(number, fractionDigits = 2) {
-			return number.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺';
+			const formattedNumber = parseFloat(number).toFixed(fractionDigits);
+			return  '₺ '+ formattedNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 		}
 		function rowInformation(heigth) {
 			doc.lineJoin('miter').rect(-128, heigth, 805.5, 11).stroke();
@@ -864,8 +866,9 @@ function generatePDF3(res, useridInfo) {
 				.fontSize('7')
 				.text('(Teklif Birim Fiyatlı Hizmet İçin)', 225, 30)
 				.fontSize('6')
-				.text('Sayfa No:', 507, 44)
+				.text('Sayfa No: 1', 507, 44)
 				.text('Hakediş No:', 575, 44)
+				.text(`${results[0].no}`, 612, 44)
 				.text('Sıra No', -125, 67, { width: 15, align: 'left' })
 				.text('İşin Tanımı', 33, 72)
 				.text('Sözleşme Bedeli', 220, 72)
@@ -891,13 +894,13 @@ function generatePDF3(res, useridInfo) {
 				doc
 					.text(`${e.no}`, -125, 97 + x)
 					.text(`${e.isin_adi}`, -107, 97 + x)
-					.text(`${e.sozlesme_bedeli}`, 220, 97 + x)
+					.text(`${para(e.sozlesme_bedeli)}`, 220, 97 + x)
 					.text(`${e.Bas}`, 300, 97 + x)
-					.text(`${e.Cas}`, 360, 97 + x)
+					.text(`${para(e.Cas)}`, 360, 97 + x)
 					.text(`${e.Das}`, 425, 97 + x)
-					.text(`${e.Eas}`, 490, 97 + x)
+					.text(`${para(e.Eas)}`, 490, 97 + x)
 					.text(`${e.Fas}`, 557, 97 + x, { width: 100 })
-					.text(`${e.Gas}`, 615, 97 + x);
+					.text(`${para(e.Gas)}`, 615, 97 + x);
 				x = x + 11;
 			});
 		}
@@ -942,7 +945,6 @@ function generatePDF3(res, useridInfo) {
 			});
 		}
 
-		console.log(results);
 		doc.pipe(res);
 		console.log('Hakediş raporu-3 başarıyla oluşturuldu');
 		res.setHeader('Content-Type', 'application/pdf');
