@@ -34,6 +34,14 @@ app.get('/register', (req, res) => {
 app.get('/welcome/:userId', (req, res) => {
 	res.sendFile(__dirname + '/welcome.html');
 });
+app.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Oturum sonlandırma hatası:', err);
+    }
+    res.redirect('/'); 
+  });
+});
 
 app.get('/generate-pdf/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
@@ -96,14 +104,25 @@ app.post('/register', (req, res) => {
 });
 
 var date = new Date();
-const gun = date.getDate();
-const ay = date.getMonth() + 1; 
+let gun = date.getDate();
+let ay = date.getMonth() + 1; 
 const yil = date.getFullYear();
+function gunx(){
+	if(gun<10){
+		return "0"+gun;
+	}
+	else{return gun;}
+}
+function ayx(){
+	if(ay<10){
+		return "0"+ay;
+	}else{return ay}
+}
 
 app.post('/welcome', async (req, res) => {
 	const userId = req.session.userId;
 	var uygulama_yili = yil;
-	var tarih =`${gun}.${ay}.${yil}`;
+	var tarih =`${gunx(gun)}.${ayx(ay)}.${yil}`;
 	var is_adi = req.body.is_adi;
 	var proje_no = req.body.proje_no;
 	var yuklenici_adi = req.body.yuklenici_adi;
@@ -343,9 +362,10 @@ function generatePDF(res, useridInfo) {
 
 		reportFrame();
 		reportHeader();
-		reportInformation(results);
-		reportTable(results);
-		reportFooter(results);
+		reportInformation();
+		reportTable();
+		reportFooter();
+		updateData();
 
 		function reportFrame() {
 			const frameX = 15; // Çerçevenin sol kenarının X koordinatı
@@ -403,7 +423,7 @@ function generatePDF(res, useridInfo) {
 				.text('Hakediş Raporu', 100, 150, { align: 'center' })
 				.moveDown();
 		}
-		function reportInformation(results) {
+		function reportInformation() {
 			doc
 				.fontSize(12)
 				.text(`Tarihi: ${results[0].tarih}`, 100, 180, { align: 'center' })
@@ -431,7 +451,7 @@ function generatePDF(res, useridInfo) {
 				.text(`${results[0].is_bitim_tarihi}`, 275, 540, { align: 'left' })
 				.moveDown();
 		}
-		function reportTable(results) {
+		function reportTable() {
 			doc
 				.lineCap('butt')
 				.moveTo(135, 580)
@@ -480,11 +500,35 @@ function generatePDF(res, useridInfo) {
 				.text('Verilen Süre', 305, 675)
 				.text('İş Bitim Tarihi', 435, 675);
 		}
+		function updateData(){
+			const sqlInsert = `
+			INSERT INTO hakedis_raporu 
+			(kullanici_id,  uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi) 
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		`;
+		const insertParams = [
+			results[0].kullanici_id,
+			results[0].uygulama_yili,
+			results[0].tarih,
+			results[0].is_adi,
+			results[0].proje_no,
+			results[0].yuklenici_adi,
+			results[0].sozlesme_bedeli,
+			results[0].ihale_tarihi,
+			results[0].kayit_no,
+			results[0].sozlesme_tarih,
+			results[0].isyeri_teslim_tarihi,
+			results[0].isin_suresi,
+			results[0].is_bitim_tarihi
+		];
+		connection.query(sqlInsert, insertParams, (insertError, insertResults) => {
+		});
+		}
 
 		doc.pipe(res);
 		console.log('Hakediş raporu başarıyla oluşturuldu');
 		res.setHeader('Content-Type', 'application/pdf');
-		res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu.pdf');
+		res.setHeader('Content-Disposition', 'attachment; filename=hakedis_kapagi.pdf');
 		doc.end();
 	});
 }
@@ -564,7 +608,7 @@ function generatePDF2(res, useridInfo) {
 			doc
 				.font('Roboto-Bold.ttf')
 				.text('HAKEDİŞ RAPORU', { align: 'center' })
-				.fontSize('10')
+				.fontSize('9')
 				.text(`${results[0].isin_adi}`, 25, 65, { align: 'left' })
 
 				.font('Roboto-Bold')
@@ -712,31 +756,27 @@ function generatePDF2(res, useridInfo) {
 				.text('|makam1|', 265, 765);
 		}
 		function updateData2() {
-			//let lastIndex = results.length - 1;
 			let kul_id1 = results[0].kullanici_id;
 			let is_ad1 = results[0].isin_adi;
-			let no = results[0].no;
+			let no1 = results[0].no;
 			let soz_bed1 = results[0].sozlesme_bedeli;
 			let is_sure1 = results[0].is_sure;
 			let ceza = results[0].i_para_cezasi;
-			let D_o = results[0].D_onceki_topla;
-
-			console.log(typeof results[0].D_onceki_topla);
 
 			let E_hakedis_tutari = soz_bed1 / is_sure1;
 			let F_kdv_20 = (E_hakedis_tutari * 20) / 100;
 			let G_tahakkuk_tutari = E_hakedis_tutari + F_kdv_20;
 			let c_kdv_tev = F_kdv_20 * 0.7;
-			let A_soz_tutari = E_hakedis_tutari * no;
+			let A_soz_tutari = E_hakedis_tutari * (no1+1);
 			let B_fiyat_farki = results[0].B_fiyat_farki;
 			let C_toplam = A_soz_tutari + B_fiyat_farki;
-			let D_onceki_toplam = E_hakedis_tutari * (no - 1);
+			let D_onceki_toplam = E_hakedis_tutari * (no1);
 			let H_kesintiler = c_kdv_tev + ceza;
 			let I_odenecek_tutar = G_tahakkuk_tutari - H_kesintiler;
+	
 			// var ı_para_cezasi = (sozlesme_bedeli*0.001)*(gecikme günü)
 
-			let sql = `INSERT INTO haz_hakedis_2 (kullanici_id, isin_adi, sozlesme_bedeli, is_sure, A_soz_tutari, B_fiyat_farki, C_toplam, D_onceki_toplam, E_hakedis_tutari, F_kdv_20, G_tahakkuk_tutari, c_kdv_tev, H_kesintiler, I_odenecek_tutar)
-								 VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+			let sql = `INSERT INTO haz_hakedis_2 (kullanici_id, isin_adi, sozlesme_bedeli, is_sure, A_soz_tutari, B_fiyat_farki, C_toplam, D_onceki_toplam, E_hakedis_tutari, F_kdv_20, G_tahakkuk_tutari, c_kdv_tev, H_kesintiler, I_odenecek_tutar)VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 			let values = [
 				kul_id1,
 				is_ad1,
@@ -762,7 +802,7 @@ function generatePDF2(res, useridInfo) {
 		doc.pipe(res);
 		console.log('Hakediş raporu-2 başarıyla oluşturuldu');
 		res.setHeader('Content-Type', 'application/pdf');
-		res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu2.pdf');
+		res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu.pdf');
 		doc.end();
 	});
 }
@@ -783,7 +823,7 @@ function generatePDF3(res, useridInfo) {
 		header();
 		Information();
 		footer();
-		updateData();
+		updateData3();
 
 		function para(number, fractionDigits = 2) {
 			const formattedNumber = parseFloat(number).toFixed(fractionDigits);
@@ -933,7 +973,7 @@ function generatePDF3(res, useridInfo) {
 				.font('Roboto-Bold.ttf')
 				.text('|dismakamtarih1|', 245, 390);
 		}
-		function updateData() {
+		function updateData3() {
 			let lastIndex = results.length - 1;
 			let kul_id = results[lastIndex].kullanici_id;
 			let is_ad = results[lastIndex].isin_adi;
@@ -958,7 +998,7 @@ function generatePDF3(res, useridInfo) {
 		doc.pipe(res);
 		console.log('Hakediş raporu-3 başarıyla oluşturuldu');
 		res.setHeader('Content-Type', 'application/pdf');
-		res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu3.pdf');
+		res.setHeader('Content-Disposition', 'attachment; filename=yapilan_isler_listesi.pdf');
 		doc.end();
 	});
 }
