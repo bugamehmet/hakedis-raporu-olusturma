@@ -95,10 +95,15 @@ app.post('/register', (req, res) => {
 	);
 });
 
+var date = new Date();
+const gun = date.getDate();
+const ay = date.getMonth() + 1; 
+const yil = date.getFullYear();
+
 app.post('/welcome', async (req, res) => {
 	const userId = req.session.userId;
-	var uygulama_yili = req.body.uygulama_yili;
-	var tarih = req.body.tarih;
+	var uygulama_yili = yil;
+	var tarih =`${gun}.${ay}.${yil}`;
 	var is_adi = req.body.is_adi;
 	var proje_no = req.body.proje_no;
 	var yuklenici_adi = req.body.yuklenici_adi;
