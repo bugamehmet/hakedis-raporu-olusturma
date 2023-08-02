@@ -117,6 +117,9 @@
     <div>
       <input type="text" id="is_bitim_tarihi" name="is_bitim_tarihi" value="24" placeholder="Sözleşmeye Göre İşin Bitim Süresi" required/>
     </div>
+    <div>
+      <input type="text" id="i_para_cezasi" name="i_para_cezasi" placeholder="Gecikme Günü" required/>
+    </div>
     <button type="submit" value="LOGIN">Bilgileri Kaydet</button>
   </form>
 
@@ -126,6 +129,8 @@
       </form>
       <form action="/generate-pdf2" method="post">
         <button type="submit">Hakediş Raporu</button>
+          <br><br>
+        <input type="text" id="i_para_cezasi" name="i_para_cezasi" placeholder="Gecikme Günü" require>        
       </form>
       <form action="/generate-pdf3" method="post">
         <button type="submit">Yapılan İşler Listesi</button>
