@@ -137,23 +137,22 @@ app.post('/welcome', async (req, res) => {
 	let isyeri_teslim_tarihi = req.body.isyeri_teslim_tarihi;
 	let isin_suresi = req.body.isin_suresi;
 	let is_bitim_tarihi = req.body.is_bitim_tarihi;
-	let gecikme =req.body.i_para_cezasi;
 
 	let Gas = sozlesme_bedeli / isin_suresi;
 	let Cas = Gas;
 
-	let E_hakedis_tutari = sozlesme_bedeli / isin_suresi;
-	let F_kdv_20 = (E_hakedis_tutari * 20) / 100;
-	let G_tahakkuk_tutari = E_hakedis_tutari + F_kdv_20;
-	let h_fiyat_farki = G_tahakkuk_tutari * 0.06;
-	let c_kdv_tev = F_kdv_20 * 0.7;
-	let A_soz_tutari = E_hakedis_tutari;
-	let B_fiyat_farki = 0;
-	let C_toplam = A_soz_tutari + B_fiyat_farki;
-	let D_onceki_toplam = E_hakedis_tutari * 0;
-	let i_para_cezasi = (sozlesme_bedeli*0.001)*(gecikme); 
-	let H_kesintiler = c_kdv_tev + h_fiyat_farki + i_para_cezasi;  
-	let I_odenecek_tutar = G_tahakkuk_tutari - H_kesintiler;
+	//let E_hakedis_tutari = sozlesme_bedeli / isin_suresi;
+	//let F_kdv_20 = (E_hakedis_tutari * 20) / 100;
+	//let G_tahakkuk_tutari = E_hakedis_tutari + F_kdv_20;
+	//let h_fiyat_farki = G_tahakkuk_tutari * 0.06;
+	//let c_kdv_tev = F_kdv_20 * 0.7;
+	//let A_soz_tutari = E_hakedis_tutari;
+	//let B_fiyat_farki = 0;
+	//let C_toplam = A_soz_tutari + B_fiyat_farki;
+	//let D_onceki_toplam = E_hakedis_tutari * 0;
+	//let i_para_cezasi = (sozlesme_bedeli * 0.001) * gecikme;
+	//let H_kesintiler = c_kdv_tev + h_fiyat_farki + i_para_cezasi;
+	//let I_odenecek_tutar = G_tahakkuk_tutari - H_kesintiler;
 
 	try {
 		await insertHakedis_1(
@@ -176,19 +175,7 @@ app.post('/welcome', async (req, res) => {
 			userId,
 			is_adi,
 			sozlesme_bedeli,
-			isin_suresi,
-			A_soz_tutari,
-			B_fiyat_farki,
-			C_toplam,
-			D_onceki_toplam,
-			Gas,
-			F_kdv_20,
-			G_tahakkuk_tutari,
-			c_kdv_tev,
-			H_kesintiler,
-			I_odenecek_tutar,
-			h_fiyat_farki,
-			i_para_cezasi
+			isin_suresi
 		);
 
 		await insertHakedis_3(userId, is_adi, sozlesme_bedeli, isin_suresi, Gas, Cas);
@@ -220,7 +207,7 @@ app.post('/generate-pdf', (req, res) => {
 });
 app.post('/generate-pdf2', (req, res) => {
 	const x = req.session.userId;
-	const gecikme = req.body.i_para_cezasi;
+	const gecikme = req.body.gecikme;
 	req.session.gecikme = gecikme;
 	connection.query(
 		'select kullanici_id from hakedis_2 where kullanici_id=?',
@@ -301,40 +288,16 @@ function insertHakedis_2(
 	userId,
 	is_adi,
 	sozlesme_bedeli,
-	isin_suresi,
-	A_soz_tutari,
-	B_fiyat_farki,
-	C_toplam,
-	D_onceki_toplam,
-	Gas,
-	F_kdv_20,
-	G_tahakkuk_tutari,
-	c_kdv_tev,
-	H_kesintiler,
-	I_odenecek_tutar,
-	h_fiyat_farki,
-	i_para_cezasi 
+	isin_suresi
 ) {
 	return new Promise((resolve, reject) => {
 		connection.query(
-			'INSERT INTO hakedis_2 (kullanici_id, isin_adi, sozlesme_bedeli, is_sure, A_soz_tutari, B_fiyat_farki, C_toplam, D_onceki_toplam, E_hakedis_tutari, F_kdv_20, G_tahakkuk_tutari, c_kdv_tev, H_kesintiler, I_odenecek_tutar, h_fiyat_farki, i_para_cezasi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+			'INSERT INTO hakedis_2 (kullanici_id, isin_adi, sozlesme_bedeli, is_sure) VALUES (?, ?, ?, ?)',
 			[
 				userId,
 				is_adi,
 				sozlesme_bedeli,
-				isin_suresi,
-				A_soz_tutari,
-				B_fiyat_farki,
-				C_toplam,
-				D_onceki_toplam,
-				Gas,
-				F_kdv_20,
-				G_tahakkuk_tutari,
-				c_kdv_tev,
-				H_kesintiler,
-				I_odenecek_tutar,
-				h_fiyat_farki,
-				i_para_cezasi
+				isin_suresi
 			],
 			function (error, results, fields) {
 				if (error) {
@@ -549,23 +512,40 @@ function generatePDF(res, useridInfo) {
 function generatePDF2(res, useridInfo, gecikme) {
 	const sql = 'select * from hakedis_2 where kullanici_id=? order by h_id_2 desc limit 1';
 	const params = useridInfo;
-	console.log(gecikme);
-	// const gecikmex = gecikme;
 	connection.query(sql, params, (error, results) => {
 		if (error) {
 			console.log('Veritabanı hatası:', error);
 			res.status(500).send('Veritabanı hatası');
 			return;
 		}
+    const kul_id1 = results[0].kullanici_id;
+    let sozlesme_bedeli = results[0].sozlesme_bedeli;
+    let isin_suresi = results[0].is_sure;
+		let is_adi = results[0].isin_adi;
+    let no1 = results[0].no;
+    let B_fiyat_farki = results[0].B_fiyat_farki;
+
+    let x_E_hakedis_tutari = sozlesme_bedeli / isin_suresi;
+    let x_F_kdv_20 = (x_E_hakedis_tutari * 20) / 100;
+    let x_G_tahakkuk_tutari = x_E_hakedis_tutari + x_F_kdv_20;
+    let x_h_fiyat_farki = x_G_tahakkuk_tutari * 0.06;
+    let x_c_kdv_tev =x_F_kdv_20 * 0.7;
+    let x_A_soz_tutari = x_E_hakedis_tutari * (no1);
+    let x_C_toplam = x_A_soz_tutari + B_fiyat_farki;
+    let x_D_onceki_toplam = x_E_hakedis_tutari * (no1 - 1);
+    let x_i_para_cezasi = (sozlesme_bedeli*0.001)*(gecikme);
+    let x_H_kesintiler = x_c_kdv_tev + x_h_fiyat_farki + x_i_para_cezasi;
+    let x_I_odenecek_tutar = x_G_tahakkuk_tutari - x_H_kesintiler;
+
 		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
-		// SINIR EKLENECEK !!
-		progressFrame();
+
+    progressFrame();
 		progressHeader();
 		progressMiddle();
 		progressFooter();
-		updateData2();
+    updateData2();
 
-		function progressFrame() {
+    function progressFrame() {
 			const frameX = 15; // Çerçevenin sol kenarının X koordinatı
 			const frameY = 50; // Çerçevenin üst kenarının Y koordinatı
 			const frameWidth = 570; // Çerçevenin genişliği
@@ -627,16 +607,16 @@ function generatePDF2(res, useridInfo, gecikme) {
 				.text(`${results[0].isin_adi}`, 25, 60, { align: 'left' })
 
 				.font('Roboto-Bold')
-				.text(`${para(results[0].A_soz_tutari)}`, 455, 90, { align: 'left' })
+				.text(`${para(x_A_soz_tutari)}`, 455, 90, { align: 'left' })
 				.text('C', 25, 130)
 				.text('Toplam Tutar ( A + B )', 45, 130)
-				.text(`${para(results[0].C_toplam)}`, 455, 130, { align: 'left' })
-				.text(`${para(results[0].D_onceki_toplam)}`, 455, 155, { align: 'left' })
-				.text(`${para(results[0].E_hakedis_tutari)}`, 455, 175, { align: 'left' })
-				.text(`${para(results[0].F_kdv_20)}`, 455, 195, { align: 'left' })
+				.text(`${para(x_C_toplam)}`, 455, 130, { align: 'left' })
+				.text(`${para(x_D_onceki_toplam)}`, 455, 155, { align: 'left' })
+				.text(`${para(x_E_hakedis_tutari)}`, 455, 175, { align: 'left' })
+				.text(`${para(x_F_kdv_20)}`, 455, 195, { align: 'left' })
 				.text('G', 25, 215)
 				.text('Tahakkuk Tutarı', 45, 215)
-				.text(`${para(results[0].G_tahakkuk_tutari)}`, 455, 215, { align: 'left' })
+				.text(`${para(x_G_tahakkuk_tutari)}`, 455, 215, { align: 'left' })
 				.font('Roboto.ttf')
 				.fontSize('9')
 				.text('Sayfa No :', 452, 55)
@@ -660,7 +640,7 @@ function generatePDF2(res, useridInfo, gecikme) {
 				.lineCap('butt')
 				.moveTo(40, 85)
 				.lineTo(40, 230)
-				.lineCap('butt')// SAĞ DİK
+				.lineCap('butt') // SAĞ DİK
 				.moveTo(445, 50)
 				.lineTo(445, 450)
 				.stroke();
@@ -687,9 +667,9 @@ function generatePDF2(res, useridInfo, gecikme) {
 
 				.font('Roboto-Bold.ttf')
 				.fontSize('9')
-				.text(`${para(results[0].c_kdv_tev)}`, 455, 275, { align: 'left' })
-				.text(`${para(results[0].i_para_cezasi)}`, 455, 395, { align: 'left' })
-				.text(`${para(results[0].h_fiyat_farki)}`, 455, 375, { align: 'left' })
+				.text(`${para(x_c_kdv_tev)}`, 455, 275, { align: 'left' })
+				.text(`${para(x_i_para_cezasi)}`, 455, 395, { align: 'left' })
+				.text(`${para(x_h_fiyat_farki)}`, 455, 375, { align: 'left' })
 
 				.font('Roboto.ttf')
 				.fontSize('9')
@@ -745,10 +725,10 @@ function generatePDF2(res, useridInfo, gecikme) {
 				.fontSize('9')
 				.text('H', 25, 415)
 				.text('Kesintiler ve Mahpuslar Toplamı', 45, 415)
-				.text(`${para(results[0].H_kesintiler)}`, 455, 415, { align: 'rigth' })
+				.text(`${para(x_H_kesintiler)}`, 455, 415, { align: 'rigth' })
 				.text('I', 25, 435)
 				.text('Yükleniciye Ödenecek Tutar ( G - H )', 45, 435)
-				.text(`${para(results[0].I_odenecek_tutar)}`, 455, 435, { align: 'left' })
+				.text(`${para(x_I_odenecek_tutar)}`, 455, 435, { align: 'left' })
 
 				.font('Roboto.ttf')
 				.fontSize('8')
@@ -768,45 +748,26 @@ function generatePDF2(res, useridInfo, gecikme) {
 				.text('|makam2|', 475, 705)
 				.text('|makam1|', 265, 765);
 		}
-		function updateData2() {
-			let kul_id1 = results[0].kullanici_id;
-			let is_ad1 = results[0].isin_adi;
-			let no1 = results[0].no;
-			let soz_bed1 = results[0].sozlesme_bedeli;
-			let is_sure1 = results[0].is_sure;
-			// let ceza = results[0].i_para_cezasi;
-			let h_fiyat_farki = results[0].h_fiyat_farki;
+    function updateData2() {
 
-			let E_hakedis_tutari = soz_bed1 / is_sure1;
-			let F_kdv_20 = (E_hakedis_tutari * 20) / 100;
-			let G_tahakkuk_tutari = E_hakedis_tutari + F_kdv_20;
-			let c_kdv_tev = F_kdv_20 * 0.7;
-			let A_soz_tutari = E_hakedis_tutari * (no1 + 1);
-			let B_fiyat_farki = results[0].B_fiyat_farki;
-			let C_toplam = A_soz_tutari + B_fiyat_farki;
-			let D_onceki_toplam = E_hakedis_tutari * no1;
-			let i_para_cezasi = (soz_bed1*0.001)*(gecikme);
-			let H_kesintiler = c_kdv_tev + h_fiyat_farki + i_para_cezasi;
-			let I_odenecek_tutar = G_tahakkuk_tutari - H_kesintiler;
-
-
-			let sql = `INSERT INTO haz_hakedis_2 (kullanici_id, isin_adi, sozlesme_bedeli, is_sure, A_soz_tutari, B_fiyat_farki, C_toplam, D_onceki_toplam, E_hakedis_tutari, F_kdv_20, G_tahakkuk_tutari, c_kdv_tev, H_kesintiler, I_odenecek_tutar, h_fiyat_farki)VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+			let sql = `INSERT INTO haz_hakedis_2 (kullanici_id, isin_adi, sozlesme_bedeli, is_sure, A_soz_tutari, B_fiyat_farki, C_toplam, D_onceki_toplam, E_hakedis_tutari, F_kdv_20, G_tahakkuk_tutari, c_kdv_tev, H_kesintiler, I_odenecek_tutar, h_fiyat_farki, i_para_cezasi)VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 			let values = [
 				kul_id1,
-				is_ad1,
-				soz_bed1,
-				is_sure1,
-				A_soz_tutari,
+				is_adi,
+				sozlesme_bedeli,
+				isin_suresi,
+				x_A_soz_tutari,
 				B_fiyat_farki,
-				C_toplam,
-				D_onceki_toplam,
-				E_hakedis_tutari,
-				F_kdv_20,
-				G_tahakkuk_tutari,
-				c_kdv_tev,
-				H_kesintiler,
-				I_odenecek_tutar,
-				h_fiyat_farki,
+				x_C_toplam,
+				x_D_onceki_toplam,
+				x_E_hakedis_tutari,
+				x_F_kdv_20,
+				x_G_tahakkuk_tutari,
+				x_c_kdv_tev,
+				x_H_kesintiler,
+				x_I_odenecek_tutar,
+				x_h_fiyat_farki,
+        x_i_para_cezasi
 			];
 			connection.query(sql, values, (err, result) => {
 				if (err) throw err;
