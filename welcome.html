@@ -7,115 +7,38 @@
     <title>HAKEDİS Bilgileri</title>
 </head>
 <body>
-  <!--
-  <div class="grid-container">
-    <h2>Sözleşme Bilgileri</h2>
-
-    <form action="/welcome" method="post">
-      <div class="input-group">
-        <label for="no">No:</label>
-        <input type="text" id="no" name="no" required>
-
-        <label for="tarih">Tarih:</label>
-        <input type="text" id="tarih" name="tarih" required>
-
-        <label for="uygulama_yili">Uygulama Yılı :</label>
-        <input type="text" id="uygulama_yili" name="uygulama_yili" required>
-      </div>
-
-      <div class="input-group">
-        <label for="is_adi">Yapılan işin / Hizmetin Adı :</label>
-        <input type="text" id="is_adi" name="is_adi" required>
-
-        <label for="proje_no">Proje No:</label>
-        <input type="text" id="proje_no" name="proje_no" required>
-
-        <label for="yuklenici_adi">Yüklenicinin Adı / Ticari Ünvan :</label>
-        <input type="text" id="yuklenici_adi" name="yuklenici_adi" required>
-      </div>
-
-      <div class="input-group">
-        <label for="sozlesme_bedeli">Sözleşme Bedeli:</label>
-        <input type="text" id="sozlesme_bedeli" name="sozlesme_bedeli" required>
-
-        <label for="ihale_tarihi">İhale Tarihi :</label>
-        <input type="text" id="ihale_tarihi" name="ihale_tarihi" required> 
-
-        <label for="kayit_no">Kayıt No :</label>
-        <input type="text" id="kayit_no" name="kayit_no" required>
-      </div>
-
-      <div class="input-group">
-        <label for="sozlesme_tarih">Sözleşme Tarihi:</label>
-        <input type="text" id="sozlesme_tarih" name="sozlesme_tarih" required>
-
-        <label for="isyeri_teslim_tarihi">İşyeri Teslim Tarihi :</label>
-        <input type="text" id="isyeri_teslim_tarihi" name="isyeri_teslim_tarihi" required>
-
-        <label for="isin_suresi">Sözleşmeye Göre İşin Süresi :</label>
-        <input type="text" id="isin_suresi" name="isin_suresi" required>
-      </div>
-
-      <div class="input-group">
-        <label for="is_bitim_tarihi">Sözleşmeye Göre İşin Bitim Süresi</label>
-        <input type="text" id="is_bitim_tarihi" name="is_bitim_tarihi" required> 
-      </div>
-
-      <button type="submit" value="LOGIN">KAYDET</button>
-    </form>
-
-    <div class="button-container">
-      <form action="/generate-pdf" method="post">
-        <button type="submit">PDF1</button>
-      </form>
-      <form action="/generate-pdf2" method="post">
-        <button type="submit">PDF2</button>
-      </form>
-      <form action="/generate-pdf3" method="post">
-        <button type="submit">PDF3</button>
-      </form>
-    </div>
-  </div>
--->
 <main>
-  <h2>Sözleşme Bilgileri Giriniz</h2>
+  <h2>İhale Bilgileri Giriniz</h2>
   <form class="login-1" action="/welcome" method="post">
-    <!--
     <div>
-      <input type="text" id="tarih" name="tarih"placeholder="Tarih" required/>
+      <input type="text" id="is_adi" name="is_adi"  placeholder="Yapılan işin / Hizmetin Adı" required/>
     </div>
     <div>
-      <input type="text" id="uygulama_yili" name="uygulama_yili" placeholder="Uygulama Yılı" required/>
-    </div>-->
-    <div>
-      <input type="text" id="is_adi" name="is_adi" value="xx" placeholder="Yapılan işin / Hizmetin Adı" required/>
+      <input type="text" id="proje_no" name="proje_no"  placeholder="Proje No"required/>
     </div>
     <div>
-      <input type="text" id="proje_no" name="proje_no" value="x" placeholder="Proje No"required/>
+      <input type="text" id="yuklenici_adi" name="yuklenici_adi"  placeholder="Yüklenicinin Adı / Ticari Ünvan" required/>
     </div>
     <div>
-      <input type="text" id="yuklenici_adi" name="yuklenici_adi" value="x" placeholder="Yüklenicinin Adı / Ticari Ünvan" required/>
+      <input type="text" id="sozlesme_bedeli"  name="sozlesme_bedeli"  placeholder="Sözleşme Bedeli (Örn: 1161232)" required/>
     </div>
     <div>
-      <input type="text" id="sozlesme_bedeli" value="1162056" name="sozlesme_bedeli"  placeholder="Sözleşme Bedeli (Örn: 1161232)" required/>
+      <input type="text" id="ihale_tarihi" name="ihale_tarihi"  placeholder="İhale Tarihi" required/>
     </div>
     <div>
-      <input type="text" id="ihale_tarihi" name="ihale_tarihi" value="24" placeholder="İhale Tarihi" required/>
+      <input type="text" id="kayit_no" name="kayit_no"  placeholder="Kayıt No" required/>
     </div>
     <div>
-      <input type="text" id="kayit_no" name="kayit_no" value="24" placeholder="Kayıt No" required/>
+      <input type="text" id="sozlesme_tarih" name="sozlesme_tarih"  placeholder="Sözleşme Tarihi" required/>
     </div>
     <div>
-      <input type="text" id="sozlesme_tarih" name="sozlesme_tarih" value="24" placeholder="Sözleşme Tarihi" required/>
+      <input type="text" id="isyeri_teslim_tarihi" name="isyeri_teslim_tarihi"  placeholder="İşyeri Teslim Tarihi " required/>
     </div>
     <div>
-      <input type="text" id="isyeri_teslim_tarihi" name="isyeri_teslim_tarihi" value="24" placeholder="İşyeri Teslim Tarihi " required/>
+      <input type="text" id="isin_suresi" name="isin_suresi"  placeholder="Sözleşmeye Göre İşin Süresi (Örn: 24)" required/>
     </div>
     <div>
-      <input type="text" id="isin_suresi" name="isin_suresi" value="24" placeholder="Sözleşmeye Göre İşin Süresi (Örn: 24)" required/>
-    </div>
-    <div>
-      <input type="text" id="is_bitim_tarihi" name="is_bitim_tarihi" value="24" placeholder="Sözleşmeye Göre İşin Bitim Süresi" required/>
+      <input type="text" id="is_bitim_tarihi" name="is_bitim_tarihi"  placeholder="Sözleşmeye Göre İşin Bitim Süresi" required/>
     </div>
     <button type="submit" value="LOGIN">Bilgileri Kaydet</button>
   </form>
@@ -124,10 +47,17 @@
       <form action="/generate-pdf" method="post">
         <button type="submit">Hakediş Kapağı</button>
       </form>
+
       <form action="/generate-pdf2" method="post">
         <button type="submit">Hakediş Raporu</button>
           <br><br>
-        <input type="text" id="gecikme" name="gecikme" placeholder="Gecikme Günü" required/>        
+          <input type="text" id="fiyat_farki" name="fiyat_farki" placeholder="Fiyat Farkı" required/>  
+        <br>
+        <input type="text" id="gecikme" name="gecikme" placeholder="Para Cezası" required/>
+        <label for="">KDV TEVFİKATI</label>
+        <br>
+        <input type="radio" name="var_yok" value="var" checked/> Var
+        <input type="radio" name="var_yok" value="yok"/> Yok
       </form>
       <form action="/generate-pdf3" method="post">
         <button type="submit">Yapılan İşler Listesi</button>
@@ -137,7 +67,6 @@
       </form>
       
     </div>
-
 </main>
 </body>
 </html>

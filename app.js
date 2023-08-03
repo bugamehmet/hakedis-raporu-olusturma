@@ -50,7 +50,9 @@ app.get('/generate-pdf/:userId', (req, res) => {
 app.get('/generate-pdf2/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
 	const gecikme = req.session.gecikme;
-	generatePDF2(res, useridInfo, gecikme);
+	const fiyat_farki = req.session.fiyat_farki;
+	const var_yok = req.session.var_yok;
+	generatePDF2(res, useridInfo, gecikme, fiyat_farki, var_yok);
 });
 app.get('/generate-pdf3/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
@@ -208,6 +210,10 @@ app.post('/generate-pdf', (req, res) => {
 app.post('/generate-pdf2', (req, res) => {
 	const x = req.session.userId;
 	const gecikme = req.body.gecikme;
+	const fiyat_farki = req.body.fiyat_farki;
+	const var_yok = req.body.var_yok;
+	req.session.var_yok = var_yok;
+	req.session.fiyat_farki = fiyat_farki;
 	req.session.gecikme = gecikme;
 	connection.query(
 		'select kullanici_id from hakedis_2 where kullanici_id=?',
@@ -284,12 +290,7 @@ function insertHakedis_1(
 	});
 }
 
-function insertHakedis_2(
-	userId,
-	is_adi,
-	sozlesme_bedeli,
-	isin_suresi
-) {
+function insertHakedis_2(userId,is_adi,sozlesme_bedeli,isin_suresi) {
 	return new Promise((resolve, reject) => {
 		connection.query(
 			'INSERT INTO hakedis_2 (kullanici_id, isin_adi, sozlesme_bedeli, is_sure) VALUES (?, ?, ?, ?)',
@@ -509,7 +510,9 @@ function generatePDF(res, useridInfo) {
 	});
 }
 
-function generatePDF2(res, useridInfo, gecikme) {
+
+function generatePDF2(res, useridInfo, gecikme, fark, var_yok) {
+
 	const sql = 'select * from hakedis_2 where kullanici_id=? order by h_id_2 desc limit 1';
 	const params = useridInfo;
 	connection.query(sql, params, (error, results) => {
@@ -525,18 +528,24 @@ function generatePDF2(res, useridInfo, gecikme) {
     let no1 = results[0].no;
     let B_fiyat_farki = results[0].B_fiyat_farki;
 
+		let x_h_fiyat_farki = parseInt(fark);
+    let x_i_para_cezasi = parseInt(gecikme);
+
     let x_E_hakedis_tutari = sozlesme_bedeli / isin_suresi;
     let x_F_kdv_20 = (x_E_hakedis_tutari * 20) / 100;
     let x_G_tahakkuk_tutari = x_E_hakedis_tutari + x_F_kdv_20;
-    let x_h_fiyat_farki = x_G_tahakkuk_tutari * 0.06;
-    let x_c_kdv_tev =x_F_kdv_20 * 0.7;
+
     let x_A_soz_tutari = x_E_hakedis_tutari * (no1);
     let x_C_toplam = x_A_soz_tutari + B_fiyat_farki;
     let x_D_onceki_toplam = x_E_hakedis_tutari * (no1 - 1);
-    let x_i_para_cezasi = (sozlesme_bedeli*0.001)*(gecikme);
+
+		let x_c_kdv_tev =0;
+		if (var_yok === 'var') {
+			x_c_kdv_tev = x_F_kdv_20 * 0.7;
+	}
     let x_H_kesintiler = x_c_kdv_tev + x_h_fiyat_farki + x_i_para_cezasi;
     let x_I_odenecek_tutar = x_G_tahakkuk_tutari - x_H_kesintiler;
-
+	
 		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
 
     progressFrame();
