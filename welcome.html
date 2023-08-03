@@ -51,14 +51,18 @@
       <form action="/generate-pdf2" method="post">
         <button type="submit">Hakediş Raporu</button>
           <br><br>
+          <input type="text" id="hakedis_tutari" name="hakedis_tutari" placeholder="HAKEDİŞ TUTARI" required/>
+          <br>
           <input type="text" id="fiyat_farki" name="fiyat_farki" placeholder="Fiyat Farkı" required/>  
         <br>
         <input type="text" id="gecikme" name="gecikme" placeholder="Para Cezası" required/>
+        <br>
         <label for="">KDV TEVFİKATI</label>
         <br>
-        <input type="radio" name="var_yok" value="var" checked/> Var
+        <input type="radio" name="var_yok" value="var"/> Var
         <input type="radio" name="var_yok" value="yok"/> Yok
       </form>
+      
       <form action="/generate-pdf3" method="post">
         <button type="submit">Yapılan İşler Listesi</button>
       </form>

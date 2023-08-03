@@ -52,7 +52,8 @@ app.get('/generate-pdf2/:userId', (req, res) => {
 	const gecikme = req.session.gecikme;
 	const fiyat_farki = req.session.fiyat_farki;
 	const var_yok = req.session.var_yok;
-	generatePDF2(res, useridInfo, gecikme, fiyat_farki, var_yok);
+	const hakedis_tutari = req.session.hakedis_tutari;
+	generatePDF2(res, useridInfo, gecikme, fiyat_farki, var_yok, hakedis_tutari);
 });
 app.get('/generate-pdf3/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
@@ -212,6 +213,8 @@ app.post('/generate-pdf2', (req, res) => {
 	const gecikme = req.body.gecikme;
 	const fiyat_farki = req.body.fiyat_farki;
 	const var_yok = req.body.var_yok;
+	const hakedis_tutari = req.body.hakedis_tutari;
+	req.session.hakedis_tutari = hakedis_tutari;
 	req.session.var_yok = var_yok;
 	req.session.fiyat_farki = fiyat_farki;
 	req.session.gecikme = gecikme;
@@ -511,7 +514,7 @@ function generatePDF(res, useridInfo) {
 }
 
 
-function generatePDF2(res, useridInfo, gecikme, fark, var_yok) {
+function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari) {
 
 	const sql = 'select * from hakedis_2 where kullanici_id=? order by h_id_2 desc limit 1';
 	const params = useridInfo;
@@ -528,10 +531,12 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok) {
     let no1 = results[0].no;
     let B_fiyat_farki = results[0].B_fiyat_farki;
 
+		console.log(hakedis_tutari);
 		let x_h_fiyat_farki = parseInt(fark);
     let x_i_para_cezasi = parseInt(gecikme);
+		//let x_hakedis_tutari = parseInt(hakedis_tutari);
 
-    let x_E_hakedis_tutari = sozlesme_bedeli / isin_suresi;
+    let x_E_hakedis_tutari = parseInt(hakedis_tutari);
     let x_F_kdv_20 = (x_E_hakedis_tutari * 20) / 100;
     let x_G_tahakkuk_tutari = x_E_hakedis_tutari + x_F_kdv_20;
 
