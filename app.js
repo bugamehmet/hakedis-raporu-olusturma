@@ -31,9 +31,9 @@ app.get('/', (req, res) => {
 app.get('/register', (req, res) => {
 	res.sendFile(__dirname + '/register.html');
 });
-app.get('/welcome/:userId', (req, res) => {
-	res.sendFile(__dirname + '/welcome.html');
-});
+app.get('/login/:userId', (req, res)=>{
+	res.sendFile(__dirname + '/login.html');
+})
 app.get('/logout', (req, res) => {
 	req.session.destroy((err) => {
 		if (err) {
@@ -42,7 +42,9 @@ app.get('/logout', (req, res) => {
 		res.redirect('/');
 	});
 });
-
+app.get('/welcome/:userId', (req, res) => {
+	res.sendFile(__dirname + '/welcome.html');
+});
 app.get('/generate-pdf/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
 	generatePDF(res, useridInfo);
@@ -72,7 +74,7 @@ app.post('/', (req, res) => {
 				// Kullanıcı adı ve şifre doğru, kullanıcı kimliğini alalım
 				const userId = results[0].userId;
 				req.session.userId = userId;
-				res.redirect(`/welcome/${userId}`);
+				res.redirect(`/login/${userId}`);
 			} else {
 				res.redirect('/');
 			}
@@ -106,7 +108,6 @@ app.post('/register', (req, res) => {
 		}
 	);
 });
-
 let date = new Date();
 let gun = date.getDate();
 let ay = date.getMonth() + 1;
@@ -128,6 +129,12 @@ function ayx() {
 
 app.post('/welcome', async (req, res) => {
 	const userId = req.session.userId;
+	const source = req.body.source;
+
+  if (source === 'login') {
+    res.redirect(`/welcome/${userId}`);
+    return;
+  }
 	let uygulama_yili = yil;
 	let tarih = `${gunx(gun)}.${ayx(ay)}.${yil}`;
 	let is_adi = req.body.is_adi;
@@ -140,22 +147,8 @@ app.post('/welcome', async (req, res) => {
 	let isyeri_teslim_tarihi = req.body.isyeri_teslim_tarihi;
 	let isin_suresi = req.body.isin_suresi;
 	let is_bitim_tarihi = req.body.is_bitim_tarihi;
-
 	let Gas = sozlesme_bedeli / isin_suresi;
 	let Cas = Gas;
-
-	//let E_hakedis_tutari = sozlesme_bedeli / isin_suresi;
-	//let F_kdv_20 = (E_hakedis_tutari * 20) / 100;
-	//let G_tahakkuk_tutari = E_hakedis_tutari + F_kdv_20;
-	//let h_fiyat_farki = G_tahakkuk_tutari * 0.06;
-	//let c_kdv_tev = F_kdv_20 * 0.7;
-	//let A_soz_tutari = E_hakedis_tutari;
-	//let B_fiyat_farki = 0;
-	//let C_toplam = A_soz_tutari + B_fiyat_farki;
-	//let D_onceki_toplam = E_hakedis_tutari * 0;
-	//let i_para_cezasi = (sozlesme_bedeli * 0.001) * gecikme;
-	//let H_kesintiler = c_kdv_tev + h_fiyat_farki + i_para_cezasi;
-	//let I_odenecek_tutar = G_tahakkuk_tutari - H_kesintiler;
 
 	try {
 		await insertHakedis_1(
