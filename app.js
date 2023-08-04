@@ -31,9 +31,9 @@ app.get('/', (req, res) => {
 app.get('/register', (req, res) => {
 	res.sendFile(__dirname + '/register.html');
 });
-app.get('/login/:userId', (req, res)=>{
+app.get('/login/:userId', (req, res) => {
 	res.sendFile(__dirname + '/login.html');
-})
+});
 app.get('/logout', (req, res) => {
 	req.session.destroy((err) => {
 		if (err) {
@@ -59,7 +59,8 @@ app.get('/generate-pdf2/:userId', (req, res) => {
 });
 app.get('/generate-pdf3/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
-	generatePDF3(res, useridInfo);
+	const hakedis_tutari_2 = req.session.hakedis_tutari_2;
+	generatePDF3(res, useridInfo, hakedis_tutari_2);
 });
 
 app.post('/', (req, res) => {
@@ -131,10 +132,10 @@ app.post('/welcome', async (req, res) => {
 	const userId = req.session.userId;
 	const source = req.body.source;
 
-  if (source === 'login') {
-    res.redirect(`/welcome/${userId}`);
-    return;
-  }
+	if (source === 'login') {
+		res.redirect(`/welcome/${userId}`);
+		return;
+	}
 	let uygulama_yili = yil;
 	let tarih = `${gunx(gun)}.${ayx(ay)}.${yil}`;
 	let is_adi = req.body.is_adi;
@@ -147,8 +148,6 @@ app.post('/welcome', async (req, res) => {
 	let isyeri_teslim_tarihi = req.body.isyeri_teslim_tarihi;
 	let isin_suresi = req.body.isin_suresi;
 	let is_bitim_tarihi = req.body.is_bitim_tarihi;
-	let Gas = sozlesme_bedeli / isin_suresi;
-	let Cas = Gas;
 
 	try {
 		await insertHakedis_1(
@@ -167,14 +166,9 @@ app.post('/welcome', async (req, res) => {
 			is_bitim_tarihi
 		);
 
-		await insertHakedis_2(
-			userId,
-			is_adi,
-			sozlesme_bedeli,
-			isin_suresi
-		);
+		await insertHakedis_2(userId, is_adi, sozlesme_bedeli, isin_suresi);
 
-		await insertHakedis_3(userId, is_adi, sozlesme_bedeli, isin_suresi, Gas, Cas);
+		await insertHakedis_3(userId, is_adi, sozlesme_bedeli, isin_suresi);
 
 		console.log('Veriler başarıyla eklendi');
 		res.redirect(`/welcome/${userId}`);
@@ -227,6 +221,8 @@ app.post('/generate-pdf2', (req, res) => {
 });
 app.post('/generate-pdf3', (req, res) => {
 	const x = req.session.userId;
+	const hakedis_tutari_2 = req.body.hakedis_tutari_2;
+	req.session.hakedis_tutari_2 = hakedis_tutari_2;
 	connection.query(
 		'select kullanici_id from hakedis_3 where kullanici_id=?',
 		[x],
@@ -286,16 +282,11 @@ function insertHakedis_1(
 	});
 }
 
-function insertHakedis_2(userId,is_adi,sozlesme_bedeli,isin_suresi) {
+function insertHakedis_2(userId, is_adi, sozlesme_bedeli, isin_suresi) {
 	return new Promise((resolve, reject) => {
 		connection.query(
 			'INSERT INTO hakedis_2 (kullanici_id, isin_adi, sozlesme_bedeli, is_sure) VALUES (?, ?, ?, ?)',
-			[
-				userId,
-				is_adi,
-				sozlesme_bedeli,
-				isin_suresi
-			],
+			[userId, is_adi, sozlesme_bedeli, isin_suresi],
 			function (error, results, fields) {
 				if (error) {
 					reject(error);
@@ -307,11 +298,11 @@ function insertHakedis_2(userId,is_adi,sozlesme_bedeli,isin_suresi) {
 	});
 }
 
-function insertHakedis_3(userId, is_adi, sozlesme_bedeli, isin_suresi, Gas, Cas) {
+function insertHakedis_3(userId, is_adi, sozlesme_bedeli, isin_suresi) {
 	return new Promise((resolve, reject) => {
 		connection.query(
-			'INSERT INTO hakedis_3 (kullanici_id, isin_adi, sozlesme_bedeli, isin_suresi, Gas, Cas) VALUES (?, ?, ?, ?, ?, ?)',
-			[userId, is_adi, sozlesme_bedeli, isin_suresi, Gas, Cas],
+			'INSERT INTO hakedis_3 (kullanici_id, isin_adi, sozlesme_bedeli, isin_suresi) VALUES (?, ?, ?, ?)',
+			[userId, is_adi, sozlesme_bedeli, isin_suresi],
 			function (error, results, fields) {
 				if (error) {
 					reject(error);
@@ -506,10 +497,8 @@ function generatePDF(res, useridInfo) {
 	});
 }
 
-
 function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari) {
-
-	const sql = 'select * from hakedis_2 where kullanici_id=? order by h_id_2 desc limit 1';
+	const sql = 'select * from hakedis_2 where kullanici_id=? order by h_id_2 desc';
 	const params = useridInfo;
 	connection.query(sql, params, (error, results) => {
 		if (error) {
@@ -517,42 +506,38 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari) {
 			res.status(500).send('Veritabanı hatası');
 			return;
 		}
-    const kul_id1 = results[0].kullanici_id;
-    let sozlesme_bedeli = results[0].sozlesme_bedeli;
-    let isin_suresi = results[0].is_sure;
-		let is_adi = results[0].isin_adi;
-    let no1 = results[0].no;
-    let B_fiyat_farki = results[0].B_fiyat_farki;
-
-		console.log(hakedis_tutari);
 		let x_h_fiyat_farki = parseInt(fark);
-    let x_i_para_cezasi = parseInt(gecikme);
-		//let x_hakedis_tutari = parseInt(hakedis_tutari);
+		let x_i_para_cezasi = parseInt(gecikme);
+		let x_E_hakedis_tutari = parseInt(hakedis_tutari);
+		let db_toplam = results.map(item => item.E_hakedis_tutari).reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+		let toplam = parseInt(db_toplam) + parseInt(hakedis_tutari);
 
-    let x_E_hakedis_tutari = parseInt(hakedis_tutari);
-    let x_F_kdv_20 = (x_E_hakedis_tutari * 20) / 100;
-    let x_G_tahakkuk_tutari = x_E_hakedis_tutari + x_F_kdv_20;
+		const kul_id1 = results[0].kullanici_id;
+		let sozlesme_bedeli = results[0].sozlesme_bedeli;
+		let isin_suresi = results[0].is_sure;
+		let is_adi = results[0].isin_adi;
+		let x_F_kdv_20 = (x_E_hakedis_tutari * 20) / 100;
+		let x_G_tahakkuk_tutari = x_E_hakedis_tutari + x_F_kdv_20;
+		let x_A_soz_tutari = toplam;
+		let x_C_toplam = x_A_soz_tutari;
+		let x_D_onceki_toplam = db_toplam;
 
-    let x_A_soz_tutari = x_E_hakedis_tutari * (no1);
-    let x_C_toplam = x_A_soz_tutari + B_fiyat_farki;
-    let x_D_onceki_toplam = x_E_hakedis_tutari * (no1 - 1);
-
-		let x_c_kdv_tev =0;
+		let x_c_kdv_tev = 0;
 		if (var_yok === 'var') {
 			x_c_kdv_tev = x_F_kdv_20 * 0.7;
-	}
-    let x_H_kesintiler = x_c_kdv_tev + x_h_fiyat_farki + x_i_para_cezasi;
-    let x_I_odenecek_tutar = x_G_tahakkuk_tutari - x_H_kesintiler;
-	
+		}
+		let x_H_kesintiler = x_c_kdv_tev + x_h_fiyat_farki + x_i_para_cezasi;
+		let x_I_odenecek_tutar = x_G_tahakkuk_tutari - x_H_kesintiler;
+
 		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
 
-    progressFrame();
+		progressFrame();
 		progressHeader();
 		progressMiddle();
 		progressFooter();
-    updateData2();
+		updateData2();
 
-    function progressFrame() {
+		function progressFrame() {
 			const frameX = 15; // Çerçevenin sol kenarının X koordinatı
 			const frameY = 50; // Çerçevenin üst kenarının Y koordinatı
 			const frameWidth = 570; // Çerçevenin genişliği
@@ -755,16 +740,15 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari) {
 				.text('|makam2|', 475, 705)
 				.text('|makam1|', 265, 765);
 		}
-    function updateData2() {
+		function updateData2() {
 
-			let sql = `INSERT INTO haz_hakedis_2 (kullanici_id, isin_adi, sozlesme_bedeli, is_sure, A_soz_tutari, B_fiyat_farki, C_toplam, D_onceki_toplam, E_hakedis_tutari, F_kdv_20, G_tahakkuk_tutari, c_kdv_tev, H_kesintiler, I_odenecek_tutar, h_fiyat_farki, i_para_cezasi)VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+			let sql = `INSERT INTO haz_hakedis_2 (kullanici_id, isin_adi, sozlesme_bedeli, is_sure, A_soz_tutari, C_toplam, D_onceki_toplam, E_hakedis_tutari, F_kdv_20, G_tahakkuk_tutari, c_kdv_tev, H_kesintiler, I_odenecek_tutar, h_fiyat_farki, i_para_cezasi)VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 			let values = [
 				kul_id1,
 				is_adi,
 				sozlesme_bedeli,
 				isin_suresi,
 				x_A_soz_tutari,
-				B_fiyat_farki,
 				x_C_toplam,
 				x_D_onceki_toplam,
 				x_E_hakedis_tutari,
@@ -774,7 +758,7 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari) {
 				x_H_kesintiler,
 				x_I_odenecek_tutar,
 				x_h_fiyat_farki,
-        x_i_para_cezasi
+				x_i_para_cezasi,
 			];
 			connection.query(sql, values, (err, result) => {
 				if (err) throw err;
@@ -790,7 +774,7 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari) {
 	});
 }
 
-function generatePDF3(res, useridInfo) {
+function generatePDF3(res, useridInfo, hakedis_tutari_2) {
 	const sql = 'select * from hakedis_3 where kullanici_id=? order by h_id_3 desc';
 	const params = useridInfo;
 	connection.query(sql, params, (error, results) => {
@@ -799,6 +783,21 @@ function generatePDF3(res, useridInfo) {
 			res.status(500).send('Veritabanı hatası');
 			return;
 		}
+		let sozlesme_bedeli = results[0].sozlesme_bedeli;
+		let isin_suresi = results[0].isin_suresi;
+		let is_adi = results[0].isin_adi;
+
+		let lastIndex = results.length - 1;
+		let kul_id = results[lastIndex].kullanici_id;
+		let soz_bed = results[lastIndex].sozlesme_bedeli;
+		let is_sure = results[lastIndex].isin_suresi;
+		let Gas = soz_bed / is_sure;
+		let Bas = results[lastIndex].Bas + 1;
+		let Cas = Bas * Gas;
+		let Das = results[lastIndex].Das + 1;
+		let Eas = Gas * Das;
+		let Fas = Bas - Das;
+
 		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
 		doc.page.dictionary.data.Rotate = 90;
 
@@ -957,20 +956,7 @@ function generatePDF3(res, useridInfo) {
 				.text('|dismakamtarih1|', 245, 390);
 		}
 		function updateData3() {
-			let lastIndex = results.length - 1;
-			let kul_id = results[lastIndex].kullanici_id;
-			let is_ad = results[lastIndex].isin_adi;
-			let soz_bed = results[lastIndex].sozlesme_bedeli;
-			let is_sure = results[lastIndex].isin_suresi;
-			let Gas = soz_bed / is_sure;
-			let Bas = results[lastIndex].Bas + 1;
-			let Cas = Bas * Gas;
-			let Das = results[lastIndex].Das + 1;
-			let Eas = Gas * Das;
-			let Fas = Bas - Das;
-
-			let sql = `INSERT INTO haz_hakedis_3_update (kullanici_id, isin_adi, sozlesme_bedeli, isin_suresi, Gas, Bas, Cas, Das, Eas, Fas)
-						 VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+			let sql = `INSERT INTO haz_hakedis_3_update (kullanici_id, isin_adi, sozlesme_bedeli, isin_suresi, Gas, Bas, Cas, Das, Eas, Fas) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 			let values = [kul_id, is_ad, soz_bed, is_sure, Gas, Bas, Cas, Das, Eas, Fas];
 			connection.query(sql, values, (err, result) => {
 				if (err) throw err;
