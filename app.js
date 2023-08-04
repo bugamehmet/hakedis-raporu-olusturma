@@ -75,7 +75,7 @@ app.post('/', (req, res) => {
 				// Kullanıcı adı ve şifre doğru, kullanıcı kimliğini alalım
 				const userId = results[0].userId;
 				req.session.userId = userId;
-				res.redirect(`/login/${userId}`);
+				res.redirect(`/welcome/${userId}`);
 			} else {
 				res.redirect('/');
 			}
@@ -785,9 +785,7 @@ function generatePDF3(res, useridInfo, hakedis_tutari_2) {
 			return;
 		}
 		let x_hakedis_tutari_2 = parseInt(hakedis_tutari_2);
-		let db_toplam = results
-			.map((item) => item.Gas)
-			.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+		let db_toplam = results.map((item) => item.Gas).reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 		let toplam = parseInt(db_toplam) + x_hakedis_tutari_2;
 		console.log(db_toplam, x_hakedis_tutari_2, toplam);
 		//let lastIndex = results.length - 1;
@@ -918,8 +916,8 @@ function generatePDF3(res, useridInfo, hakedis_tutari_2) {
 		}
 		function Information() {
 			let x = 0;
-			results.reverse().forEach((e, index) => {
-				if (index !== 0) {
+			results.reverse().forEach((e) => {
+			
 					rowInformation(95 + x);
 					lineInformation(93 + x, -110, 106 + x, -110);
 					lineInformation(93 + x, 200, 106 + x, 200);
@@ -930,17 +928,17 @@ function generatePDF3(res, useridInfo, hakedis_tutari_2) {
 					lineInformation(93 + x, 550, 106 + x, 550);
 					lineInformation(93 + x, 600, 106 + x, 600);
 					doc
-						.text(`${e.no-1}`, -125, 97 + x)
+						.text(`${e.no - 1}`, -125, 97 + x)
 						.text(`${e.isin_adi}`, -107, 97 + x)
 						.text(`${para(e.sozlesme_bedeli)}`, 220, 97 + x)
-						.text(`${e.Bas-1}`, 300, 97 + x)
+						.text(`${e.Bas - 1}`, 300, 97 + x)
 						.text(`${para(e.Cas)}`, 360, 97 + x)
-						.text(`${e.Das-1}`, 425, 97 + x)
+						.text(`${e.Das - 1}`, 425, 97 + x)
 						.text(`${para(e.Eas)}`, 490, 97 + x)
 						.text(`${e.Fas}`, 557, 97 + x, { width: 100 })
 						.text(`${para(e.Gas)}`, 615, 97 + x);
 					x = x + 11;
-				}
+				
 			});
 		}
 		function footer() {
