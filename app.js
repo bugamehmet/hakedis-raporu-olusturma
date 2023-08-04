@@ -509,7 +509,9 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari) {
 		let x_h_fiyat_farki = parseInt(fark);
 		let x_i_para_cezasi = parseInt(gecikme);
 		let x_E_hakedis_tutari = parseInt(hakedis_tutari);
-		let db_toplam = results.map(item => item.E_hakedis_tutari).reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+		let db_toplam = results
+			.map((item) => item.E_hakedis_tutari)
+			.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 		let toplam = parseInt(db_toplam) + parseInt(hakedis_tutari);
 
 		const kul_id1 = results[0].kullanici_id;
@@ -741,7 +743,6 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari) {
 				.text('|makam1|', 265, 765);
 		}
 		function updateData2() {
-
 			let sql = `INSERT INTO haz_hakedis_2 (kullanici_id, isin_adi, sozlesme_bedeli, is_sure, A_soz_tutari, C_toplam, D_onceki_toplam, E_hakedis_tutari, F_kdv_20, G_tahakkuk_tutari, c_kdv_tev, H_kesintiler, I_odenecek_tutar, h_fiyat_farki, i_para_cezasi)VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 			let values = [
 				kul_id1,
@@ -783,19 +784,23 @@ function generatePDF3(res, useridInfo, hakedis_tutari_2) {
 			res.status(500).send('Veritabanı hatası');
 			return;
 		}
-		let sozlesme_bedeli = results[0].sozlesme_bedeli;
-		let isin_suresi = results[0].isin_suresi;
-		let is_adi = results[0].isin_adi;
+		let x_hakedis_tutari_2 = parseInt(hakedis_tutari_2);
+		let db_toplam = results
+			.map((item) => item.Gas)
+			.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+		let toplam = parseInt(db_toplam) + x_hakedis_tutari_2;
+		console.log(db_toplam, x_hakedis_tutari_2, toplam);
+		//let lastIndex = results.length - 1;
+		let kul_id = results[0].kullanici_id;
+		let is_ad = results[0].isin_adi;
+		let soz_bed = results[0].sozlesme_bedeli;
+		let is_sure = results[0].isin_suresi;
 
-		let lastIndex = results.length - 1;
-		let kul_id = results[lastIndex].kullanici_id;
-		let soz_bed = results[lastIndex].sozlesme_bedeli;
-		let is_sure = results[lastIndex].isin_suresi;
-		let Gas = soz_bed / is_sure;
-		let Bas = results[lastIndex].Bas + 1;
-		let Cas = Bas * Gas;
-		let Das = results[lastIndex].Das + 1;
-		let Eas = Gas * Das;
+		let Gas = x_hakedis_tutari_2;
+		let Bas = results[0].Bas + 1;
+		let Cas = toplam;
+		let Das = results[0].Das + 1;
+		let Eas = db_toplam;
 		let Fas = Bas - Das;
 
 		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
@@ -900,7 +905,7 @@ function generatePDF3(res, useridInfo, hakedis_tutari_2) {
 				.fontSize('6')
 				.text('Sayfa No: 1', 507, 44)
 				.text('Hakediş No:', 575, 44)
-				.text(`${results[0].no}`, 612, 44)
+				.text(`${results[0].no - 1}`, 612, 44)
 				.text('Sıra No', -125, 67, { width: 15, align: 'left' })
 				.text('İşin Tanımı', 33, 72)
 				.text('Sözleşme Bedeli', 220, 72)
@@ -913,27 +918,29 @@ function generatePDF3(res, useridInfo, hakedis_tutari_2) {
 		}
 		function Information() {
 			let x = 0;
-			results.reverse().forEach((e) => {
-				rowInformation(95 + x);
-				lineInformation(93 + x, -110, 106 + x, -110);
-				lineInformation(93 + x, 200, 106 + x, 200);
-				lineInformation(93 + x, 285, 106 + x, 285);
-				lineInformation(93 + x, 345, 106 + x, 345);
-				lineInformation(93 + x, 420, 106 + x, 420);
-				lineInformation(93 + x, 485, 106 + x, 485);
-				lineInformation(93 + x, 550, 106 + x, 550);
-				lineInformation(93 + x, 600, 106 + x, 600);
-				doc
-					.text(`${e.no}`, -125, 97 + x)
-					.text(`${e.isin_adi}`, -107, 97 + x)
-					.text(`${para(e.sozlesme_bedeli)}`, 220, 97 + x)
-					.text(`${e.Bas}`, 300, 97 + x)
-					.text(`${para(e.Cas)}`, 360, 97 + x)
-					.text(`${e.Das}`, 425, 97 + x)
-					.text(`${para(e.Eas)}`, 490, 97 + x)
-					.text(`${e.Fas}`, 557, 97 + x, { width: 100 })
-					.text(`${para(e.Gas)}`, 615, 97 + x);
-				x = x + 11;
+			results.reverse().forEach((e, index) => {
+				if (index !== 0) {
+					rowInformation(95 + x);
+					lineInformation(93 + x, -110, 106 + x, -110);
+					lineInformation(93 + x, 200, 106 + x, 200);
+					lineInformation(93 + x, 285, 106 + x, 285);
+					lineInformation(93 + x, 345, 106 + x, 345);
+					lineInformation(93 + x, 420, 106 + x, 420);
+					lineInformation(93 + x, 485, 106 + x, 485);
+					lineInformation(93 + x, 550, 106 + x, 550);
+					lineInformation(93 + x, 600, 106 + x, 600);
+					doc
+						.text(`${e.no-1}`, -125, 97 + x)
+						.text(`${e.isin_adi}`, -107, 97 + x)
+						.text(`${para(e.sozlesme_bedeli)}`, 220, 97 + x)
+						.text(`${e.Bas-1}`, 300, 97 + x)
+						.text(`${para(e.Cas)}`, 360, 97 + x)
+						.text(`${e.Das-1}`, 425, 97 + x)
+						.text(`${para(e.Eas)}`, 490, 97 + x)
+						.text(`${e.Fas}`, 557, 97 + x, { width: 100 })
+						.text(`${para(e.Gas)}`, 615, 97 + x);
+					x = x + 11;
+				}
 			});
 		}
 		function footer() {
