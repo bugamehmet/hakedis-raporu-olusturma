@@ -536,7 +536,7 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari) {
 
 		function progressFrame() {
 			const frameX = 15; // Çerçevenin sol kenarının X koordinatı
-			const frameY = 50; // Çerçevenin üst kenarının Y koordinatı
+			const frameY = 30; // Çerçevenin üst kenarının Y koordinatı
 			const frameWidth = 570; // Çerçevenin genişliği
 			const frameHeight = 750; // Çerçevenin yüksekliği
 			const frameThickness = 1.3; // Çerçevenin kalınlığı piksel cinsinden
@@ -581,60 +581,61 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari) {
 			return formattedNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺';
 		}
 		function progressHeader() {
+			progressRow(doc, 65);
 			progressRow(doc, 85);
 			progressRow(doc, 105);
-			progressRow(doc, 125);
+			progressRow(doc, 130);
 			progressRow(doc, 150);
 			progressRow(doc, 170);
 			progressRow(doc, 190);
-			progressRow(doc, 210);
 
 			doc
 				.font('Roboto-Bold.ttf')
-				.text('HAKEDİŞ RAPORU', { align: 'center' })
+				.text('HAKEDİŞ RAPORU', 65, 10,{ align: 'center' })
 				.fontSize('9')
-				.text(`${results[0].isin_adi}`, 25, 60, { align: 'left' })
+				.text(`${results[0].isin_adi}`, 25, 40, { align: 'left' })
 
 				.font('Roboto-Bold')
-				.text(`${para(x_A_soz_tutari)}`, 455, 90, { align: 'left' })
-				.text('C', 25, 130)
-				.text('Toplam Tutar ( A + B )', 45, 130)
-				.text(`${para(x_C_toplam)}`, 455, 130, { align: 'left' })
-				.text(`${para(x_D_onceki_toplam)}`, 455, 155, { align: 'left' })
-				.text(`${para(x_E_hakedis_tutari)}`, 455, 175, { align: 'left' })
-				.text(`${para(x_F_kdv_20)}`, 455, 195, { align: 'left' })
-				.text('G', 25, 215)
-				.text('Tahakkuk Tutarı', 45, 215)
-				.text(`${para(x_G_tahakkuk_tutari)}`, 455, 215, { align: 'left' })
+				.text(`${para(x_A_soz_tutari)}`, 455, 70, { align: 'left' })
+				.text('C', 25, 110)
+				.text('Toplam Tutar ( A + B )', 45, 110)
+				.text(`${para(x_C_toplam)}`, 455, 110, { align: 'left' })
+				.text(`${para(x_D_onceki_toplam)}`, 455, 135, { align: 'left' })
+				.text(`${para(x_E_hakedis_tutari)}`, 455, 155, { align: 'left' })
+				.text(`${para(x_F_kdv_20)}`, 455, 175, { align: 'left' })
+				.text('G', 25, 195)
+				.text('Tahakkuk Tutarı', 45, 195)
+				.text(`${para(x_G_tahakkuk_tutari)}`, 455, 195, { align: 'left' })
 				.font('Roboto.ttf')
 				.fontSize('9')
-				.text('Sayfa No :', 452, 55)
-				.text('1', 562, 55)
-				.text('Hakediş No :', 452, 70)
-				.text(`${results[0].no}`, 562, 70, { width: '100' })
+				.text('Sayfa No :', 452, 35)
+				.text('1', 562, 35)
+				.text('Hakediş No :', 452, 50)
+				.text(`${results[0].no}`, 562, 50, { width: '100' })
 				.fontSize('9')
-				.text('A', 25, 90)
-				.text('Sözleşme Fiyatları ile Yapılan Hizmet Tutarı', 45, 90)
-				.text('B', 25, 110)
-				.text('Fiyat Farkı Tutarı', 45, 110)
-				.text(`${para(results[0].B_fiyat_farki)}`, 455, 110, { align: 'left' })
-				.text('D', 25, 155)
-				.text('Bir Önceki Hakedişin Toplam Tutarı', 45, 155)
-				.text('E', 25, 175)
-				.text('Bu Hakedişin Tutarı', 45, 175)
-				.text('F', 25, 195)
-				.text('KDV ( E x %20 )', 45, 195);
+				.text('A', 25, 70)
+				.text('Sözleşme Fiyatları ile Yapılan Hizmet Tutarı', 45, 70)
+				.text('B', 25, 90)
+				.text('Fiyat Farkı Tutarı', 45, 90)
+				.text(`${para(results[0].B_fiyat_farki)}`, 455, 90, { align: 'left' })
+				.text('D', 25, 135)
+				.text('Bir Önceki Hakedişin Toplam Tutarı', 45, 135)
+				.text('E', 25, 155)
+				.text('Bu Hakedişin Tutarı', 45, 155)
+				.text('F', 25, 175)
+				.text('KDV ( E x %20 )', 45, 175);
 
 			doc // SOL DİK
 				.lineCap('butt')
-				.moveTo(40, 85)
-				.lineTo(40, 230)
+				.moveTo(40, 65)
+				.lineTo(40, 210)
 				.lineCap('butt') // SAĞ DİK
-				.moveTo(445, 50)
+				.moveTo(445, 30)
 				.lineTo(445, 450)
 				.stroke();
 		}
 		function progressMiddle() {
+			progressRow2(doc, 210);
 			progressRow2(doc, 230);
 			progressRow2(doc, 250);
 			progressRow2(doc, 270);
@@ -643,11 +644,12 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari) {
 			progressRow2(doc, 330);
 			progressRow2(doc, 350);
 			progressRow2(doc, 370);
-			progressRow2(doc, 390);
+			progressRow2(doc, 390); // YENİ KESİNTİ
+			
 
 			doc
 				.save() // Dökümanın mevcut durumunu kaydet
-				.translate(30, 380) // Başlangıç noktasını ayarla
+				.translate(30, 370) // Başlangıç noktasını ayarla
 				.rotate(-90, { origin: [0, 0] }) // Metni belirli bir açıyla döndür
 				.font('Roboto-Bold.ttf')
 				.fontSize('9')
@@ -656,36 +658,37 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari) {
 
 				.font('Roboto-Bold.ttf')
 				.fontSize('9')
-				.text(`${para(x_c_kdv_tev)}`, 455, 275, { align: 'left' })
-				.text(`${para(x_i_para_cezasi)}`, 455, 395, { align: 'left' })
-				.text(`${para(x_h_fiyat_farki)}`, 455, 375, { align: 'left' })
+				.text(`${para(x_c_kdv_tev)}`, 455, 255, { align: 'left' })
+				.text(`${para(x_i_para_cezasi)}`, 455, 375, { align: 'left' })
+				.text(`${para(x_h_fiyat_farki)}`, 455, 355, { align: 'left' })
 
 				.font('Roboto.ttf')
 				.fontSize('9')
-				.text('a) Gelir/ Kurumlar Vergisi ( E x % .. )', 60, 235)
+				.text('a) Gelir/ Kurumlar Vergisi ( E x % .. )', 60, 215)
+				.text(`${para(results[0].kullanilmayan)}`, 455, 215, { align: 'left' })
+				.text('b) Damga Vergisi ( E - g x % ..)0,00825', 60, 235)
 				.text(`${para(results[0].kullanilmayan)}`, 455, 235, { align: 'left' })
-				.text('b) Damga Vergisi ( E - g x % ..)0,00825', 60, 255)
-				.text(`${para(results[0].kullanilmayan)}`, 455, 255, { align: 'left' })
-				.text('c) KDV Tevfikatı (7/10)', 60, 275)
-				.text('d) Sosyal Sigortalar Kurumu Kesintisi', 60, 295)
+				.text('c) KDV Tevfikatı (7/10)', 60, 255)
+				.text('d) Sosyal Sigortalar Kurumu Kesintisi', 60, 275)
+				.text(`${para(results[0].kullanilmayan)}`, 455, 275, { align: 'left' })
+				.text('e) İdare Makinesi Kiraları', 60, 295)
 				.text(`${para(results[0].kullanilmayan)}`, 455, 295, { align: 'left' })
-				.text('e) İdare Makinesi Kiraları', 60, 315)
+				.text('f) Gecikme Cezası', 60, 315)
 				.text(`${para(results[0].kullanilmayan)}`, 455, 315, { align: 'left' })
-				.text('f) Gecikme Cezası', 60, 335)
+				.text('g) Avans Mahsubu', 60, 335)
 				.text(`${para(results[0].kullanilmayan)}`, 455, 335, { align: 'left' })
-				.text('g) Avans Mahsubu', 60, 355)
-				.text(`${para(results[0].kullanilmayan)}`, 455, 355, { align: 'left' })
-				.text('h) Bu Hakedişle Ödenen Fiyat Farkı Teminat Kesintisi (%6)', 60, 375)
+				.text('h) Bu Hakedişle Ödenen Fiyat Farkı Teminat Kesintisi (%6)', 60, 355)
 				.text(
 					'ı) İdari Para Cezası ( Ekteki 07/02/2023 Tarihli Tutanakta Belirtldiği Üzere )',
 					60,
-					395
-				);
+					375
+				)
+				.text('k) Kesintiler', 60, 395).text(`${para(results[0].kullanilmayan)}`, 455, 395, {align:'left'});
 
 			doc // SOL DİK
 				.lineCap('butt')
 				.moveTo(55, 230)
-				.lineTo(55, 410)
+				.lineTo(55, 390)
 				.stroke();
 		}
 		function progressFooter() {
@@ -693,10 +696,12 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari) {
 			progressRow(doc, 430);
 
 			doc // SOL DİK
+				.lineWidth('1')
 				.lineCap('butt')
 				.moveTo(40, 410)
 				.lineTo(40, 450)
-
+				.stroke();
+				doc
 				.lineWidth('1.5')
 				.lineCap('butt')
 				.moveTo(15, 525)
