@@ -631,9 +631,7 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari) {
 				.text('KDV ( E x %20 )', 45, 195);
 
 			doc // SOL DİK
-				.lineCap('butt')
-				.moveTo(40, 85)
-				.lineTo(40, 230)
+				.lineCap('butt').moveTo(40, 85).lineTo(40, 230)
 				.lineCap('butt') // SAĞ DİK
 				.moveTo(445, 50)
 				.lineTo(445, 450)
@@ -787,8 +785,8 @@ function generatePDF3(res, useridInfo, hakedis_tutari_2) {
 		let x_hakedis_tutari_2 = parseInt(hakedis_tutari_2);
 		let db_toplam = results.map((item) => item.Gas).reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 		let toplam = parseInt(db_toplam) + x_hakedis_tutari_2;
-		console.log(db_toplam, x_hakedis_tutari_2, toplam);
-		//let lastIndex = results.length - 1;
+
+
 		let kul_id = results[0].kullanici_id;
 		let is_ad = results[0].isin_adi;
 		let soz_bed = results[0].sozlesme_bedeli;
@@ -801,9 +799,23 @@ function generatePDF3(res, useridInfo, hakedis_tutari_2) {
 		let Eas = db_toplam;
 		let Fas = Bas - Das;
 
+		function f_Cas(e, toplam) {
+			if (e && typeof e.Cas === "number" && !isNaN(e.Cas)) {
+				return e.Cas;
+			}
+			return toplam;
+		}
+		
+		function f_Gas(e, x_hakedis_tutari_2) {
+			if (e && typeof e.Gas === "number" && !isNaN(e.Gas)) {
+				return e.Gas;
+			}
+			return x_hakedis_tutari_2;
+		}
 		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
 		doc.page.dictionary.data.Rotate = 90;
 
+		
 		generateFrame();
 		header();
 		Information();
@@ -928,15 +940,15 @@ function generatePDF3(res, useridInfo, hakedis_tutari_2) {
 					lineInformation(93 + x, 550, 106 + x, 550);
 					lineInformation(93 + x, 600, 106 + x, 600);
 					doc
-						.text(`${e.no - 1}`, -125, 97 + x)
+						.text(`${e.no }`, -125, 97 + x)
 						.text(`${e.isin_adi}`, -107, 97 + x)
 						.text(`${para(e.sozlesme_bedeli)}`, 220, 97 + x)
-						.text(`${e.Bas - 1}`, 300, 97 + x)
-						.text(`${para(e.Cas)}`, 360, 97 + x)
-						.text(`${e.Das - 1}`, 425, 97 + x)
+						.text(`${e.Bas }`, 300, 97 + x)
+						.text(`${f_Cas(e, toplam)}` ,360, 97 + x)
+						.text(`${e.Das }`, 425, 97 + x)
 						.text(`${para(e.Eas)}`, 490, 97 + x)
 						.text(`${e.Fas}`, 557, 97 + x, { width: 100 })
-						.text(`${para(e.Gas)}`, 615, 97 + x);
+						.text(`${f_Gas(e, x_hakedis_tutari_2)}`, 615, 97 + x);
 					x = x + 11;
 				
 			});
