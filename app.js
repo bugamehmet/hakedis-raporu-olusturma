@@ -55,7 +55,8 @@ app.get('/generate-pdf2/:userId', (req, res) => {
 	const fiyat_farki = req.session.fiyat_farki;
 	const var_yok = req.session.var_yok;
 	const hakedis_tutari = req.session.hakedis_tutari;
-	generatePDF2(res, useridInfo, gecikme, fiyat_farki, var_yok, hakedis_tutari);
+	const kesinti = req.session.kesinti;
+	generatePDF2(res, useridInfo, gecikme, fiyat_farki, var_yok, hakedis_tutari, kesinti);
 });
 app.get('/generate-pdf3/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
@@ -196,6 +197,8 @@ app.post('/generate-pdf2', (req, res) => {
 	const fiyat_farki = req.body.fiyat_farki;
 	const var_yok = req.body.var_yok;
 	const hakedis_tutari = req.body.hakedis_tutari;
+	const kesinti = req.body.kesinti;
+	req.session.kesinti = kesinti;
 	req.session.hakedis_tutari = hakedis_tutari;
 	req.session.var_yok = var_yok;
 	req.session.fiyat_farki = fiyat_farki;
@@ -492,7 +495,7 @@ function generatePDF(res, useridInfo) {
 	});
 }
 
-function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari) {
+function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari, kesinti) {
 	const sql = 'select * from hakedis_2 where kullanici_id=? order by h_id_2 desc';
 	const params = useridInfo;
 	connection.query(sql, params, (error, results) => {
@@ -504,6 +507,7 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari) {
 		let x_h_fiyat_farki = parseInt(fark);
 		let x_i_para_cezasi = parseInt(gecikme);
 		let x_E_hakedis_tutari = parseInt(hakedis_tutari);
+		let x_kesinti = parseInt(kesinti);
 		let db_toplam = results
 			.map((item) => item.E_hakedis_tutari)
 			.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
@@ -523,7 +527,7 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari) {
 		if (var_yok === 'var') {
 			x_c_kdv_tev = x_F_kdv_20 * 0.7;
 		}
-		let x_H_kesintiler = x_c_kdv_tev + x_h_fiyat_farki + x_i_para_cezasi;
+		let x_H_kesintiler = x_c_kdv_tev + x_h_fiyat_farki + x_i_para_cezasi + x_kesinti;
 		let x_I_odenecek_tutar = x_G_tahakkuk_tutari - x_H_kesintiler;
 
 		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
@@ -683,7 +687,7 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari) {
 					60,
 					375
 				)
-				.text('k) Kesintiler', 60, 395).text(`${para(results[0].kullanilmayan)}`, 455, 395, {align:'left'});
+				.text('k) Kesintiler', 60, 395).text(`${para(x_kesinti)}`, 455, 395, {align:'left'});
 
 			doc // SOL DİK
 				.lineCap('butt')
@@ -743,7 +747,7 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari) {
 				.text('|makam1|', 265, 765);
 		}
 		function updateData2() {
-			let sql = `INSERT INTO haz_hakedis_2 (kullanici_id, isin_adi, sozlesme_bedeli, is_sure, A_soz_tutari, C_toplam, D_onceki_toplam, E_hakedis_tutari, F_kdv_20, G_tahakkuk_tutari, c_kdv_tev, H_kesintiler, I_odenecek_tutar, h_fiyat_farki, i_para_cezasi)VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+			let sql = `INSERT INTO haz_hakedis_2 (kullanici_id, isin_adi, sozlesme_bedeli, is_sure, A_soz_tutari, C_toplam, D_onceki_toplam, E_hakedis_tutari, F_kdv_20, G_tahakkuk_tutari, c_kdv_tev, H_kesintiler, I_odenecek_tutar, h_fiyat_farki, i_para_cezasi, k_kesintiler)VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 			let values = [
 				kul_id1,
 				is_adi,
@@ -760,6 +764,7 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari) {
 				x_I_odenecek_tutar,
 				x_h_fiyat_farki,
 				x_i_para_cezasi,
+				x_kesinti
 			];
 			connection.query(sql, values, (err, result) => {
 				if (err) throw err;
