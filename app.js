@@ -47,7 +47,8 @@ app.get('/welcome/:userId', (req, res) => {
 });
 app.get('/generate-pdf/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
-	generatePDF(res, useridInfo);
+	const sirket_id = req.session.sirket_id;
+	generatePDF(res, useridInfo, sirket_id);
 });
 app.get('/generate-pdf2/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
@@ -56,12 +57,14 @@ app.get('/generate-pdf2/:userId', (req, res) => {
 	const var_yok = req.session.var_yok;
 	const hakedis_tutari = req.session.hakedis_tutari;
 	const kesinti = req.session.kesinti;
-	generatePDF2(res, useridInfo, gecikme, fiyat_farki, var_yok, hakedis_tutari, kesinti);
+	const sirket_id = req.session.sirket_id;
+	generatePDF2(res, useridInfo, gecikme, fiyat_farki, var_yok, hakedis_tutari, kesinti, sirket_id);
 });
 app.get('/generate-pdf3/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
 	const hakedis_tutari_2 = req.session.hakedis_tutari_2;
-	generatePDF3(res, useridInfo, hakedis_tutari_2);
+	const sirket_id = req.session.sirket_id;
+	generatePDF3(res, useridInfo, hakedis_tutari_2, sirket_id);
 });
 
 app.post('/', (req, res) => {
@@ -110,6 +113,7 @@ app.post('/register', (req, res) => {
 		}
 	);
 });
+
 let date = new Date();
 let gun = date.getDate();
 let ay = date.getMonth() + 1;
@@ -144,10 +148,12 @@ app.post('/welcome', async (req, res) => {
 	let isyeri_teslim_tarihi = req.body.isyeri_teslim_tarihi;
 	let isin_suresi = req.body.isin_suresi;
 	let is_bitim_tarihi = req.body.is_bitim_tarihi;
+	let sirket_id = req.body.sirket_id;
 
 	try {
 		await insertHakedis_1(
 			userId,
+			sirket_id,
 			uygulama_yili,
 			tarih,
 			is_adi,
@@ -162,12 +168,12 @@ app.post('/welcome', async (req, res) => {
 			is_bitim_tarihi
 		);
 
-		await insertHakedis_2(userId, is_adi, sozlesme_bedeli, isin_suresi);
+		await insertHakedis_2(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi);
 
-		await insertHakedis_3(userId, is_adi, sozlesme_bedeli, isin_suresi);
+		await insertHakedis_3(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi);
 
 		console.log('Veriler başarıyla eklendi');
-		res.redirect(`/welcome/${userId}`);
+		res.redirect(`/welcome/${userId}`); // k_id ya da isin adi
 	} catch (error) {
 		console.log('Veriler eklenirken bir hata oluştu');
 		console.log(error);
@@ -177,6 +183,8 @@ app.post('/welcome', async (req, res) => {
 
 app.post('/generate-pdf', (req, res) => {
 	const x = req.session.userId;
+	const sirket_id = req.body.sirket_id;
+	req.session.sirket_id = sirket_id;
 	connection.query(
 		'select kullanici_id from hakedis_raporu where kullanici_id=?',
 		[x],
@@ -198,11 +206,11 @@ app.post('/generate-pdf2', (req, res) => {
 	const var_yok = req.body.var_yok;
 	const hakedis_tutari = req.body.hakedis_tutari;
 	const kesinti = req.body.kesinti;
+	req.session.gecikme = gecikme;
 	req.session.kesinti = kesinti;
 	req.session.hakedis_tutari = hakedis_tutari;
 	req.session.var_yok = var_yok;
 	req.session.fiyat_farki = fiyat_farki;
-	req.session.gecikme = gecikme;
 	connection.query(
 		'select kullanici_id from hakedis_2 where kullanici_id=?',
 		[x],
@@ -238,6 +246,7 @@ app.post('/generate-pdf3', (req, res) => {
 
 function insertHakedis_1(
 	userId,
+	sirket_id,
 	uygulama_yili,
 	tarih,
 	is_adi,
@@ -253,9 +262,10 @@ function insertHakedis_1(
 ) {
 	return new Promise((resolve, reject) => {
 		connection.query(
-			'INSERT INTO hakedis_raporu (kullanici_id, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+			'INSERT INTO hakedis_raporu (kullanici_id, s_id, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 			[
 				userId,
+				sirket_id,
 				uygulama_yili,
 				tarih,
 				is_adi,
@@ -280,11 +290,11 @@ function insertHakedis_1(
 	});
 }
 
-function insertHakedis_2(userId, is_adi, sozlesme_bedeli, isin_suresi) {
+function insertHakedis_2(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi) {
 	return new Promise((resolve, reject) => {
 		connection.query(
-			'INSERT INTO hakedis_2 (kullanici_id, isin_adi, sozlesme_bedeli, is_sure) VALUES (?, ?, ?, ?)',
-			[userId, is_adi, sozlesme_bedeli, isin_suresi],
+			'INSERT INTO hakedis_2 (kullanici_id, s_id, isin_adi, sozlesme_bedeli, is_sure) VALUES (?, ?, ?, ?, ?)',
+			[userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi],
 			function (error, results, fields) {
 				if (error) {
 					reject(error);
@@ -296,11 +306,11 @@ function insertHakedis_2(userId, is_adi, sozlesme_bedeli, isin_suresi) {
 	});
 }
 
-function insertHakedis_3(userId, is_adi, sozlesme_bedeli, isin_suresi) {
+function insertHakedis_3(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi) {
 	return new Promise((resolve, reject) => {
 		connection.query(
-			'INSERT INTO hakedis_3 (kullanici_id, isin_adi, sozlesme_bedeli, isin_suresi) VALUES (?, ?, ?, ?)',
-			[userId, is_adi, sozlesme_bedeli, isin_suresi],
+			'INSERT INTO hakedis_3 (kullanici_id, s_id, isin_adi, sozlesme_bedeli, isin_suresi) VALUES (?, ?, ?, ?, ?)',
+			[userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi],
 			function (error, results, fields) {
 				if (error) {
 					reject(error);
@@ -312,9 +322,9 @@ function insertHakedis_3(userId, is_adi, sozlesme_bedeli, isin_suresi) {
 	});
 }
 
-function generatePDF(res, useridInfo) {
-	const sql = 'SELECT * FROM hakedis_raporu WHERE kullanici_id = ? ORDER BY h_id DESC LIMIT 1';
-	const params = useridInfo;
+function generatePDF(res, useridInfo, sirket_id) {
+	const sql = 'SELECT * FROM hakedis_raporu WHERE kullanici_id = ? AND s_id = ? ORDER BY h_id DESC LIMIT 1';
+	const params = [useridInfo, sirket_id];
 	connection.query(sql, params, (error, results) => {
 		if (error) {
 			console.log('Veritabanı hatası:', error);
@@ -466,11 +476,12 @@ function generatePDF(res, useridInfo) {
 		function updateData() {
 			const sqlInsert = `
 			INSERT INTO hakedis_raporu 
-			(kullanici_id,  uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi) 
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			(kullanici_id, s_id,  uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi) 
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		`;
 			const insertParams = [
 				results[0].kullanici_id,
+				results[0].s_id,
 				results[0].uygulama_yili,
 				results[0].tarih,
 				results[0].is_adi,
@@ -495,9 +506,10 @@ function generatePDF(res, useridInfo) {
 	});
 }
 
-function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari, kesinti) {
-	const sql = 'select * from hakedis_2 where kullanici_id=? order by h_id_2 desc';
-	const params = useridInfo;
+function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari, kesinti, sirket_id) {
+	console.log(sirket_id)
+	const sql = 'select * from hakedis_2 where kullanici_id=? AND s_id=? order by h_id_2 desc';
+	const params = [useridInfo, sirket_id];
 	connection.query(sql, params, (error, results) => {
 		if (error) {
 			console.log('Veritabanı hatası:', error);
@@ -513,7 +525,7 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari, k
 			.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 		let toplam = parseInt(db_toplam) + parseInt(hakedis_tutari);
 
-		const kul_id1 = results[0].kullanici_id;
+		let kul_id1 = results[0].kullanici_id;
 		let sozlesme_bedeli = results[0].sozlesme_bedeli;
 		let isin_suresi = results[0].is_sure;
 		let is_adi = results[0].isin_adi;
@@ -595,7 +607,7 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari, k
 
 			doc
 				.font('Roboto-Bold.ttf')
-				.text('HAKEDİŞ RAPORU', 65, 10,{ align: 'center' })
+				.text('HAKEDİŞ RAPORU', 65, 10, { align: 'center' })
 				.fontSize('9')
 				.text(`${results[0].isin_adi}`, 25, 40, { align: 'left' })
 
@@ -649,7 +661,6 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari, k
 			progressRow2(doc, 350);
 			progressRow2(doc, 370);
 			progressRow2(doc, 390); // YENİ KESİNTİ
-			
 
 			doc
 				.save() // Dökümanın mevcut durumunu kaydet
@@ -687,7 +698,8 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari, k
 					60,
 					375
 				)
-				.text('k) Kesintiler', 60, 395).text(`${para(x_kesinti)}`, 455, 395, {align:'left'});
+				.text('k) Kesintiler', 60, 395)
+				.text(`${para(x_kesinti)}`, 455, 395, { align: 'left' });
 
 			doc // SOL DİK
 				.lineCap('butt')
@@ -705,7 +717,7 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari, k
 				.moveTo(40, 410)
 				.lineTo(40, 450)
 				.stroke();
-				doc
+			doc
 				.lineWidth('1.5')
 				.lineCap('butt')
 				.moveTo(15, 525)
@@ -747,9 +759,10 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari, k
 				.text('|makam1|', 265, 765);
 		}
 		function updateData2() {
-			let sql = `INSERT INTO haz_hakedis_2 (kullanici_id, isin_adi, sozlesme_bedeli, is_sure, A_soz_tutari, C_toplam, D_onceki_toplam, E_hakedis_tutari, F_kdv_20, G_tahakkuk_tutari, c_kdv_tev, H_kesintiler, I_odenecek_tutar, h_fiyat_farki, i_para_cezasi, k_kesintiler)VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+			let sql = `INSERT INTO haz_hakedis_2 (kullanici_id, s_id, isin_adi, sozlesme_bedeli, is_sure, A_soz_tutari, C_toplam, D_onceki_toplam, E_hakedis_tutari, F_kdv_20, G_tahakkuk_tutari, c_kdv_tev, H_kesintiler, I_odenecek_tutar, h_fiyat_farki, i_para_cezasi, k_kesintiler)VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 			let values = [
 				kul_id1,
+				sirket_id,
 				is_adi,
 				sozlesme_bedeli,
 				isin_suresi,
@@ -764,7 +777,7 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari, k
 				x_I_odenecek_tutar,
 				x_h_fiyat_farki,
 				x_i_para_cezasi,
-				x_kesinti
+				x_kesinti,
 			];
 			connection.query(sql, values, (err, result) => {
 				if (err) throw err;
@@ -780,9 +793,9 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari, k
 	});
 }
 
-function generatePDF3(res, useridInfo, hakedis_tutari_2) {
-	const sql = 'select * from hakedis_3 where kullanici_id=? order by h_id_3 desc';
-	const params = useridInfo;
+function generatePDF3(res, useridInfo, hakedis_tutari_2, sirket_id) {
+	const sql = 'select * from hakedis_3 where kullanici_id=? AND s_id=? order by h_id_3 desc';
+	const params = [useridInfo, sirket_id];
 	connection.query(sql, params, (error, results) => {
 		if (error) {
 			console.log('Veritabanı hatası:', error);
@@ -809,9 +822,10 @@ function generatePDF3(res, useridInfo, hakedis_tutari_2) {
 
 		updateData3();
 		pdf3_generate();
+
 		function updateData3() {
-			let sql = `INSERT INTO haz_hakedis_3_update (kullanici_id, isin_adi, sozlesme_bedeli, isin_suresi, Gas, Bas, Cas, Das, Eas, Fas) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-			let values = [kul_id, is_ad, soz_bed, is_sure, Gas, Bas, Cas, Das, Eas, Fas];
+			let sql = `INSERT INTO haz_hakedis_3_update (kullanici_id, s_id, isin_adi, sozlesme_bedeli, isin_suresi, Gas, Bas, Cas, Das, Eas, Fas) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+			let values = [kul_id, sirket_id, is_ad, soz_bed, is_sure, Gas, Bas, Cas, Das, Eas, Fas];
 			connection.query(sql, values, (err, result) => {
 				if (err) throw err;
 				console.log('Değerler başarıyla eklendi.');
@@ -820,8 +834,8 @@ function generatePDF3(res, useridInfo, hakedis_tutari_2) {
 	});
 
 	function pdf3_generate() {
-		const sql = 'select * from asil_hakedis_3 where kullanici_id=? order by a_h_id_3 desc';
-		const params = useridInfo;
+		const sql = 'select * from asil_hakedis_3 where kullanici_id=? AND s_id=? order by a_h_id_3 desc';
+		const params = [useridInfo, sirket_id];
 		connection.query(sql, params, (error, results) => {
 			if (error) {
 				console.log('Veritabanı hatası:', error);

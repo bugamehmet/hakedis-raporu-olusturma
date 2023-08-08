@@ -11,6 +11,9 @@
   <h2>İhale Bilgileri Giriniz</h2>
   <form class="login-1" action="/welcome" method="post">
     <div>
+      <input type="text" id="sirket_id" name="sirket_id" placeholder="SİRKET İD" required/>
+    </div>
+    <div>
       <input type="text" id="is_adi" name="is_adi" value="xx" placeholder="Yapılan işin / Hizmetin Adı" required/>
     </div>
     <div>
@@ -48,11 +51,15 @@
     <div class="full-width">
       <form action="/generate-pdf" method="post">
         <button type="submit">Hakediş Kapağı</button>
+        <br><br>
+        <input type="text" id="sirket_id" name="sirket_id" placeholder="SİRKET İD" required/>
       </form>
 
       <form action="/generate-pdf2" method="post">
         <button type="submit">Hakediş Raporu</button>
-          <br><br>
+        <br><br>
+        <input type="text" id="sirket_id" name="sirket_id" placeholder="SİRKET İD" required/>
+          <br>
           <input type="text" id="hakedis_tutari" name="hakedis_tutari" value="20" placeholder="HAKEDİŞ TUTARI" required/>
           <br>
           <input type="text" id="fiyat_farki" name="fiyat_farki" value="20" placeholder="Fiyat Farkı" required/>  
@@ -71,7 +78,10 @@
       <form action="/generate-pdf3" method="post">
         <button type="submit">Yapılan İşler Listesi</button>
         <br><br>
+        <input type="text" id="sirket_id" name="sirket_id" placeholder="SİRKET İD" required/>
+        <br>
         <input type="text" id="hakedis_tutari_2" name="hakedis_tutari_2" placeholder="HAKEDİŞ TUTARI" required/>
+      
       </form>
       <form action="/logout" method="GET">
         <button type="submit">Çıkış Yap</button>
