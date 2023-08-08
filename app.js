@@ -48,7 +48,8 @@ app.get('/welcome/:userId', (req, res) => {
 app.get('/generate-pdf/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
 	const sirket_id = req.session.sirket_id;
-	generatePDF(res, useridInfo, sirket_id);
+	generatePDF(res, useridInfo, sirket_id)
+	req.session.sirket_id = null;
 });
 app.get('/generate-pdf2/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
@@ -59,12 +60,15 @@ app.get('/generate-pdf2/:userId', (req, res) => {
 	const kesinti = req.session.kesinti;
 	const sirket_id = req.session.sirket_id;
 	generatePDF2(res, useridInfo, gecikme, fiyat_farki, var_yok, hakedis_tutari, kesinti, sirket_id);
+	req.session.sirket_id = null;
 });
+
 app.get('/generate-pdf3/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
 	const hakedis_tutari_2 = req.session.hakedis_tutari_2;
 	const sirket_id = req.session.sirket_id;
 	generatePDF3(res, useridInfo, hakedis_tutari_2, sirket_id);
+	req.session.sirket_id = null;
 });
 
 app.post('/', (req, res) => {
@@ -211,6 +215,8 @@ app.post('/generate-pdf2', (req, res) => {
 	req.session.hakedis_tutari = hakedis_tutari;
 	req.session.var_yok = var_yok;
 	req.session.fiyat_farki = fiyat_farki;
+	const sirket_id = req.body.sirket_id;
+	req.session.sirket_id = sirket_id;
 	connection.query(
 		'select kullanici_id from hakedis_2 where kullanici_id=?',
 		[x],
@@ -229,6 +235,8 @@ app.post('/generate-pdf3', (req, res) => {
 	const x = req.session.userId;
 	const hakedis_tutari_2 = req.body.hakedis_tutari_2;
 	req.session.hakedis_tutari_2 = hakedis_tutari_2;
+	const sirket_id = req.body.sirket_id;
+	req.session.sirket_id = sirket_id;
 	connection.query(
 		'select kullanici_id from hakedis_3 where kullanici_id=?',
 		[x],
@@ -323,6 +331,7 @@ function insertHakedis_3(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi
 }
 
 function generatePDF(res, useridInfo, sirket_id) {
+	console.log(sirket_id)
 	const sql = 'SELECT * FROM hakedis_raporu WHERE kullanici_id = ? AND s_id = ? ORDER BY h_id DESC LIMIT 1';
 	const params = [useridInfo, sirket_id];
 	connection.query(sql, params, (error, results) => {
@@ -508,7 +517,7 @@ function generatePDF(res, useridInfo, sirket_id) {
 
 function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari, kesinti, sirket_id) {
 	console.log(sirket_id)
-	const sql = 'select * from hakedis_2 where kullanici_id=? AND s_id=? order by h_id_2 desc';
+	const sql = 'select * from hakedis_2 where kullanici_id = ? AND s_id=? order by h_id_2 desc';
 	const params = [useridInfo, sirket_id];
 	connection.query(sql, params, (error, results) => {
 		if (error) {
@@ -794,6 +803,7 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari, k
 }
 
 function generatePDF3(res, useridInfo, hakedis_tutari_2, sirket_id) {
+	console.log(sirket_id);
 	const sql = 'select * from hakedis_3 where kullanici_id=? AND s_id=? order by h_id_3 desc';
 	const params = [useridInfo, sirket_id];
 	connection.query(sql, params, (error, results) => {
@@ -1007,6 +1017,7 @@ function generatePDF3(res, useridInfo, hakedis_tutari_2, sirket_id) {
 		});
 	}
 }
+
 
 // MySQL bağlantısını kapat
 // connection.end();
