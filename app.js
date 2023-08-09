@@ -19,11 +19,11 @@ app.use(
 );
 
 app.get('/info', (req, res) => {
-  const query = 'SELECT * FROM hakedis_2'; // Tablo adını düzeltin
+	const userId = req.session.userId;
+  const query = 'SELECT * FROM hakedis_2';
   connection.query(query, (err, data) => {
     if (err) throw err;
-		console.log(data)
-    res.render('info', { data });
+    res.render('info', { userId, data });
   });
 });
 

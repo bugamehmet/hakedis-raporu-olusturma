@@ -2,12 +2,49 @@
 <html lang="en">
 <head>
   <title>Veri Listesi</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      text-align: center;
+      padding: 20px;
+    }
+    table {
+      width: 80%;
+      margin: auto;
+      border-collapse: collapse;
+      background-color: #fff;
+    }
+    th, td {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    tr:hover {
+      background-color: #ddd;
+    }
+    td[colspan="4"] {
+      text-align: center;
+      padding: 10px;
+      font-style: italic;
+    }
+  </style>
 </head>
 <body>
-  <h1>Veri Listesi</h1>
+  <h1>İhale Verileri <%= userId %></h1>
   <table border="1">
     <tr>
-        <th>Veri No/th>
+        <th>Veri No </th>
         <th>Sirket Id</th>
         <th>Sirket İsmi</th>
         <th>Sozlesme bedeli</th>
