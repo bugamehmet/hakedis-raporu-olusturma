@@ -1,4 +1,4 @@
-const mysql = require('mysql');
+const connection = require("./db")
 const express = require('express');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
@@ -14,16 +14,7 @@ app.use(
 	})
 );
 
-const connection = mysql.createConnection({
-	host: 'localhost',
-	user: 'root',
-	password: '12345678',
-	database: 'userDB',
-});
-connection.connect((error) => {
-	if (error) throw error;
-	else console.log('bağlanıldı!');
-});
+
 
 app.get('/', (req, res) => {
 	res.sendFile(__dirname + '/index.html');
