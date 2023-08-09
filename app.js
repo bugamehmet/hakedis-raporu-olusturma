@@ -1,10 +1,14 @@
-const connection = require("./db")
 const express = require('express');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
 const session = require('express-session');
+const connection = require("./db")
+
+
 const app = express();
+app.set("view engine", "ejs");
 app.use('/assets', express.static('assets'));
+app.use(express.static('views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(
 	session({
@@ -14,6 +18,14 @@ app.use(
 	})
 );
 
+app.get('/info', (req, res) => {
+  const query = 'SELECT * FROM hakedis_2'; // Tablo adını düzeltin
+  connection.query(query, (err, data) => {
+    if (err) throw err;
+		console.log(data)
+    res.render('info', { data });
+  });
+});
 
 
 app.get('/', (req, res) => {

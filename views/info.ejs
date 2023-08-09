@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Veri Listesi</title>
+</head>
+<body>
+  <h1>Veri Listesi</h1>
+  <table border="1">
+    <tr>
+        <th>Veri No/th>
+        <th>Sirket Id</th>
+        <th>Sirket İsmi</th>
+        <th>Sozlesme bedeli</th>
+    </tr>
+    
+    <%
+    if(data.length!=0){
+    var i=1;
+    data.forEach(function(data){
+    %>
+    <tr>
+        <td><%=i; %></td>
+        <td><%=data.s_id %></td>
+        <td><%=data.isin_adi %></td>
+        <td><%=data.sozlesme_bedeli %></td>
+    </tr>
+    <%  i++; }) %>
+    <% } else{ %>
+        <tr>
+            <td colspan="7">No Data Found</td>
+        </tr>
+    <% } %>
+  </table>
+</body>
+</html>
+
