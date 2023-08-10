@@ -20,7 +20,7 @@
       background-color: #fff;
     }
     th, td {
-      border: 1px solid #dddddd;
+      border: 3px solid #dddddd;
       text-align: left;
       padding: 8px;
     }
@@ -41,15 +41,22 @@
   </style>
 </head>
 <body>
-  <h1>İhale Verileri <%= userId %></h1>
+  <h1>Son Veriler <%= userId %></h1>
   <table border="1">
     <tr>
-        <th>Veri No </th>
-        <th>Sirket Id</th>
+        <th>Veri No</th>
+        <th>Hakediş No</th>
         <th>Sirket İsmi</th>
         <th>Sozlesme bedeli</th>
+        <th>Oluşturulma Tarihi</th>
     </tr>
     
+    <% function formatDate(dateString) {
+      const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+      return new Date(dateString).toLocaleDateString('tr-TR', options);
+  } %>
+  
+  
     <%
     if(data.length!=0){
     var i=1;
@@ -57,9 +64,10 @@
     %>
     <tr>
         <td><%=i; %></td>
-        <td><%=data.s_id %></td>
+        <td><%=data.no %></td>
         <td><%=data.isin_adi %></td>
         <td><%=data.sozlesme_bedeli %></td>
+        <td><%= formatDate(data.olusturulma_tarihi) %></td>
     </tr>
     <%  i++; }) %>
     <% } else{ %>
