@@ -8,7 +8,18 @@
 </head>
 <body>
 <main>
-  <h2>İhale Bilgileri Giriniz</h2>
+  <div class="full-width">
+    <h2>İhale Bilgileri Giriniz</h2>
+    <br>
+    <form action="/info" method="get">
+      <button id="info" type="submit">Geçmiş Hakedişler</button>
+    </form>
+    <br>
+    <form action="/logout" method="get">
+      <button id="info" type="submit">Çıkış Yap</button>
+    </form>
+
+  </div>
   <form class="login-1" action="/welcome" method="post">
     <div>
       <input type="text" id="sirket_id" name="sirket_id" placeholder="SİRKET İD" required/>
@@ -54,11 +65,7 @@
         <br><br>
         <input type="text" id="sirket_id" name="sirket_id" placeholder="SİRKET İD" required/>
       </form>
-
-      <form action="/info" method="get">
-        <button type="submit">İNFO</button>
-      </form>
-
+      
       <form action="/generate-pdf2" method="post">
         <button type="submit">Hakediş Raporu</button>
         <br><br>
@@ -70,7 +77,6 @@
           <br>
           <input type="text" id="gecikme" name="gecikme" value="20"  placeholder="Para Cezası" required/>
           <br>
-          
           <input type="text" id="kesinti" name="kesinti" value="20"  placeholder="Kesinti" required/>
           <br>
           <label for="">KDV TEVFİKATI</label>
@@ -84,11 +90,7 @@
         <br><br>
         <input type="text" id="sirket_id" name="sirket_id" placeholder="SİRKET İD" required/>
         <br>
-        <input type="text" id="hakedis_tutari_2" name="hakedis_tutari_2" placeholder="HAKEDİŞ TUTARI" required/>
-      
-      </form>
-      <form action="/logout" method="GET">
-        <button type="submit">Çıkış Yap</button>
+        <input type="text" id="hakedis_tutari_2" name="hakedis_tutari_2" placeholder="HAKEDİŞ TUTARI" required/>     
       </form>
     </div>
 </main>
