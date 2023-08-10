@@ -956,7 +956,7 @@ function generatePDF3(res, useridInfo, hakedis_tutari_2, sirket_id) {
 					.fontSize('6')
 					.text('Sayfa No: 3', 507, 44)
 					.text('Hakediş No:', 575, 44)
-					.text(`${results[0].no - 1}`, 612, 44)
+					.text(`${results[0].no}`, 612, 44)
 					.text('Sıra No', -125, 67, { width: 15, align: 'left' })
 					.text('İşin Tanımı', 33, 72)
 					.text('Sözleşme Bedeli', 220, 72)
@@ -980,7 +980,7 @@ function generatePDF3(res, useridInfo, hakedis_tutari_2, sirket_id) {
 					lineInformation(93 + x, 550, 106 + x, 550);
 					lineInformation(93 + x, 600, 106 + x, 600);
 					doc
-						.text(`${e.no - 1}`, -125, 97 + x)
+						.text(`${e.no}`, -125, 97 + x)
 						.text(`${e.isin_adi}`, -107, 97 + x)
 						.text(`${para(e.sozlesme_bedeli)}`, 220, 97 + x)
 						.text(`${e.Bas - 1}`, 300, 97 + x)
