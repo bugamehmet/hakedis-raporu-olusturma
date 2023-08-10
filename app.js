@@ -20,8 +20,8 @@ app.use(
 
 app.get('/info', (req, res) => {
 	const userId = req.session.userId;
-  const query = 'SELECT * FROM hakedis_2';
-  connection.query(query, (err, data) => {
+  const query = 'SELECT * FROM hakedis_2 WHERE kullanici_id=?';
+  connection.query(query, userId, (err, data) => {
     if (err) throw err;
     res.render('info', { userId, data });
   });
@@ -954,7 +954,7 @@ function generatePDF3(res, useridInfo, hakedis_tutari_2, sirket_id) {
 					.fontSize('7')
 					.text('(Teklif Birim Fiyatlı Hizmet İçin)', 225, 30)
 					.fontSize('6')
-					.text('Sayfa No: 1', 507, 44)
+					.text('Sayfa No: 3', 507, 44)
 					.text('Hakediş No:', 575, 44)
 					.text(`${results[0].no - 1}`, 612, 44)
 					.text('Sıra No', -125, 67, { width: 15, align: 'left' })
