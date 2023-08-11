@@ -69,7 +69,6 @@ app.get('/generate-pdf2/:userId', (req, res) => {
 	generatePDF2(res, useridInfo, gecikme, fiyat_farki, var_yok, hakedis_tutari, kesinti, sirket_id);
 	req.session.sirket_id = null;
 });
-
 app.get('/generate-pdf3/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
 	const hakedis_tutari_2 = req.session.hakedis_tutari_2;
@@ -77,7 +76,6 @@ app.get('/generate-pdf3/:userId', (req, res) => {
 	generatePDF3(res, useridInfo, hakedis_tutari_2, sirket_id);
 	req.session.sirket_id = null;
 });
-
 app.post('/', (req, res) => {
 	let username = req.body.username;
 	let password = req.body.password;
@@ -124,7 +122,6 @@ app.post('/register', (req, res) => {
 		}
 	);
 });
-
 let date = new Date();
 let gun = date.getDate();
 let ay = date.getMonth() + 1;
@@ -191,7 +188,6 @@ app.post('/welcome', async (req, res) => {
 		res.redirect(`/welcome/${userId}`);
 	}
 });
-
 app.post('/generate-pdf', (req, res) => {
 	const x = req.session.userId;
 	const sirket_id = req.body.sirket_id;
