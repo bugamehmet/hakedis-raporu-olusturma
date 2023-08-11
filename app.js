@@ -18,14 +18,6 @@ app.use(
 	})
 );
 
-app.get('/info', (req, res) => {
-	const userId = req.session.userId;
-  const query = 'SELECT * FROM hakedis_2 WHERE kullanici_id=?';
-  connection.query(query, userId, (err, data) => {
-    if (err) throw err;
-    res.render('info', { userId, data });
-  });
-});
 
 
 app.get('/', (req, res) => {
@@ -45,6 +37,18 @@ app.get('/logout', (req, res) => {
 		res.redirect('/');
 	});
 });
+app.get('/info', (req, res) => {
+	const userId = req.session.userId;
+  const query = 'SELECT * FROM hakedis_2 WHERE kullanici_id=?';
+  connection.query(query, userId, (err, data) => {
+    if (err) throw err;
+    res.render('info', { userId, data });
+  });
+});
+app.get('/downloadPDF/:no', (req,res)=>{
+const no = req.params.no;
+console.log(no)
+})
 app.get('/welcome/:userId', (req, res) => {
 	res.sendFile(__dirname + '/welcome.html');
 });
