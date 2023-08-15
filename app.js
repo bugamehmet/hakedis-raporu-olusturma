@@ -36,7 +36,7 @@ app.get('/logout', (req, res) => {
 });
 app.get('/info', (req, res) => {
 	const userId = req.session.userId;
-	const query = 'SELECT * FROM hakedis_2 WHERE kullanici_id=? order by h_id_2 desc';
+	const query = 'SELECT * FROM haz_hakedis_2 WHERE kullanici_id=? order by h_id_2 desc';
 	connection.query(query, userId, (err, data) => {
 		if (err) throw err;
 		res.render('info', { userId, data });
