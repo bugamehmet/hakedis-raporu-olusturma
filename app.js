@@ -181,12 +181,12 @@ app.post('/welcome', async (req, res) => {
 	}
 });
 app.post('/generate-pdf', (req, res) => {
-	const x = req.session.userId;
+	const userId = req.session.userId;
 	const sirket_id = req.body.sirket_id;
 	req.session.sirket_id = sirket_id;
 
 	let query = 'select kullanici_id from hakedis_raporu where kullanici_id=?';
-	let params = [x];
+	let params = [userId];
 	connection.query(query, params, (err, results) => {
 		if (results.length > 0) {
 			const userId = results[0].kullanici_id;
@@ -198,7 +198,7 @@ app.post('/generate-pdf', (req, res) => {
 	});
 });
 app.post('/generate-pdf2', (req, res) => {
-	const x = req.session.userId;
+	const userId = req.session.userId;
 	const gecikme = req.body.gecikme;
 	const fiyat_farki = req.body.fiyat_farki;
 	const var_yok = req.body.var_yok;
@@ -213,7 +213,7 @@ app.post('/generate-pdf2', (req, res) => {
 	req.session.sirket_id = sirket_id;
 
 	let query = 'select kullanici_id from hakedis_2 where kullanici_id=?';
-	let params = [x];
+	let params = [userId];
 	connection.query(query, params, (err, results) => {
 		if (results.length > 0) {
 			const userId = results[0].kullanici_id;
@@ -225,14 +225,14 @@ app.post('/generate-pdf2', (req, res) => {
 	});
 });
 app.post('/generate-pdf3', (req, res) => {
-	const x = req.session.userId;
+	const userId = req.session.userId;
 	const hakedis_tutari_2 = req.body.hakedis_tutari_2;
 	req.session.hakedis_tutari_2 = hakedis_tutari_2;
 	const sirket_id = req.body.sirket_id;
 	req.session.sirket_id = sirket_id;
 
 	let query = 'select kullanici_id from hakedis_3 where kullanici_id=?';
-	let params = [x];
+	let params = [userId];
 	connection.query(query, params, (err, results) => {
 		if (results.length > 0) {
 			const userId = results[0].kullanici_id;
