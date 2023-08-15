@@ -1245,7 +1245,7 @@ function infoPDF(res, no, s_id) {
 		doc.pipe(res);
 		console.log('Hakediş raporu-2 başarıyla oluşturuldu');
 		res.setHeader('Content-Type', 'application/pdf');
-		res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu.pdf');
+		res.setHeader('Content-Disposition', `attachment; filename=${results[0].isin_adi}_hakedis_raporu.pdf`);
 		doc.end();
 	})
 }
