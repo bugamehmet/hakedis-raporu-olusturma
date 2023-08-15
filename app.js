@@ -1021,7 +1021,7 @@ function generatePDF3(res, useridInfo, hakedis_tutari_2, sirket_id) {
 }
 
 function infoPDF(res, no, s_id) {
-	let sql = 'select * from hakedis_2 where no=? and s_id=?';
+	let sql = 'select * from haz_hakedis_2 where no=? and s_id=?';
 	let params = [no, s_id];
 	connection.query(sql, params, (err,results) =>{
 		if (err) {
@@ -1183,7 +1183,7 @@ function infoPDF(res, no, s_id) {
 					375
 				)
 				.text('k) Kesintiler', 60, 395)
-				.text(`${para(results[0].k_kesinti)}`, 455, 395, { align: 'left' });
+				.text(`${para(results[0].k_kesintiler)}`, 455, 395, { align: 'left' });
 
 			doc // SOL DİK
 				.lineCap('butt')
