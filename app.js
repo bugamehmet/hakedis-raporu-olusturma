@@ -78,47 +78,41 @@ app.post('/', (req, res) => {
 	let username = req.body.username;
 	let password = req.body.password;
 
-	connection.query(
-		'select * from userTable where username = ? and password = ?',
-		[username, password],
-		function (error, results, fields) {
-			if (results.length > 0) {
-				// Kullanıcı adı ve şifre doğru, kullanıcı kimliğini alalım
-				const userId = results[0].userId;
-				req.session.userId = userId;
-				res.redirect(`/welcome/${userId}`);
-			} else {
-				res.redirect('/');
-			}
-			res.end();
+	let query = 'select * from userTable where username = ? and password = ?';
+	let params = [username, password];
+	connection.query(query, params, (err, results) => {
+		if (results.length > 0) {
+			const userId = results[0].userId;
+			req.session.userId = userId;
+			res.redirect(`/welcome/${userId}`);
+		} else {
+			res.redirect('/');
 		}
-	);
+		res.end();
+	});
 });
 app.post('/register', (req, res) => {
 	let username = req.body.username;
 	let password = req.body.password;
-	let isim = req.body.password;
-	let soyisim = req.body.password;
-	let eposta = req.body.password;
-	let telefon = req.body.password;
-	let adres = req.body.password;
+	let isim = req.body.isim;
+	let soyisim = req.body.soyisim;
+	let eposta = req.body.eposta;
+	let telefon = req.body.telefon;
+	let adres = req.body.adres;
 
-	// Veritabanına kullanıcıyı kaydetme işlemi
-	connection.query(
-		'INSERT INTO userTable (username, password, isim, soyisim, eposta, telefon, adres) VALUES (?, ?, ?, ?, ?, ?, ?)',
-		[username, password, isim, soyisim, eposta, telefon, adres],
-		function (error, results, fields) {
-			if (error) {
-				console.log('Kayıt olma hatası:', error);
-				res.redirect('/');
-			} else {
-				// Kayıt başarılıysa kullanıcı kimliğini alalım
-				const userId = results.insertId;
-				res.redirect('/welcome/' + userId);
-			}
-			res.end();
+	let query =
+		'INSERT INTO userTable (username, password, isim, soyisim, eposta, telefon, adres) VALUES (?, ?, ?, ?, ?, ?, ?)';
+	let params = [username, password, isim, soyisim, eposta, telefon, adres];
+	connection.query(query, params, (err, results) => {
+		if (err) {
+			console.log('Kayıt olma hatası:', err);
+			res.redirect('/');
+		} else {
+			const userId = results.insertId;
+			res.redirect('/welcome/' + userId);
 		}
-	);
+		res.end();
+	});
 });
 let date = new Date();
 let gun = date.getDate();
@@ -179,7 +173,7 @@ app.post('/welcome', async (req, res) => {
 		await insertHakedis_3(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi);
 
 		console.log('Veriler başarıyla eklendi');
-		res.redirect(`/welcome/${userId}`); // k_id ya da isin adi
+		res.redirect(`/welcome/${userId}`);
 	} catch (error) {
 		console.log('Veriler eklenirken bir hata oluştu');
 		console.log(error);
@@ -190,19 +184,18 @@ app.post('/generate-pdf', (req, res) => {
 	const x = req.session.userId;
 	const sirket_id = req.body.sirket_id;
 	req.session.sirket_id = sirket_id;
-	connection.query(
-		'select kullanici_id from hakedis_raporu where kullanici_id=?',
-		[x],
-		function (error, results) {
-			if (results.length > 0) {
-				const userId = results[0].kullanici_id;
-				res.redirect(`/generate-pdf/${userId}`);
-			} else {
-				console.log(error);
-			}
-			res.end();
+
+	let query = 'select kullanici_id from hakedis_raporu where kullanici_id=?';
+	let params = [x];
+	connection.query(query, params, (err, results) => {
+		if (results.length > 0) {
+			const userId = results[0].kullanici_id;
+			res.redirect(`/generate-pdf/${userId}`);
+		} else {
+			console.log(err);
 		}
-	);
+		res.end();
+	});
 });
 app.post('/generate-pdf2', (req, res) => {
 	const x = req.session.userId;
@@ -211,26 +204,25 @@ app.post('/generate-pdf2', (req, res) => {
 	const var_yok = req.body.var_yok;
 	const hakedis_tutari = req.body.hakedis_tutari;
 	const kesinti = req.body.kesinti;
+	const sirket_id = req.body.sirket_id;
 	req.session.gecikme = gecikme;
 	req.session.kesinti = kesinti;
 	req.session.hakedis_tutari = hakedis_tutari;
 	req.session.var_yok = var_yok;
 	req.session.fiyat_farki = fiyat_farki;
-	const sirket_id = req.body.sirket_id;
 	req.session.sirket_id = sirket_id;
-	connection.query(
-		'select kullanici_id from hakedis_2 where kullanici_id=?',
-		[x],
-		(error, results) => {
-			if (results.length > 0) {
-				const userId = results[0].kullanici_id;
-				res.redirect(`/generate-pdf2/${userId}`);
-			} else {
-				console.log(error);
-			}
-			res.end();
+
+	let query = 'select kullanici_id from hakedis_2 where kullanici_id=?';
+	let params = [x];
+	connection.query(query, params, (err, results) => {
+		if (results.length > 0) {
+			const userId = results[0].kullanici_id;
+			res.redirect(`/generate-pdf2/${userId}`);
+		} else {
+			console.log(err);
 		}
-	);
+		res.end();
+	});
 });
 app.post('/generate-pdf3', (req, res) => {
 	const x = req.session.userId;
@@ -238,19 +230,18 @@ app.post('/generate-pdf3', (req, res) => {
 	req.session.hakedis_tutari_2 = hakedis_tutari_2;
 	const sirket_id = req.body.sirket_id;
 	req.session.sirket_id = sirket_id;
-	connection.query(
-		'select kullanici_id from hakedis_3 where kullanici_id=?',
-		[x],
-		(error, results) => {
-			if (results.length > 0) {
-				const userId = results[0].kullanici_id;
-				res.redirect(`/generate-pdf3/${userId}`);
-			} else {
-				console.log(error);
-			}
-			res.end();
+
+	let query = 'select kullanici_id from hakedis_3 where kullanici_id=?';
+	let params = [x];
+	connection.query(query, params, (err, results) => {
+		if (results.length > 0) {
+			const userId = results[0].kullanici_id;
+			res.redirect(`/generate-pdf3/${userId}`);
+		} else {
+			console.log(err);
 		}
-	);
+		res.end();
+	});
 });
 
 function insertHakedis_1(
@@ -270,73 +261,69 @@ function insertHakedis_1(
 	is_bitim_tarihi
 ) {
 	return new Promise((resolve, reject) => {
-		connection.query(
-			'INSERT INTO hakedis_raporu (kullanici_id, s_id, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-			[
-				userId,
-				sirket_id,
-				uygulama_yili,
-				tarih,
-				is_adi,
-				proje_no,
-				yuklenici_adi,
-				sozlesme_bedeli,
-				ihale_tarihi,
-				kayit_no,
-				sozlesme_tarih,
-				isyeri_teslim_tarihi,
-				isin_suresi,
-				is_bitim_tarihi,
-			],
-			function (error, results, fields) {
-				if (error) {
-					reject(error);
-				} else {
-					resolve();
-				}
+		let query =
+			'INSERT INTO hakedis_raporu (kullanici_id, s_id, uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+		let params = [
+			userId,
+			sirket_id,
+			uygulama_yili,
+			tarih,
+			is_adi,
+			proje_no,
+			yuklenici_adi,
+			sozlesme_bedeli,
+			ihale_tarihi,
+			kayit_no,
+			sozlesme_tarih,
+			isyeri_teslim_tarihi,
+			isin_suresi,
+			is_bitim_tarihi,
+		];
+		connection.query(query, params, (err, results) => {
+			if (err) {
+				reject(err);
+			} else {
+				resolve();
 			}
-		);
+		});
 	});
 }
 
 function insertHakedis_2(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi) {
 	return new Promise((resolve, reject) => {
-		connection.query(
-			'INSERT INTO hakedis_2 (kullanici_id, s_id, isin_adi, sozlesme_bedeli, is_sure) VALUES (?, ?, ?, ?, ?)',
-			[userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi],
-			function (error, results, fields) {
-				if (error) {
-					reject(error);
-				} else {
-					resolve();
-				}
+		let query =
+			'INSERT INTO hakedis_2 (kullanici_id, s_id, isin_adi, sozlesme_bedeli, is_sure) VALUES (?, ?, ?, ?, ?)';
+		let params = [userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi];
+		connection.query(query, params, (err, res) => {
+			if (err) {
+				reject(err);
+			} else {
+				resolve();
 			}
-		);
+		});
 	});
 }
 
 function insertHakedis_3(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi) {
 	return new Promise((resolve, reject) => {
-		connection.query(
-			'INSERT INTO hakedis_3 (kullanici_id, s_id, isin_adi, sozlesme_bedeli, isin_suresi) VALUES (?, ?, ?, ?, ?)',
-			[userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi],
-			function (error, results, fields) {
-				if (error) {
-					reject(error);
-				} else {
-					resolve();
-				}
+		let query =
+			'INSERT INTO hakedis_3 (kullanici_id, s_id, isin_adi, sozlesme_bedeli, isin_suresi) VALUES (?, ?, ?, ?, ?)';
+		let params = [userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi];
+
+		connection.query(query, params, (err, res) => {
+			if (err) {
+				reject(err);
+			} else {
+				resolve();
 			}
-		);
+		});
 	});
 }
 
 function generatePDF(res, useridInfo, sirket_id) {
-	console.log(sirket_id);
-	const sql =
-		'SELECT * FROM hakedis_raporu WHERE kullanici_id = ? AND s_id = ? ORDER BY h_id DESC LIMIT 1';
+	const query = 'SELECT * FROM hakedis_raporu WHERE kullanici_id = ? AND s_id = ? ORDER BY h_id DESC LIMIT 1';
 	const params = [useridInfo, sirket_id];
-	connection.query(sql, params, (error, results) => {
+	connection.query(query, params, (error, results) => {
 		if (error) {
 			console.log('Veritabanı hatası:', error);
 			res.status(500).send('Veritabanı hatası');
@@ -518,9 +505,9 @@ function generatePDF(res, useridInfo, sirket_id) {
 }
 
 function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari, kesinti, sirket_id) {
-	const sql = 'select * from hakedis_2 where kullanici_id = ? AND s_id=? order by h_id_2 desc';
+	const query = 'select * from hakedis_2 where kullanici_id = ? AND s_id=? order by h_id_2 desc';
 	const params = [useridInfo, sirket_id];
-	connection.query(sql, params, (error, results) => {
+	connection.query(query, params, (error, results) => {
 		if (error) {
 			console.log('Veritabanı hatası:', error);
 			res.status(500).send('Veritabanı hatası');
@@ -804,10 +791,9 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari, k
 }
 
 function generatePDF3(res, useridInfo, hakedis_tutari_2, sirket_id) {
-	console.log(sirket_id);
-	const sql = 'select * from hakedis_3 where kullanici_id=? AND s_id=? order by h_id_3 desc';
+	const query = 'select * from hakedis_3 where kullanici_id=? AND s_id=? order by h_id_3 desc';
 	const params = [useridInfo, sirket_id];
-	connection.query(sql, params, (error, results) => {
+	connection.query(query, params, (error, results) => {
 		if (error) {
 			console.log('Veritabanı hatası:', error);
 			res.status(500).send('Veritabanı hatası');
@@ -1021,9 +1007,9 @@ function generatePDF3(res, useridInfo, hakedis_tutari_2, sirket_id) {
 }
 
 function infoPDF(res, no, s_id) {
-	let sql = 'select * from haz_hakedis_2 where no=? and s_id=?';
+	let query = 'select * from haz_hakedis_2 where no=? and s_id=?';
 	let params = [no, s_id];
-	connection.query(sql, params, (err,results) =>{
+	connection.query(query, params, (err, results) => {
 		if (err) {
 			console.log('Veritabanı hatası:', err);
 			res.status(500).send('Veritabanı hatası');
@@ -1245,9 +1231,12 @@ function infoPDF(res, no, s_id) {
 		doc.pipe(res);
 		console.log('Hakediş raporu-2 başarıyla oluşturuldu');
 		res.setHeader('Content-Type', 'application/pdf');
-		res.setHeader('Content-Disposition', `attachment; filename=${results[0].isin_adi}_hakedis_raporu.pdf`);
+		res.setHeader(
+			'Content-Disposition',
+			`attachment; filename=${results[0].isin_adi}_hakedis_raporu.pdf`
+		);
 		doc.end();
-	})
+	});
 }
 
 // MySQL bağlantısını kapat
