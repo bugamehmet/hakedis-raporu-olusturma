@@ -1,99 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/assets/welcome.css">
-    <title>HAKEDİS Bilgileri</title>
-</head>
-<body>
-<main>
-  <div class="full-width">
-    <h2>İhale Bilgileri Giriniz</h2>
-    <br>
-    <form action="/info" method="get">
-      <button id="info" type="submit">Geçmiş Hakedişler</button>
-    </form>
-    <br>
-    <form action="/logout" method="get">
-      <button id="info" type="submit">Çıkış Yap</button>
-    </form>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="/assets/welcome.css" />
+		<title>HAKEDİS Bilgileri</title>
+	</head>
+	<body>
+		<main>
+			<div class="full-width">
+				<h2>İhale Bilgileri Giriniz</h2>
+				<br />
+				<form action="/info" method="get">
+					<button id="info" type="submit">Geçmiş Hakedişler</button>
+				</form>
+				<br />
+				<form action="/logout" method="get">
+					<button id="info" type="submit">Çıkış Yap</button>
+				</form>
+			</div>
+			<form class="login-1" action="/welcome" method="post">
+				<div>
+					<input type="text" id="sirket_id" name="sirket_id" placeholder="SİRKET İD" required />
+				</div>
+				<div>
+					<input
+						type="text"
+						id="is_adi"
+						name="is_adi"
+						value="xx"
+						placeholder="Yapılan işin / Hizmetin Adı"
+						required
+					/>
+				</div>
+				<div>
+					<input
+						type="text"
+						id="proje_no"
+						name="proje_no"
+						value="x"
+						placeholder="Proje No"
+						required
+					/>
+				</div>
+				<div>
+					<input
+						type="text"
+						id="yuklenici_adi"
+						name="yuklenici_adi"
+						value="x"
+						placeholder="Yüklenicinin Adı / Ticari Ünvan"
+						required
+					/>
+				</div>
+				<div>
+					<input
+						type="text"
+						id="sozlesme_bedeli"
+						value="1162056"
+						name="sozlesme_bedeli"
+						placeholder="Sözleşme Bedeli (Örn: 1161232)"
+						required
+					/>
+				</div>
+				<div>
+					<input
+						type="text"
+						id="ihale_tarihi"
+						name="ihale_tarihi"
+						value="24"
+						placeholder="İhale Tarihi"
+						required
+					/>
+				</div>
+				<div>
+					<input
+						type="text"
+						id="kayit_no"
+						name="kayit_no"
+						value="24"
+						placeholder="Kayıt No"
+						required
+					/>
+				</div>
+				<div>
+					<input
+						type="text"
+						id="sozlesme_tarih"
+						name="sozlesme_tarih"
+						value="24"
+						placeholder="Sözleşme Tarihi"
+						required
+					/>
+				</div>
+				<div>
+					<input
+						type="text"
+						id="isyeri_teslim_tarihi"
+						name="isyeri_teslim_tarihi"
+						value="24"
+						placeholder="İşyeri Teslim Tarihi "
+						required
+					/>
+				</div>
+				<div>
+					<input
+						type="text"
+						id="isin_suresi"
+						name="isin_suresi"
+						value="24"
+						placeholder="Sözleşmeye Göre İşin Süresi (Örn: 24)"
+						required
+					/>
+				</div>
+				<div>
+					<input
+						type="text"
+						id="is_bitim_tarihi"
+						name="is_bitim_tarihi"
+						value="24"
+						placeholder="Sözleşmeye Göre İşin Bitim Süresi"
+						required
+					/>
+				</div>
 
-  </div>
-  <form class="login-1" action="/welcome" method="post">
-    <div>
-      <input type="text" id="sirket_id" name="sirket_id" placeholder="SİRKET İD" required/>
-    </div>
-    <div>
-      <input type="text" id="is_adi" name="is_adi" value="xx" placeholder="Yapılan işin / Hizmetin Adı" required/>
-    </div>
-    <div>
-      <input type="text" id="proje_no" name="proje_no" value="x" placeholder="Proje No"required/>
-    </div>
-    <div>
-      <input type="text" id="yuklenici_adi" name="yuklenici_adi" value="x" placeholder="Yüklenicinin Adı / Ticari Ünvan" required/>
-    </div>
-    <div>
-      <input type="text" id="sozlesme_bedeli" value="1162056" name="sozlesme_bedeli"  placeholder="Sözleşme Bedeli (Örn: 1161232)" required/>
-    </div>
-    <div>
-      <input type="text" id="ihale_tarihi" name="ihale_tarihi" value="24" placeholder="İhale Tarihi" required/>
-    </div>
-    <div>
-      <input type="text" id="kayit_no" name="kayit_no" value="24" placeholder="Kayıt No" required/>
-    </div>
-    <div>
-      <input type="text" id="sozlesme_tarih" name="sozlesme_tarih" value="24" placeholder="Sözleşme Tarihi" required/>
-    </div>
-    <div>
-      <input type="text" id="isyeri_teslim_tarihi" name="isyeri_teslim_tarihi" value="24" placeholder="İşyeri Teslim Tarihi " required/>
-    </div>
-    <div>
-      <input type="text" id="isin_suresi" name="isin_suresi" value="24" placeholder="Sözleşmeye Göre İşin Süresi (Örn: 24)" required/>
-    </div>
-    <div>
-      <input type="text" id="is_bitim_tarihi" name="is_bitim_tarihi" value="24" placeholder="Sözleşmeye Göre İşin Bitim Süresi" required/>
-    </div>
+				<button type="submit" value="LOGIN">Bilgileri Kaydet</button>
+			</form>
+			<div class="full-width">
+				<form action="/generate-pdf" method="post">
+					<button type="submit">Hakediş Kapağı</button>
+					<br /><br />
+					<input type="text" id="sirket_id" name="sirket_id" placeholder="SİRKET İD" required />
+				</form>
 
+				<form action="/generate-pdf2" method="post">
+					<button type="submit">Hakediş Raporu</button>
+					<br /><br />
+					<input type="text" id="sirket_id" name="sirket_id" placeholder="SİRKET İD" required />
+					<br />
+					<input
+						type="text"
+						id="hakedis_tutari"
+						name="hakedis_tutari"
+						value="20"
+						placeholder="HAKEDİŞ TUTARI"
+						required
+					/>
+					<br />
+					<input
+						type="text"
+						id="fiyat_farki"
+						name="fiyat_farki"
+						value="20"
+						placeholder="Fiyat Farkı"
+						required
+					/>
+					<br />
+					<input
+						type="text"
+						id="gecikme"
+						name="gecikme"
+						value="20"
+						placeholder="Para Cezası"
+						required
+					/>
+					<br />
+					<input
+						type="text"
+						id="kesinti"
+						name="kesinti"
+						value="20"
+						placeholder="Kesinti"
+						required
+					/>
+					<br />
+					<label for="">KDV TEVFİKATI</label>
+					<br />
+					<input type="radio" name="var_yok" value="var" checked /> Var
+					<input type="radio" name="var_yok" value="yok" /> Yok
+				</form>
 
-    <button type="submit" value="LOGIN">Bilgileri Kaydet</button>
-  </form>
-
-    <div class="full-width">
-      <form action="/generate-pdf" method="post">
-        <button type="submit">Hakediş Kapağı</button>
-        <br><br>
-        <input type="text" id="sirket_id" name="sirket_id" placeholder="SİRKET İD" required/>
-      </form>
-      
-      <form action="/generate-pdf2" method="post">
-        <button type="submit">Hakediş Raporu</button>
-        <br><br>
-        <input type="text" id="sirket_id" name="sirket_id" placeholder="SİRKET İD" required/>
-          <br>
-          <input type="text" id="hakedis_tutari" name="hakedis_tutari" value="20" placeholder="HAKEDİŞ TUTARI" required/>
-          <br>
-          <input type="text" id="fiyat_farki" name="fiyat_farki" value="20" placeholder="Fiyat Farkı" required/>  
-          <br>
-          <input type="text" id="gecikme" name="gecikme" value="20"  placeholder="Para Cezası" required/>
-          <br>
-          <input type="text" id="kesinti" name="kesinti" value="20"  placeholder="Kesinti" required/>
-          <br>
-          <label for="">KDV TEVFİKATI</label>
-          <br>
-          <input type="radio" name="var_yok" value="var" checked/> Var
-          <input type="radio" name="var_yok" value="yok"/> Yok
-      </form>
-      
-      <form action="/generate-pdf3" method="post">
-        <button type="submit">Yapılan İşler Listesi</button>
-        <br><br>
-        <input type="text" id="sirket_id" name="sirket_id" placeholder="SİRKET İD" required/>
-        <br>
-        <input type="text" id="hakedis_tutari_2" name="hakedis_tutari_2" placeholder="HAKEDİŞ TUTARI" required/>     
-      </form>
-    </div>
-</main>
-</body>
+				<form action="/generate-pdf3" method="post">
+					<button type="submit">Yapılan İşler Listesi</button>
+					<br /><br />
+					<input type="text" id="sirket_id" name="sirket_id" placeholder="SİRKET İD" required />
+					<br />
+					<input
+						type="text"
+						id="hakedis_tutari_2"
+						name="hakedis_tutari_2"
+						placeholder="HAKEDİŞ TUTARI"
+						required
+					/>
+				</form>
+			</div>
+		</main>
+	</body>
 </html>
-
