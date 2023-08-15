@@ -1096,7 +1096,7 @@ function infoPDF(res, no, s_id) {
 				.text(`${results[0].isin_adi}`, 25, 40, { align: 'left' })
 
 				.font('Roboto-Bold')
-				.text(`${para(results[0].A_soz_tutar)}`, 455, 70, { align: 'left' })
+				.text(`${para(results[0].A_soz_tutari)}`, 455, 70, { align: 'left' })
 				.text('C', 25, 110)
 				.text('Toplam Tutar ( A + B )', 45, 110)
 				.text(`${para(results[0].C_toplam)}`, 455, 110, { align: 'left' })
