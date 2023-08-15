@@ -193,7 +193,7 @@ app.post('/generate-pdf', (req, res) => {
 			res.redirect(`/generate-pdf/${userId}`);
 		} else {
 			console.log(err);
-		}
+		} 
 		res.end();
 	});
 });
@@ -320,6 +320,12 @@ function insertHakedis_3(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi
 	});
 }
 
+
+function para(number, fractionDigits = 2) {
+	const formattedNumber = parseFloat(number).toFixed(fractionDigits);
+	return '₺ ' + formattedNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
 function generatePDF(res, useridInfo, sirket_id) {
 	const query = 'SELECT * FROM hakedis_raporu WHERE kullanici_id = ? AND s_id = ? ORDER BY h_id DESC LIMIT 1';
 	const params = [useridInfo, sirket_id];
@@ -376,9 +382,6 @@ function generatePDF(res, useridInfo, sirket_id) {
 			doc.lineJoin('miter').rect(30, heigth, 550, 85).stroke();
 			return doc;
 		}
-		function para(number, fractionDigits = 2) {
-			return number.toFixed(fractionDigits).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺';
-		}
 		function reportHeader() {
 			const logoLeft = 'assets/gorseller/logo_left.png';
 			const logoRight = 'assets/gorseller/logo_right.png';
@@ -394,6 +397,7 @@ function generatePDF(res, useridInfo, sirket_id) {
 				.text('Hakediş Raporu', 100, 150, { align: 'center' })
 				.moveDown();
 		}
+
 		function reportInformation() {
 			doc
 				.fontSize(12)
@@ -589,10 +593,7 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari, k
 			doc.lineJoin('miter').rect(55, height, 528, 20).stroke();
 			return doc;
 		}
-		function para(number, fractionDigits = 2) {
-			const formattedNumber = parseFloat(number).toFixed(fractionDigits);
-			return formattedNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺';
-		}
+
 		function progressHeader() {
 			progressRow(doc, 65);
 			progressRow(doc, 85);
@@ -847,11 +848,6 @@ function generatePDF3(res, useridInfo, hakedis_tutari_2, sirket_id) {
 			header();
 			Information();
 			footer();
-
-			function para(number, fractionDigits = 2) {
-				const formattedNumber = parseFloat(number).toFixed(fractionDigits);
-				return '₺ ' + formattedNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-			}
 			function rowInformation(heigth) {
 				doc.lineJoin('miter').rect(-128, heigth, 805.5, 11).stroke();
 			}
