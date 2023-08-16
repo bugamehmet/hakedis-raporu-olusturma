@@ -53,7 +53,7 @@ app.get('/welcome/:userId', (req, res) => {
 app.get('/hakedis-kapagi/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
 	const sirket_id = req.session.sirket_id;
-	generatePDF(res, useridInfo, sirket_id);
+	hakediskapagiPDF(res, useridInfo, sirket_id);
 	req.session.sirket_id = null;
 });
 app.get('/hakedis-raporu/:userId', (req, res) => {
@@ -64,14 +64,14 @@ app.get('/hakedis-raporu/:userId', (req, res) => {
 	const hakedis_tutari = req.session.hakedis_tutari;
 	const kesinti = req.session.kesinti;
 	const sirket_id = req.session.sirket_id;
-	generatePDF2(res, useridInfo, gecikme, fiyat_farki, var_yok, hakedis_tutari, kesinti, sirket_id);
+	hakedisraporuPDF(res, useridInfo, gecikme, fiyat_farki, var_yok, hakedis_tutari, kesinti, sirket_id);
 	req.session.sirket_id = null;
 });
 app.get('/yapilan-isler/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
 	const hakedis_tutari_2 = req.session.hakedis_tutari_2;
 	const sirket_id = req.session.sirket_id;
-	generatePDF3(res, useridInfo, hakedis_tutari_2, sirket_id);
+	yapilanislerPDF(res, useridInfo, hakedis_tutari_2, sirket_id);
 	req.session.sirket_id = null;
 });
 app.post('/', (req, res) => {
@@ -320,13 +320,12 @@ function insertHakedis_3(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi
 	});
 }
 
-
 function para(number, fractionDigits = 2) {
 	const formattedNumber = parseFloat(number).toFixed(fractionDigits);
 	return '₺ ' + formattedNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-function generatePDF(res, useridInfo, sirket_id) {
+function hakediskapagiPDF(res, useridInfo, sirket_id) {
 	const query = 'SELECT * FROM hakedis_raporu WHERE kullanici_id = ? AND s_id = ? ORDER BY h_id DESC LIMIT 1';
 	const params = [useridInfo, sirket_id];
 	connection.query(query, params, (error, results) => {
@@ -508,7 +507,7 @@ function generatePDF(res, useridInfo, sirket_id) {
 	});
 }
 
-function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari, kesinti, sirket_id) {
+function hakedisraporuPDF(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari, kesinti, sirket_id) {
 	const query = 'select * from hakedis_2 where kullanici_id = ? AND s_id=? order by h_id_2 desc';
 	const params = [useridInfo, sirket_id];
 	connection.query(query, params, (error, results) => {
@@ -791,7 +790,7 @@ function generatePDF2(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari, k
 	});
 }
 
-function generatePDF3(res, useridInfo, hakedis_tutari_2, sirket_id) {
+function yapilanislerPDF(res, useridInfo, hakedis_tutari_2, sirket_id) {
 	const query = 'select * from hakedis_3 where kullanici_id=? AND s_id=? order by h_id_3 desc';
 	const params = [useridInfo, sirket_id];
 	connection.query(query, params, (error, results) => {
