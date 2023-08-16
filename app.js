@@ -23,9 +23,6 @@ app.get('/', (req, res) => {
 app.get('/register', (req, res) => {
 	res.sendFile(__dirname + '/register.html');
 });
-app.get('/login/:userId', (req, res) => {
-	res.sendFile(__dirname + '/login.html');
-});
 app.get('/logout', (req, res) => {
 	req.session.destroy((err) => {
 		if (err) {
