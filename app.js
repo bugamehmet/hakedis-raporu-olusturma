@@ -114,7 +114,7 @@ app.post('/register', (req, res) => {
 let date = new Date();
 let gun = date.getDate();
 let ay = date.getMonth() + 1;
-const yil = date.getFullYear();
+let yil = date.getFullYear();
 function gunx() {
 	if (gun < 10) {
 		return '0' + gun;
@@ -331,7 +331,7 @@ function hakediskapagiPDF(res, useridInfo, sirket_id) {
 			res.status(500).send('Veritabanı hatası');
 			return;
 		}
-		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
+		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'assets/fonts/Roboto.ttf' });
 
 		reportFrame();
 		reportHeader();
@@ -393,7 +393,6 @@ function hakediskapagiPDF(res, useridInfo, sirket_id) {
 				.text('Hakediş Raporu', 100, 150, { align: 'center' })
 				.moveDown();
 		}
-
 		function reportInformation() {
 			doc
 				.fontSize(12)
@@ -472,12 +471,12 @@ function hakediskapagiPDF(res, useridInfo, sirket_id) {
 				.text('İş Bitim Tarihi', 435, 675);
 		}
 		function updateData() {
-			const sqlInsert = `
+			const query = `
 			INSERT INTO hakedis_raporu 
 			(kullanici_id, s_id,  uygulama_yili, tarih, is_adi, proje_no, yuklenici_adi, sozlesme_bedeli, ihale_tarihi, kayit_no, sozlesme_tarih, isyeri_teslim_tarihi, isin_suresi, is_bitim_tarihi) 
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		`;
-			const insertParams = [
+			const values = [
 				results[0].kullanici_id,
 				results[0].s_id,
 				results[0].uygulama_yili,
@@ -493,7 +492,7 @@ function hakediskapagiPDF(res, useridInfo, sirket_id) {
 				results[0].isin_suresi,
 				results[0].is_bitim_tarihi,
 			];
-			connection.query(sqlInsert, insertParams, (insertError, insertResults) => {});
+			connection.query(query, values, (insertError, insertResults) => {});
 		}
 
 		doc.pipe(res);
@@ -539,7 +538,7 @@ function hakedisraporuPDF(res, useridInfo, gecikme, fark, var_yok, hakedis_tutar
 		let x_H_kesintiler = x_c_kdv_tev + x_h_fiyat_farki + x_i_para_cezasi + x_kesinti;
 		let x_I_odenecek_tutar = x_G_tahakkuk_tutari - x_H_kesintiler;
 
-		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
+		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'assets/fonts/Roboto.ttf' });
 
 		progressFrame();
 		progressHeader();
@@ -600,12 +599,12 @@ function hakedisraporuPDF(res, useridInfo, gecikme, fark, var_yok, hakedis_tutar
 			progressRow(doc, 190);
 
 			doc
-				.font('Roboto-Bold.ttf')
+				.font('assets/fonts/Roboto-Bold.ttf')
 				.text('HAKEDİŞ RAPORU', 65, 10, { align: 'center' })
 				.fontSize('9')
 				.text(`${results[0].isin_adi}`, 25, 40, { align: 'left' })
 
-				.font('Roboto-Bold')
+				.font('assets/fonts/Roboto-Bold.ttf')
 				.text(`${para(x_A_soz_tutari)}`, 455, 70, { align: 'left' })
 				.text('C', 25, 110)
 				.text('Toplam Tutar ( A + B )', 45, 110)
@@ -616,7 +615,7 @@ function hakedisraporuPDF(res, useridInfo, gecikme, fark, var_yok, hakedis_tutar
 				.text('G', 25, 195)
 				.text('Tahakkuk Tutarı', 45, 195)
 				.text(`${para(x_G_tahakkuk_tutari)}`, 455, 195, { align: 'left' })
-				.font('Roboto.ttf')
+				.font('assets/fonts/Roboto.ttf')
 				.fontSize('9')
 				.text('Sayfa No :', 452, 35)
 				.text('1', 562, 35)
@@ -660,18 +659,18 @@ function hakedisraporuPDF(res, useridInfo, gecikme, fark, var_yok, hakedis_tutar
 				.save() // Dökümanın mevcut durumunu kaydet
 				.translate(30, 370) // Başlangıç noktasını ayarla
 				.rotate(-90, { origin: [0, 0] }) // Metni belirli bir açıyla döndür
-				.font('Roboto-Bold.ttf')
+				.font('assets/fonts/Roboto-Bold.ttf')
 				.fontSize('9')
 				.text('KESİNTİLER VE MAHPUSLAR', 0, 0)
 				.restore() // Dökümanı önceki durumuna geri getir
 
-				.font('Roboto-Bold.ttf')
+				.font('assets/fonts/Roboto-Bold.ttf')
 				.fontSize('9')
 				.text(`${para(x_c_kdv_tev)}`, 455, 255, { align: 'left' })
 				.text(`${para(x_i_para_cezasi)}`, 455, 375, { align: 'left' })
 				.text(`${para(x_h_fiyat_farki)}`, 455, 355, { align: 'left' })
 
-				.font('Roboto.ttf')
+				.font('assets/fonts/Roboto.ttf')
 				.fontSize('9')
 				.text('a) Gelir/ Kurumlar Vergisi ( E x % .. )', 60, 215)
 				.text(`${para(results[0].kullanilmayan)}`, 455, 215, { align: 'left' })
@@ -718,7 +717,7 @@ function hakedisraporuPDF(res, useridInfo, gecikme, fark, var_yok, hakedis_tutar
 				.lineTo(585, 525)
 				.stroke()
 
-				.font('Roboto-Bold.ttf')
+				.font('assets/fonts/Roboto-Bold.ttf')
 				.fontSize('10')
 				.text('YÜKLENİCİ', 275, 455, { underline: true })
 				.text('KONTROL TEŞKİLATI', 260, 540, { underline: true, align: 'left' })
@@ -734,7 +733,7 @@ function hakedisraporuPDF(res, useridInfo, gecikme, fark, var_yok, hakedis_tutar
 				.text('Yükleniciye Ödenecek Tutar ( G - H )', 45, 435)
 				.text(`${para(x_I_odenecek_tutar)}`, 455, 435, { align: 'left' })
 
-				.font('Roboto.ttf')
+				.font('assets/fonts/Roboto.ttf')
 				.fontSize('8')
 				.text('|dismakamtarih1|', 270, 480)
 				.text('|dismakamunvanad1|', 265, 510)
@@ -747,7 +746,7 @@ function hakedisraporuPDF(res, useridInfo, gecikme, fark, var_yok, hakedis_tutar
 				.text('|makamtarih3|', 55, 675)
 				.text('|makamtarih2|', 470, 675)
 				.text('|makamtarih1|', 260, 735)
-				.font('Roboto-Bold.ttf')
+				.font('assets/fonts/Roboto-Bold.ttf')
 				.text('|makam3|', 60, 705)
 				.text('|makam2|', 475, 705)
 				.text('|makam1|', 265, 765);
@@ -837,7 +836,7 @@ function yapilanislerPDF(res, useridInfo, hakedis_tutari_2, sirket_id) {
 				res.status(500).send('Veritabanı hatası');
 				return;
 			}
-			const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
+			const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'assets/fonts/Roboto.ttf' });
 			doc.page.dictionary.data.Rotate = 90;
 
 			generateFrame();
@@ -915,7 +914,7 @@ function yapilanislerPDF(res, useridInfo, hakedis_tutari_2, sirket_id) {
 					.lineTo(95, 100)
 					.stroke()
 					.rotate(-90, { origin: [350, 350] })
-					.font('Roboto-Bold.ttf')
+					.font('assets/fonts/Roboto-Bold.ttf')
 					.fontSize('6')
 					.text(`${results[0].isin_adi}`, -125, 45)
 					.text('A', 240, 57)
@@ -927,7 +926,7 @@ function yapilanislerPDF(res, useridInfo, hakedis_tutari_2, sirket_id) {
 					.text('G=(AxF)', 615, 57)
 					.fontSize('8')
 					.text('YAPILAN İŞLER LİSTESİ', 230, 20)
-					.font('Roboto.ttf')
+					.font('assets/fonts/Roboto.ttf')
 					.fontSize('7')
 					.text('(Teklif Birim Fiyatlı Hizmet İçin)', 225, 30)
 					.fontSize('6')
@@ -971,7 +970,7 @@ function yapilanislerPDF(res, useridInfo, hakedis_tutari_2, sirket_id) {
 			}
 			function footer() {
 				doc
-					.font('Roboto.ttf')
+					.font('assets/fonts/Roboto.ttf')
 					.fontSize('8')
 					.text('|dismakamunvanad1|', 240, 420)
 
@@ -985,7 +984,7 @@ function yapilanislerPDF(res, useridInfo, hakedis_tutari_2, sirket_id) {
 					.text('|makam3|', 400, 520)
 					.text('|makamtarih2|', 520, 490, { width: 100 })
 					.text('|makam2|', 525, 520)
-					.font('Roboto-Bold.ttf')
+					.font('assets/fonts/Roboto-Bold.ttf')
 					.text('|dismakamtarih1|', 245, 390);
 			}
 
@@ -1007,7 +1006,7 @@ function infoPDF(res, no, s_id) {
 			res.status(500).send('Veritabanı hatası');
 			return;
 		}
-		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'Roboto.ttf' });
+		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'assets/fonts/Roboto.ttf' });
 		progressFrame();
 		progressHeader();
 		progressMiddle();
@@ -1068,12 +1067,12 @@ function infoPDF(res, no, s_id) {
 			progressRow(doc, 190);
 
 			doc
-				.font('Roboto-Bold.ttf')
+				.font('assets/fonts/Roboto-Bold.ttf')
 				.text('HAKEDİŞ RAPORU', 65, 10, { align: 'center' })
 				.fontSize('9')
 				.text(`${results[0].isin_adi}`, 25, 40, { align: 'left' })
 
-				.font('Roboto-Bold')
+				.font('assets/fonts/Roboto-Bold')
 				.text(`${para(results[0].A_soz_tutari)}`, 455, 70, { align: 'left' })
 				.text('C', 25, 110)
 				.text('Toplam Tutar ( A + B )', 45, 110)
@@ -1084,7 +1083,7 @@ function infoPDF(res, no, s_id) {
 				.text('G', 25, 195)
 				.text('Tahakkuk Tutarı', 45, 195)
 				.text(`${para(results[0].G_tahakkuk_tutari)}`, 455, 195, { align: 'left' })
-				.font('Roboto.ttf')
+				.font('assets/fonts/Roboto.ttf')
 				.fontSize('9')
 				.text('Sayfa No :', 452, 35)
 				.text('1', 562, 35)
@@ -1128,18 +1127,18 @@ function infoPDF(res, no, s_id) {
 				.save() // Dökümanın mevcut durumunu kaydet
 				.translate(30, 370) // Başlangıç noktasını ayarla
 				.rotate(-90, { origin: [0, 0] }) // Metni belirli bir açıyla döndür
-				.font('Roboto-Bold.ttf')
+				.font('assets/fonts/Roboto-Bold.ttf')
 				.fontSize('9')
 				.text('KESİNTİLER VE MAHPUSLAR', 0, 0)
 				.restore() // Dökümanı önceki durumuna geri getir
 
-				.font('Roboto-Bold.ttf')
+				.font('assets/fonts/Roboto-Bold.ttf')
 				.fontSize('9')
 				.text(`${para(results[0].c_kdv_tev)}`, 455, 255, { align: 'left' })
 				.text(`${para(results[0].i_para_cezasi)}`, 455, 375, { align: 'left' })
 				.text(`${para(results[0].h_fiyat_farki)}`, 455, 355, { align: 'left' })
 
-				.font('Roboto.ttf')
+				.font('assets/fonts/Roboto.ttf')
 				.fontSize('9')
 				.text('a) Gelir/ Kurumlar Vergisi ( E x % .. )', 60, 215)
 				.text(`${para(results[0].kullanilmayan)}`, 455, 215, { align: 'left' })
@@ -1186,7 +1185,7 @@ function infoPDF(res, no, s_id) {
 				.lineTo(585, 525)
 				.stroke()
 
-				.font('Roboto-Bold.ttf')
+				.font('assets/fonts/Roboto-Bold.ttf')
 				.fontSize('10')
 				.text('YÜKLENİCİ', 275, 455, { underline: true })
 				.text('KONTROL TEŞKİLATI', 260, 540, { underline: true, align: 'left' })
@@ -1202,7 +1201,7 @@ function infoPDF(res, no, s_id) {
 				.text('Yükleniciye Ödenecek Tutar ( G - H )', 45, 435)
 				.text(`${para(results[0].I_odenecek_tutar)}`, 455, 435, { align: 'left' })
 
-				.font('Roboto.ttf')
+				.font('assets/fonts/Roboto.ttf')
 				.fontSize('8')
 				.text('|dismakamtarih1|', 270, 480)
 				.text('|dismakamunvanad1|', 265, 510)
@@ -1215,7 +1214,7 @@ function infoPDF(res, no, s_id) {
 				.text('|makamtarih3|', 55, 675)
 				.text('|makamtarih2|', 470, 675)
 				.text('|makamtarih1|', 260, 735)
-				.font('Roboto-Bold.ttf')
+				.font('assets/fonts/Roboto-Bold.ttf')
 				.text('|makam3|', 60, 705)
 				.text('|makam2|', 475, 705)
 				.text('|makam1|', 265, 765);
