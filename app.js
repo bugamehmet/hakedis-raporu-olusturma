@@ -50,13 +50,13 @@ app.get('/downloadPDF/:no/:s_id', (req, res) => {
 app.get('/welcome/:userId', (req, res) => {
 	res.sendFile(__dirname + '/welcome.html');
 });
-app.get('/generate-pdf/:userId', (req, res) => {
+app.get('/hakedis-kapagi/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
 	const sirket_id = req.session.sirket_id;
 	generatePDF(res, useridInfo, sirket_id);
 	req.session.sirket_id = null;
 });
-app.get('/generate-pdf2/:userId', (req, res) => {
+app.get('/hakedis-raporu/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
 	const gecikme = req.session.gecikme;
 	const fiyat_farki = req.session.fiyat_farki;
@@ -67,7 +67,7 @@ app.get('/generate-pdf2/:userId', (req, res) => {
 	generatePDF2(res, useridInfo, gecikme, fiyat_farki, var_yok, hakedis_tutari, kesinti, sirket_id);
 	req.session.sirket_id = null;
 });
-app.get('/generate-pdf3/:userId', (req, res) => {
+app.get('/yapilan-isler/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
 	const hakedis_tutari_2 = req.session.hakedis_tutari_2;
 	const sirket_id = req.session.sirket_id;
@@ -180,7 +180,7 @@ app.post('/welcome', async (req, res) => {
 		res.redirect(`/welcome/${userId}`);
 	}
 });
-app.post('/generate-pdf', (req, res) => {
+app.post('/hakedis-kapagi', (req, res) => {
 	const userId = req.session.userId;
 	const sirket_id = req.body.sirket_id;
 	req.session.sirket_id = sirket_id;
@@ -190,14 +190,14 @@ app.post('/generate-pdf', (req, res) => {
 	connection.query(query, params, (err, results) => {
 		if (results.length > 0) {
 			const userId = results[0].kullanici_id;
-			res.redirect(`/generate-pdf/${userId}`);
+			res.redirect(`/hakedis-kapagi/${userId}`);
 		} else {
 			console.log(err);
 		} 
 		res.end();
 	});
 });
-app.post('/generate-pdf2', (req, res) => {
+app.post('/hakedis-raporu', (req, res) => {
 	const userId = req.session.userId;
 	const gecikme = req.body.gecikme;
 	const fiyat_farki = req.body.fiyat_farki;
@@ -217,14 +217,14 @@ app.post('/generate-pdf2', (req, res) => {
 	connection.query(query, params, (err, results) => {
 		if (results.length > 0) {
 			const userId = results[0].kullanici_id;
-			res.redirect(`/generate-pdf2/${userId}`);
+			res.redirect(`/hakedis-raporu/${userId}`);
 		} else {
 			console.log(err);
 		}
 		res.end();
 	});
 });
-app.post('/generate-pdf3', (req, res) => {
+app.post('/yapilan-isler', (req, res) => {
 	const userId = req.session.userId;
 	const hakedis_tutari_2 = req.body.hakedis_tutari_2;
 	req.session.hakedis_tutari_2 = hakedis_tutari_2;
@@ -236,7 +236,7 @@ app.post('/generate-pdf3', (req, res) => {
 	connection.query(query, params, (err, results) => {
 		if (results.length > 0) {
 			const userId = results[0].kullanici_id;
-			res.redirect(`/generate-pdf3/${userId}`);
+			res.redirect(`/yapilan-isler/${userId}`);
 		} else {
 			console.log(err);
 		}
