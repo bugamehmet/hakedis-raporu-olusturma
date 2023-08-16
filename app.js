@@ -44,8 +44,8 @@ app.get('/downloadPDF/:no/:s_id', (req, res) => {
 	const s_id = req.params.s_id;
 	infoPDF(res, no, s_id);
 });
-app.get('/welcome/:userId', (req, res) => {
-	res.sendFile(__dirname + '/welcome.html');
+app.get('/ihale-bilgileri/:userId', (req, res) => {
+	res.sendFile(__dirname + '/ihale-bilgileri.html');
 });
 app.get('/hakedis-kapagi/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
@@ -81,7 +81,7 @@ app.post('/', (req, res) => {
 		if (results.length > 0) {
 			const userId = results[0].userId;
 			req.session.userId = userId;
-			res.redirect(`/welcome/${userId}`);
+			res.redirect(`/ihale-bilgileri/${userId}`);
 		} else {
 			res.redirect('/');
 		}
@@ -106,7 +106,7 @@ app.post('/register', (req, res) => {
 			res.redirect('/');
 		} else {
 			const userId = results.insertId;
-			res.redirect('/welcome/' + userId);
+			res.redirect('/ihale-bilgileri/' + userId);
 		}
 		res.end();
 	});
@@ -130,7 +130,7 @@ function ayx() {
 	}
 }
 
-app.post('/welcome', async (req, res) => {
+app.post('/ihale-bilgileri', async (req, res) => {
 	const userId = req.session.userId;
 
 	let uygulama_yili = yil;
@@ -170,11 +170,11 @@ app.post('/welcome', async (req, res) => {
 		await insertYapilanisler(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi);
 
 		console.log('Veriler başarıyla eklendi');
-		res.redirect(`/welcome/${userId}`);
+		res.redirect(`/ihale-bilgileri/${userId}`);
 	} catch (error) {
 		console.log('Veriler eklenirken bir hata oluştu');
 		console.log(error);
-		res.redirect(`/welcome/${userId}`);
+		res.redirect(`/ihale-bilgileri/${userId}`);
 	}
 });
 app.post('/hakedis-kapagi', (req, res) => {
