@@ -18,10 +18,10 @@ app.use(
 );
 
 app.get('/', (req, res) => {
-	res.sendFile(__dirname + '/login.html');
+	res.sendFile(__dirname + '/views/html/login.html');
 });
 app.get('/register', (req, res) => {
-	res.sendFile(__dirname + '/register.html');
+	res.sendFile(__dirname + '/views/html/register.html');
 });
 app.get('/logout', (req, res) => {
 	req.session.destroy((err) => {
@@ -45,7 +45,7 @@ app.get('/downloadPDF/:no/:s_id', (req, res) => {
 	infoPDF(res, no, s_id);
 });
 app.get('/ihale-bilgileri/:userId', (req, res) => {
-	res.sendFile(__dirname + '/ihale-bilgileri.html');
+	res.sendFile(__dirname + '/views/html/ihale-bilgileri.html');
 });
 app.get('/hakedis-kapagi/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
