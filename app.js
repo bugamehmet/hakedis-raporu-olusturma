@@ -151,7 +151,7 @@ app.post('/welcome', async (req, res) => {
 	let sirket_id = req.body.sirket_id;
 
 	try {
-		await insertHakedis_1(
+		await inserthakedisKapagi(
 			userId,
 			sirket_id,
 			uygulama_yili,
@@ -168,9 +168,9 @@ app.post('/welcome', async (req, res) => {
 			is_bitim_tarihi
 		);
 
-		await insertHakedis_2(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi);
+		await inserthakedisRaporu(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi);
 
-		await insertHakedis_3(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi);
+		await insertYapilanisler(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi);
 
 		console.log('Veriler başarıyla eklendi');
 		res.redirect(`/welcome/${userId}`);
@@ -244,7 +244,7 @@ app.post('/yapilan-isler', (req, res) => {
 	});
 });
 
-function insertHakedis_1(
+function inserthakedisKapagi(
 	userId,
 	sirket_id,
 	uygulama_yili,
@@ -289,7 +289,7 @@ function insertHakedis_1(
 	});
 }
 
-function insertHakedis_2(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi) {
+function inserthakedisRaporu(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi) {
 	return new Promise((resolve, reject) => {
 		let query =
 			'INSERT INTO hakedis_2 (kullanici_id, s_id, isin_adi, sozlesme_bedeli, is_sure) VALUES (?, ?, ?, ?, ?)';
@@ -304,7 +304,7 @@ function insertHakedis_2(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi
 	});
 }
 
-function insertHakedis_3(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi) {
+function insertYapilanisler(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi) {
 	return new Promise((resolve, reject) => {
 		let query =
 			'INSERT INTO hakedis_3 (kullanici_id, s_id, isin_adi, sozlesme_bedeli, isin_suresi) VALUES (?, ?, ?, ?, ?)';
