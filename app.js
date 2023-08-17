@@ -48,6 +48,9 @@ app.get('/downloadPDF/:no/:s_id', (req, res) => {
 app.get('/ihale-bilgileri/:userId', (req, res) => {
 	res.sendFile(__dirname + '/views/html/ihale-bilgileri.html');
 });
+app.get('/user/:userId', (req,res)=>{
+	res.sendFile(__dirname + '/views/html/user.html');
+});
 app.get('/hakedis-kapagi/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
 	const sirket_id = req.session.sirket_id;
@@ -79,15 +82,18 @@ app.post('/', (req, res) => {
 	let query = 'select * from userTable where username = ? and password = ?';
 	let params = [username, password];
 	connection.query(query, params, (err, results) => {
-		if (results.length > 0) {
-			const userId = results[0].userId;
-			req.session.userId = userId;
+		const userId = results[0].userId;
+		req.session.userId = userId;
+		const role = results[0].role;
+		req.session.role = role;
 
-			const role = results[0].role;
-			req.session.role = role;
-
+		if (results.length > 0 && role == 'admin') {
 			res.redirect(`/ihale-bilgileri/${userId}`);
-		} else {
+		} 
+		else if(results.length > 0 && role == 'user'){
+			res.redirect(`/user/${userId}`);
+		}
+		else {
 			res.redirect('/');
 		}
 		res.end();
