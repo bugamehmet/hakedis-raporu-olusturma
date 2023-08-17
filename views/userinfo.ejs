@@ -61,8 +61,8 @@
 			'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }; return new
 			Date(dateString).toLocaleDateString('tr-TR', options); } %> <% function para(number,
 			fractionDigits = 2) { const formattedNumber = parseFloat(number).toFixed(fractionDigits);
-			return formattedNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺'; } %> <%
-			if(data.length!=0){ var i=1; data.forEach(function(data){ %>
+			return formattedNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺'; } %>
+			<% if(data.length!=0){ var i=1; data.forEach(function(data){ %>
 			<tr>
 				<td><%=i; %></td>
 				<td><%=data.no %></td>
