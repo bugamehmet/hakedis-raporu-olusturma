@@ -1,16 +1,17 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 	<head>
 		<title>Veri Listesi</title>
 		<style>
 			body {
-				font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+				font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+					Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 				margin: 0;
 				padding: 0;
 				background-color: white;
 			}
 			h1 {
-				color: rgb(46, 48, 120) ;
+				color: rgb(46, 48, 120);
 				text-align: center;
 				padding: 15px;
 			}
@@ -58,11 +59,9 @@
 
 			<% function formatDate(dateString) { const options = { day: '2-digit', month: '2-digit', year:
 			'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }; return new
-			Date(dateString).toLocaleDateString('tr-TR', options); } %> 
-			<% function para(number,
+			Date(dateString).toLocaleDateString('tr-TR', options); } %> <% function para(number,
 			fractionDigits = 2) { const formattedNumber = parseFloat(number).toFixed(fractionDigits);
-			return formattedNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺'; } %> 
-			<%
+			return formattedNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺'; } %> <%
 			if(data.length!=0){ var i=1; data.forEach(function(data){ %>
 			<tr>
 				<td><%=i; %></td>
@@ -86,6 +85,9 @@
 							/></svg
 					></a>
 				</td>
+				<td>
+					<a href="/deletehakedis/<%= data.kullanici_id %>/<%= data.s_id %>/<%= data.no %>">sil</a>
+					</td>
 			</tr>
 
 			<% i++; }) %> <% } else{ %>
