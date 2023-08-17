@@ -45,6 +45,24 @@ app.get('/downloadPDF/:no/:s_id', (req, res) => {
 	const s_id = req.params.s_id;
 	infoPDF(res, no, s_id);
 });
+app.get('/deletehakedis/:kullanici_id/:s_id/:no', (req, res)=>{
+	const k_id = req.params.kullanici_id;
+	const s_id = req.params.s_id;
+	const no = req.params.no;
+	deleteHakedis(res, k_id, s_id, no);
+});
+function deleteHakedis(res, k_id, s_id, no ){
+	let query = 'DELETE FROM haz_hakedis_2 WHERE kullanici_id = ? AND s_id = ? AND no = ?';
+	let params = [k_id, s_id, no];
+	connection.query(query, params, (err, results)=>{
+		if (err) {
+      res.status(500).json({ error: 'Veri silinemedi.' });
+    } else {
+      res.json({ success: 'Veri başarıyla silindi.' });
+    }
+
+	})
+}
 app.get('/ihale-bilgileri/:userId', (req, res) => {
 	res.sendFile(__dirname + '/views/html/ihale-bilgileri.html');
 });
