@@ -3,6 +3,7 @@ const fs = require('fs');
 const PDFDocument = require('pdfkit');
 const session = require('express-session');
 const connection = require('./db');
+const checkUserRole = require('./middlewares/role');
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -31,7 +32,7 @@ app.get('/logout', (req, res) => {
 		res.redirect('/');
 	});
 });
-app.get('/info', (req, res) => {
+app.get('/info', checkUserRole('admin'), (req, res) => {
 	const userId = req.session.userId;
 	const query = 'SELECT * FROM haz_hakedis_2 WHERE kullanici_id=? order by isin_adi desc';
 	connection.query(query, userId, (err, data) => {
@@ -81,6 +82,10 @@ app.post('/', (req, res) => {
 		if (results.length > 0) {
 			const userId = results[0].userId;
 			req.session.userId = userId;
+
+			const role = results[0].role;
+			req.session.role = role;
+
 			res.redirect(`/ihale-bilgileri/${userId}`);
 		} else {
 			res.redirect('/');
