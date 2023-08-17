@@ -331,6 +331,7 @@ function hakediskapagiPDF(res, useridInfo, sirket_id) {
 			res.status(500).send('Veritabanı hatası');
 			return;
 		}
+		let tarih = `${gunx(gun)}.${ayx(ay)}.${yil}`;
 		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'assets/fonts/Roboto.ttf' });
 
 		reportFrame();
@@ -396,7 +397,7 @@ function hakediskapagiPDF(res, useridInfo, sirket_id) {
 		function reportInformation() {
 			doc
 				.fontSize(12)
-				.text(`Tarihi: ${results[0].tarih}`, 100, 180, { align: 'center' })
+				.text(`Tarihi: ${tarih}`, 100, 180, { align: 'center' })
 				.text(`No su: ${results[0].no}`, 100, 200, { align: 'center' })
 				.text(`Uygulama Yılı: ${results[0].uygulama_yili}`, 100, 220, { align: 'center' })
 				.text('Yapılan işin / Hizmetin Adı :', 35, 270)
@@ -480,7 +481,7 @@ function hakediskapagiPDF(res, useridInfo, sirket_id) {
 				results[0].kullanici_id,
 				results[0].s_id,
 				results[0].uygulama_yili,
-				results[0].tarih,
+				tarih,
 				results[0].is_adi,
 				results[0].proje_no,
 				results[0].yuklenici_adi,
@@ -1072,7 +1073,7 @@ function infoPDF(res, no, s_id) {
 				.fontSize('9')
 				.text(`${results[0].isin_adi}`, 25, 40, { align: 'left' })
 
-				.font('assets/fonts/Roboto-Bold')
+				.font('assets/fonts/Roboto-Bold.ttf')
 				.text(`${para(results[0].A_soz_tutari)}`, 455, 70, { align: 'left' })
 				.text('C', 25, 110)
 				.text('Toplam Tutar ( A + B )', 45, 110)
