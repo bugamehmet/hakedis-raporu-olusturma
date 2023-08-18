@@ -15,20 +15,7 @@ app.use(
 
 const router = require('./routers/routes');
 app.use('/', router);
-app.use('/register', router);
-app.use('/logout', router);
-app.use('/info', router);
-app.use('/userinfo', router);
-app.use('/downloadPDF/:no/:s_id', router);
-app.use('/deletehakedis/:kullanici_id/:s_id/:no', router);
-app.use('/ihale-bilgileri/:userId', router);
-app.use('/user/:userId', router);
-app.use('/hakedis-kapagi', router);
-app.use('/hakedis-raporu', router);
-app.use('/yapilan-isler', router);
-app.use('/hakedis-kapagi/:userId', router);
-app.use('/hakedis-raporu/:userId', router);
-app.use('/yapilan-isler/:userId', router);
+
 
 // MySQL bağlantısını kapat
 // connection.end();

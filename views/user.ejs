@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<style>
+      body {
+  margin: 0;
+  background-color: hsl(0, 0%, 98%);
+  color: #333;
+}
+main {
+  margin: 0 auto;
+  padding: 4rem 0;
+  width: 90%;
+  max-width: 60rem;
+}
+h2{
+  margin-left: 10px;
+  margin-top: 2px;
+  color: rgb(46, 48, 120);
+}
+
+.login-1{
+  box-sizing: border-box;
+  padding: 2rem;
+  border-radius: 1rem;
+  background-color: hsl(0, 0%, 100%);
+  border: 4px solid rgb(46, 48, 120);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.full-width {
+  display: flex;
+  gap: 10px;
+  grid-column: span 2;
+  padding: 1rem;
+}
+
+input[type="text"],
+input[type="email"]
+{
+  font: 1rem  sans-serif;
+  display: block;
+  box-sizing: border-box;
+  border-radius: 10px;
+  width: 100%;
+  padding: 0.2rem 0.75rem;
+}
+
+button {
+  font: 1.2rem sans-serif;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  padding: 0.3rem 1.95rem;
+  border: none;
+  border-radius: 10px;
+  background-color:rgb(46, 48, 120);
+  color: #fff;
+}
+button[type="submit"] {
+  background-color: rgb(46, 48, 120);
+  color: white;
+}
+button[type="submit"]:hover {
+  background-color: rgb(106, 109, 206);
+}
+input:focus {
+  outline-color:rgb(46, 48, 120) ;
+  box-shadow: 0 0 0 4px hsl(213, 90%, 70%);
+}
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px black;
+}
+.custom-select {
+  font: 1rem sans-serif;
+  display: block;
+  box-sizing: border-box;
+  border-radius: 10px;
+  width: 100%;
+  padding: 0.2rem 0.75rem;
+  background-color: white;
+  border: 2px solid rgb(46, 48, 120);
+  color: #333;
+  cursor: pointer;
+  appearance: none; /* Bazı tarayıcılarda varsayılan oku kaldırır */
+  background-image: url("path_to_custom_arrow_icon.png");
+  background-repeat: no-repeat;
+  background-position: right center;
+}
+
+.custom-select:focus {
+  outline-color: rgb(46, 48, 120);
+  box-shadow: 0 0 0 4px hsl(213, 90%, 70%);
+}
+
+.custom-select::-ms-expand {
+  display: none;
+}
+    </style>
+		<title>HAKEDİS Bilgileri</title>
+	</head>
+	<body>
+		<main>
+			<div class="full-width">
+				<form action="/userinfo" method="get">
+					<button id="info" type="submit">Geçmiş Hakedişler</button>
+				</form>
+				<br />
+				<form action="/logout" method="get">
+					<button id="info" type="submit">Çıkış Yap</button>
+				</form>
+			</div>
+			</form>
+			<div class="full-width">
+				<form action="/hakedis-kapagi" method="post">
+					<button type="submit">Hakediş Kapağı</button>
+					<br/><br/>
+          <select name="sirket" class="custom-select">
+            <option value="" disabled selected>Bir şirket seçin</option>
+            <% data.forEach(data => { %>
+              <option value="<%= data.s_id %>"><%= data.isin_adi %></option>
+            <% }); %>
+          </select> 
+				</form>
+
+				<form action="/hakedis-raporu" method="post">
+					<button type="submit">Hakediş Raporu</button>
+					<br /><br />
+					<input type="text" id="sirket_id" name="sirket_id" placeholder="SİRKET İD" required />
+					<br />
+					<input
+						type="text"
+						id="hakedis_tutari"
+						name="hakedis_tutari"
+						value="20"
+						placeholder="HAKEDİŞ TUTARI"
+						required
+					/>
+					<br />
+					<input
+						type="text"
+						id="fiyat_farki"
+						name="fiyat_farki"
+						value="20"
+						placeholder="Fiyat Farkı"
+						required
+					/>
+					<br />
+					<input
+						type="text"
+						id="gecikme"
+						name="gecikme"
+						value="20"
+						placeholder="Para Cezası"
+						required
+					/>
+					<br />
+					<input
+						type="text"
+						id="kesinti"
+						name="kesinti"
+						value="20"
+						placeholder="Kesinti"
+						required
+					/>
+					<br />
+					<label for="">KDV TEVFİKATI</label>
+					<br />
+					<input type="radio" name="var_yok" value="var" checked /> Var
+					<input type="radio" name="var_yok" value="yok" /> Yok
+				</form>
+
+				<form action="/yapilan-isler" method="post">
+					<button type="submit">Yapılan İşler Listesi</button>
+					<br /><br />
+					<input type="text" id="sirket_id" name="sirket_id" placeholder="SİRKET İD" required />
+					<br />
+					<input
+						type="text"
+						id="hakedis_tutari_2"
+						name="hakedis_tutari_2"
+						placeholder="HAKEDİŞ TUTARI"
+						required
+					/>
+				</form>
+			</div>
+		</main>
+	</body>
+</html>
