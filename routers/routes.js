@@ -117,8 +117,13 @@ router.post('/ihale-bilgileri', async (req, res) => {
 		res.redirect(`/ihale-bilgileri/${userId}`);
 	}
 });
-router.get('/user/:userId', (req, res) => {
-	res.sendFile(path.join(__dirname, '../views/html/user.html'));
+router.get('/user/:userId', (req,res)=>{
+	const userId = req.session.userId;
+	let query = 'select * from haz_hakedis_2 where kullanici_id=?'
+	connection.query(query, userId, (err, data)=>{
+		if(err) throw err;
+		res.render('user', {data});
+	});
 });
 router.get('/info', checkUserRole('admin'), (req, res) => {
 	const userId = req.session.userId;
@@ -154,8 +159,9 @@ router.get('/hakedis-kapagi/:userId', (req, res) => {
 	req.session.sirket_id = null;
 });
 router.post('/hakedis-kapagi', (req, res) => {
+	//const sirket = req.body.sirket
 	const userId = req.session.userId;
-	const sirket_id = req.body.sirket_id;
+	const sirket_id = req.body.sirket;
 	req.session.sirket_id = sirket_id;
 	let query = 'select kullanici_id from hakedis_raporu where kullanici_id=?';
 	let params = [userId];
