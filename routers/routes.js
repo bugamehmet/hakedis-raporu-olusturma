@@ -11,17 +11,6 @@ const router = express.Router();
 router.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, '../views/html/login.html'));
 });
-router.get('/register', (req, res) => {
-	res.sendFile(path.join(__dirname, '../views/html/register.html'));
-});
-router.get('/logout', (req, res) => {
-	req.session.destroy((err) => {
-		if (err) {
-			console.error('Oturum sonlandırma hatası:', err);
-		}
-		res.redirect('/');
-	});
-});
 router.post('/', (req, res) => {
 	let username = req.body.username;
 	let password = req.body.password;
@@ -43,6 +32,9 @@ router.post('/', (req, res) => {
 		}
 		res.end();
 	});
+});
+router.get('/register', (req, res) => {
+	res.sendFile(path.join(__dirname, '../views/html/register.html'));
 });
 router.post('/register', (req, res) => {
 	let username = req.body.username;
@@ -67,38 +59,16 @@ router.post('/register', (req, res) => {
 		res.end();
 	});
 });
-router.get('/info', checkUserRole('admin'), (req, res) => {
-	const userId = req.session.userId;
-	const query = 'SELECT * FROM haz_hakedis_2 WHERE kullanici_id=? order by isin_adi desc';
-	connection.query(query, userId, (err, data) => {
-		if (err) throw err;
-		res.render('info', { userId, data });
+router.get('/logout', (req, res) => {
+	req.session.destroy((err) => {
+		if (err) {
+			console.error('Oturum sonlandırma hatası:', err);
+		}
+		res.redirect('/');
 	});
-});
-router.get('/userinfo', checkUserRole('user'), (req, res) => {
-	const userId = req.session.userId;
-	const query = 'SELECT * FROM haz_hakedis_2 WHERE kullanici_id=? order by isin_adi desc';
-	connection.query(query, userId, (err, data) => {
-		if (err) throw err;
-		res.render('userinfo', { userId, data });
-	});
-});
-router.get('/downloadPDF/:no/:s_id', (req, res) => {
-	const no = req.params.no;
-	const s_id = req.params.s_id;
-	infoPDF(res, no, s_id);
-});
-router.get('/deletehakedis/:kullanici_id/:s_id/:no', (req, res) => {
-	const k_id = req.params.kullanici_id;
-	const s_id = req.params.s_id;
-	const no = req.params.no;
-	deleteHakedis(res, k_id, s_id, no);
 });
 router.get('/ihale-bilgileri/:userId', (req, res) => {
 	res.sendFile(path.join(__dirname, '../views/html/ihale-bilgileri.html'));
-});
-router.get('/user/:userId', (req, res) => {
-	res.sendFile(path.join(__dirname, '../views/html/user.html'));
 });
 router.post('/ihale-bilgileri', async (req, res) => {
 	const userId = req.session.userId;
@@ -146,6 +116,36 @@ router.post('/ihale-bilgileri', async (req, res) => {
 		console.log(error);
 		res.redirect(`/ihale-bilgileri/${userId}`);
 	}
+});
+router.get('/user/:userId', (req, res) => {
+	res.sendFile(path.join(__dirname, '../views/html/user.html'));
+});
+router.get('/info', checkUserRole('admin'), (req, res) => {
+	const userId = req.session.userId;
+	const query = 'SELECT * FROM haz_hakedis_2 WHERE kullanici_id=? order by isin_adi desc';
+	connection.query(query, userId, (err, data) => {
+		if (err) throw err;
+		res.render('info', { userId, data });
+	});
+});
+router.get('/userinfo', checkUserRole('user'), (req, res) => {
+	const userId = req.session.userId;
+	const query = 'SELECT * FROM haz_hakedis_2 WHERE kullanici_id=? order by isin_adi desc';
+	connection.query(query, userId, (err, data) => {
+		if (err) throw err;
+		res.render('userinfo', { userId, data });
+	});
+});
+router.get('/downloadPDF/:no/:s_id', (req, res) => {
+	const no = req.params.no;
+	const s_id = req.params.s_id;
+	infoPDF(res, no, s_id);
+});
+router.get('/deletehakedis/:kullanici_id/:s_id/:no', (req, res) => {
+	const k_id = req.params.kullanici_id;
+	const s_id = req.params.s_id;
+	const no = req.params.no;
+	deleteHakedis(res, k_id, s_id, no);
 });
 router.get('/hakedis-kapagi/:userId', (req, res) => {
 	const useridInfo = req.params.userId;

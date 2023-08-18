@@ -1,6 +1,5 @@
 const express = require('express');
 const session = require('express-session');
-
 const app = express();
 app.set('view engine', 'ejs');
 app.use('/assets', express.static('assets'));
@@ -15,7 +14,6 @@ app.use(
 );
 
 const router = require('./routers/routes');
-
 app.use('/', router);
 app.use('/register', router);
 app.use('/logout', router);
