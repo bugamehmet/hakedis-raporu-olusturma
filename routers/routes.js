@@ -39,6 +39,7 @@ router.get('/register', (req, res) => {
 router.post('/register', (req, res) => {
 	let username = req.body.username;
 	let password = req.body.password;
+	let kurum_id = req.body.kurum_id;
 	let isim = req.body.isim;
 	let soyisim = req.body.soyisim;
 	let eposta = req.body.eposta;
@@ -46,13 +47,14 @@ router.post('/register', (req, res) => {
 	let adres = req.body.adres;
 
 	let query =
-		'INSERT INTO userTable (username, password, isim, soyisim, eposta, telefon, adres) VALUES (?, ?, ?, ?, ?, ?, ?)';
-	let params = [username, password, isim, soyisim, eposta, telefon, adres];
+		'INSERT INTO userTable (username, password, kurum_id, isim, soyisim, eposta, telefon, adres) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+	let params = [username, password, kurum_id, isim, soyisim, eposta, telefon, adres];
 	connection.query(query, params, (err, results) => {
 		if (err) {
 			console.log('Kayıt olma hatası:', err);
 			res.redirect('/');
 		} else {
+			console.log('Kayıt olma Başarılı');
 			const userId = results.insertId;
 			res.redirect('/ihale-bilgileri/' + userId);
 		}
