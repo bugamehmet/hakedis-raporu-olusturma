@@ -119,7 +119,7 @@ button:focus {
 				<form action="/hakedis-kapagi" method="post">
 					<button type="submit">Hakediş Kapağı</button>
 					<br/><br/>
-          <select name="sirket" class="custom-select">
+          <select name="sirket_id" class="custom-select">
             <option value="" disabled selected>Bir şirket seçin</option>
             <% data.forEach(data => { %>
               <option value="<%= data.s_id %>"><%= data.isin_adi %></option>
@@ -130,7 +130,7 @@ button:focus {
 				<form action="/hakedis-raporu" method="post">
 					<button type="submit">Hakediş Raporu</button>
 					<br/><br/>
-          <select name="sirket" class="custom-select">
+          <select name="sirket_id" class="custom-select">
             <option value="" disabled selected>Bir şirket seçin</option>
             <% data.forEach(data => { %>
               <option value="<%= data.s_id %>"><%= data.isin_adi %></option>
@@ -182,7 +182,7 @@ button:focus {
 				<form action="/yapilan-isler" method="post">
 					<button type="submit">Yapılan İşler Listesi</button>
 					<br/><br/>
-          <select name="sirket" class="custom-select">
+          <select name="sirket_id" class="custom-select">
             <option value="" disabled selected>Bir şirket seçin</option>
             <% data.forEach(data => { %>
               <option value="<%= data.s_id %>"><%= data.isin_adi %></option>

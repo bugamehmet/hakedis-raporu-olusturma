@@ -47,7 +47,7 @@ router.post('/register', (req, res) => {
 	let adres = req.body.adres;
 
 	let query =
-		'INSERT INTO userTable (username, password, kurum_id, isim, soyisim, eposta, telefon, adres) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+		'INSERT INTO userTable (username, password, userId, isim, soyisim, eposta, telefon, adres) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
 	let params = [username, password, kurum_id, isim, soyisim, eposta, telefon, adres];
 	connection.query(query, params, (err, results) => {
 		if (err) {
@@ -55,8 +55,9 @@ router.post('/register', (req, res) => {
 			res.redirect('/');
 		} else {
 			console.log('Kayıt olma Başarılı');
-			const userId = results.insertId;
-			res.redirect('/ihale-bilgileri/' + userId);
+			res.redirect('/');
+			//const userId = results.insertId;
+			//res.redirect('/ihale-bilgileri/' + userId);
 		}
 		res.end();
 	});
@@ -162,7 +163,7 @@ router.get('/hakedis-kapagi/:userId', (req, res) => {
 });
 router.post('/hakedis-kapagi', (req, res) => {
 	const userId = req.session.userId;
-	const sirket_id = req.body.sirket;
+	const sirket_id = req.body.sirket_id;
 	req.session.sirket_id = sirket_id;
 	let query = 'select kullanici_id from hakedis_raporu where kullanici_id=?';
 	let params = [userId];
@@ -203,7 +204,7 @@ router.post('/hakedis-raporu', (req, res) => {
 	const var_yok = req.body.var_yok;
 	const hakedis_tutari = req.body.hakedis_tutari;
 	const kesinti = req.body.kesinti;
-	const sirket_id = req.body.sirket;
+	const sirket_id = req.body.sirket_id;
 	req.session.gecikme = gecikme;
 	req.session.kesinti = kesinti;
 	req.session.hakedis_tutari = hakedis_tutari;
@@ -234,7 +235,7 @@ router.post('/yapilan-isler', (req, res) => {
 	const userId = req.session.userId;
 	const hakedis_tutari_2 = req.body.hakedis_tutari_2;
 	req.session.hakedis_tutari_2 = hakedis_tutari_2;
-	const sirket_id = req.body.sirket;
+	const sirket_id = req.body.sirket_id;
 	req.session.sirket_id = sirket_id;
 
 	let query = 'select kullanici_id from hakedis_3 where kullanici_id=?';
