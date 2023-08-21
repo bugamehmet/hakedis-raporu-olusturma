@@ -159,7 +159,6 @@ router.get('/hakedis-kapagi/:userId', (req, res) => {
 	req.session.sirket_id = null;
 });
 router.post('/hakedis-kapagi', (req, res) => {
-	//const sirket = req.body.sirket
 	const userId = req.session.userId;
 	const sirket_id = req.body.sirket;
 	req.session.sirket_id = sirket_id;
@@ -202,7 +201,7 @@ router.post('/hakedis-raporu', (req, res) => {
 	const var_yok = req.body.var_yok;
 	const hakedis_tutari = req.body.hakedis_tutari;
 	const kesinti = req.body.kesinti;
-	const sirket_id = req.body.sirket_id;
+	const sirket_id = req.body.sirket;
 	req.session.gecikme = gecikme;
 	req.session.kesinti = kesinti;
 	req.session.hakedis_tutari = hakedis_tutari;
@@ -233,7 +232,7 @@ router.post('/yapilan-isler', (req, res) => {
 	const userId = req.session.userId;
 	const hakedis_tutari_2 = req.body.hakedis_tutari_2;
 	req.session.hakedis_tutari_2 = hakedis_tutari_2;
-	const sirket_id = req.body.sirket_id;
+	const sirket_id = req.body.sirket;
 	req.session.sirket_id = sirket_id;
 
 	let query = 'select kullanici_id from hakedis_3 where kullanici_id=?';
