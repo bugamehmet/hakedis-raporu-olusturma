@@ -180,7 +180,7 @@ function hakediskapagiPDF(res, useridInfo, sirket_id) {
 		doc.pipe(res);
 		console.log('Hakediş raporu başarıyla oluşturuldu');
 		res.setHeader('Content-Type', 'application/pdf');
-		res.setHeader('Content-Disposition', 'attachment; filename=hakedis_kapagi.pdf');
+		res.setHeader('Content-Disposition', `attachment; filename=${results[0].is_adi}_hakedis_kapagi.pdf`);
 		doc.end();
 	});
 }
@@ -462,7 +462,7 @@ function hakedisraporuPDF(res, useridInfo, gecikme, fark, var_yok, hakedis_tutar
 		doc.pipe(res);
 		console.log('Hakediş raporu-2 başarıyla oluşturuldu');
 		res.setHeader('Content-Type', 'application/pdf');
-		res.setHeader('Content-Disposition', 'attachment; filename=hakedis_raporu.pdf');
+		res.setHeader('Content-Disposition', `attachment; filename=${results[0].isin_adi}_hakedis_raporu.pdf`);
 		doc.end();
 	});
 }
@@ -671,7 +671,7 @@ function yapilanislerPDF(res, useridInfo, hakedis_tutari_2, sirket_id) {
 			doc.pipe(res);
 			console.log('Hakediş raporu-3 başarıyla oluşturuldu');
 			res.setHeader('Content-Type', 'application/pdf');
-			res.setHeader('Content-Disposition', 'attachment; filename=yapilan_isler_listesi.pdf');
+			res.setHeader('Content-Disposition', `attachment; filename=${results[0].isin_adi}_yapilan_isler_listesi.pdf`);
 			doc.end();
 		});
 	}

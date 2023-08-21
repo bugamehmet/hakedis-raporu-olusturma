@@ -6,8 +6,10 @@ const { inserthakedisKapagi, inserthakedisRaporu, insertYapilanisler } = require
 const { infoPDF , hakediskapagiPDF, hakedisraporuPDF, yapilanislerPDF} = require('../utils/generatePdf');
 const deleteHakedis = require('../utils/deleteHakedis');
 const path = require('path');
+
 const router = express.Router();
-//veritabanı güncellemeleri yapıldı- usertabloda userId- aynı kaldı ve kurum_id olarak kullanılmaya başladın- isimler düzeltilecek-
+
+
 router.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, '../views/html/login.html'));
 });
