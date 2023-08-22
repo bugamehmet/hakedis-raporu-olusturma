@@ -38,6 +38,14 @@ router.post('/', (req, res) => {
 router.get('/register', (req, res) => {
 	res.sendFile(path.join(__dirname, '../views/html/register.html'));
 });
+router.get('/logout', (req, res) => {
+	req.session.destroy((err) => {
+		if (err) {
+			console.error('Oturum sonlandırma hatası:', err);
+		}
+		res.redirect('/');
+	});
+});
 router.post('/register', (req, res) => {
 	let username = req.body.username;
 	let password = req.body.password;
@@ -62,14 +70,6 @@ router.post('/register', (req, res) => {
 			//res.redirect('/ihale-bilgileri/' + userId);
 		}
 		res.end();
-	});
-});
-router.get('/logout', (req, res) => {
-	req.session.destroy((err) => {
-		if (err) {
-			console.error('Oturum sonlandırma hatası:', err);
-		}
-		res.redirect('/');
 	});
 });
 router.get('/ihale-bilgileri/:userId', (req, res) => {
@@ -123,7 +123,7 @@ router.post('/ihale-bilgileri', async (req, res) => {
 	}
 });
 router.get('/user/:userId', (req,res)=>{
-	const userId = req.session.userId;
+	let userId = req.session.userId;
 	let query = 'select * from haz_hakedis_2 where kullanici_id=?'
 	connection.query(query, userId, (err, data)=>{
 		if(err) throw err;
