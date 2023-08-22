@@ -3,12 +3,16 @@ const connection = require('../db');
 const checkUserRole = require('../middlewares/role');
 const { yilx, gunx, ayx } = require('../utils/date');
 const { inserthakedisKapagi, inserthakedisRaporu, insertYapilanisler } = require('../utils/insert');
-const { infoPDF , hakediskapagiPDF, hakedisraporuPDF, yapilanislerPDF} = require('../utils/generatePdf');
+const {
+	infoPDF,
+	hakediskapagiPDF,
+	hakedisraporuPDF,
+	yapilanislerPDF,
+} = require('../utils/generatePdf');
 const deleteHakedis = require('../utils/deleteHakedis');
 const path = require('path');
 
 const router = express.Router();
-
 
 router.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, '../views/html/login.html'));
@@ -28,7 +32,7 @@ router.post('/', (req, res) => {
 		if (results.length > 0 && role == 'admin') {
 			res.redirect(`/ihale-bilgileri/${userId}`);
 		} else if (results.length > 0 && role == 'user') {
-			res.redirect(`/user/${userId}`);
+			res.redirect(`/userHome/${userId}`);
 		} else {
 			res.redirect('/');
 		}
@@ -122,12 +126,12 @@ router.post('/ihale-bilgileri', async (req, res) => {
 		res.redirect(`/ihale-bilgileri/${userId}`);
 	}
 });
-router.get('/user/:userId', (req,res)=>{
-	let userId = req.session.userId;
-	let query = 'select * from haz_hakedis_2 where kullanici_id=?'
-	connection.query(query, userId, (err, data)=>{
-		if(err) throw err;
-		res.render('user', {data});
+router.get('/userHome/:userId', (req, res) => {
+	const userId = req.session.userId;
+	const query = 'SELECT * FROM haz_hakedis_2 WHERE kullanici_id=?';
+	connection.query(query, userId, (err, data) => {
+		if (err) throw err;
+		res.render('userHome', { data });
 	});
 });
 router.get('/info', checkUserRole('admin'), (req, res) => {
@@ -253,4 +257,4 @@ router.post('/yapilan-isler', (req, res) => {
 	});
 });
 
-module.exports =  router ;
+module.exports = router;
