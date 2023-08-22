@@ -119,38 +119,47 @@ button:focus {
 				<form action="/hakedis-kapagi" method="post">
 					<button type="submit">Hakediş Kapağı</button>
 					<br/><br/>
-          <select name="sirket_id" class="custom-select">
-						<option value="" disabled selected>Bir şirket seçin</option>
-						<% 
-								const uniqueCompanies = [];
-								data.forEach(item => {
-										if (!uniqueCompanies.includes(item.s_id)) {
-												uniqueCompanies.push(item.s_id);
-						%>
-						<option value="<%= item.s_id %>"><%= item.isin_adi %></option>
-						<% 
-										}
-								});
-						%>
+					<select name="sirket_id" class="custom-select">
+							<% if (data && data.length > 0) { %>
+									<option value="" disabled selected>Bir şirket seçin</option>
+									<% 
+											const uniqueCompanies = [];
+											data.forEach(item => {
+													if (!uniqueCompanies.includes(item.s_id)) {
+															uniqueCompanies.push(item.s_id);
+									%>
+									<option value="<%= item.s_id %>"><%= item.isin_adi %></option>
+									<% 
+													}
+											});
+									%>
+							<% } else { %>
+									<option value="" disabled selected>Veri Yok</option>
+							<% } %>
 					</select> 
-				</form>
+			</form>
+			
+			
 
 				<form action="/hakedis-raporu" method="post">
 					<button type="submit">Hakediş Raporu</button>
 					<br/><br/>
-          <select name="sirket_id" class="custom-select">
-						<option value="" disabled selected>Bir şirket seçin</option>
-						<% 
-								const uniqueCompaniess = [];
-								data.forEach(item => {
-										if (!uniqueCompaniess.includes(item.s_id)) {
-												uniqueCompaniess.push(item.s_id);
-						%>
-						<option value="<%= item.s_id %>"><%= item.isin_adi %></option>
-						<% 
-										}
-								});
-						%>
+					<select name="sirket_id" class="custom-select">
+        <option value="" disabled selected>Bir şirket seçin</option>
+        <% 
+            const uniqueCompaniess = [];
+            if (data && data.length > 0) {
+                data.forEach(item => {
+                    if (!uniqueCompaniess.includes(item.s_id)) {
+                        uniqueCompaniess.push(item.s_id);
+        %>
+        <option value="<%= item.s_id %>"><%= item.isin_adi %></option>
+        <% 
+                    }
+                });
+            } else { %>
+            <option value="" disabled selected>Veri Yok</option>
+        <% } %>
 					</select> 
 						<br>
 					<input
@@ -198,20 +207,23 @@ button:focus {
 				<form action="/yapilan-isler" method="post">
 					<button type="submit">Yapılan İşler Listesi</button>
 					<br/><br/>
-          <select name="sirket_id" class="custom-select">
-						<option value="" disabled selected>Bir şirket seçin</option>
-						<% 
-								const uniqueCompaniesss = [];
-								data.forEach(item => {
-										if (!uniqueCompaniesss.includes(item.s_id)) {
-												uniqueCompaniesss.push(item.s_id);
-						%>
-						<option value="<%= item.s_id %>"><%= item.isin_adi %></option>
-						<% 
-										}
-								});
-						%>
-					</select> 
+					<select name="sirket_id" class="custom-select">
+        <option value="" disabled selected>Bir şirket seçin</option>
+        <% 
+            const uniqueCompaniesss = [];
+            if (data && data.length > 0) {
+                data.forEach(item => {
+                    if (!uniqueCompaniesss.includes(item.s_id)) {
+                        uniqueCompaniesss.push(item.s_id);
+        %>
+        <option value="<%= item.s_id %>"><%= item.isin_adi %></option>
+        <% 
+                    }
+                });
+            } else { %>
+            <option value="" disabled selected>Veri Yok</option>
+        <% } %>
+    </select> 
 					<br />
 					<input
 						type="text"

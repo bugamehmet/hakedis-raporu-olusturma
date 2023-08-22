@@ -41,13 +41,54 @@
 				padding: 10px;
 				font-style: italic;
 			}
+			#filterInput {
+				margin-left: 10%;
+				display: flex;
+				width: 60%;
+				padding: 8px;
+				margin-bottom: 10px;
+				border: 2px solid rgb(46, 48, 120);
+				border-radius: 4px;
+				box-sizing: border-box;
+			}
 		</style>
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+				// Filtreleme için giriş kutusunu ve tabloyu alın
+				const filterInput = document.getElementById('filterInput');
+				const table = document.querySelector('table');
+
+				// Giriş kutusuna her tuşa basıldığında çalışacak olay dinleyici
+				filterInput.addEventListener('input', function () {
+					// Giriş kutusundaki metni alın ve küçük harfe dönüştürün
+					const filterText = filterInput.value.toLowerCase();
+
+					// Tablonun tüm satırlarını alın
+					const rows = table.querySelectorAll('tr');
+
+					// İlk satırı (başlık satırını) hariç, tüm satırları döngü ile kontrol edin
+					for (let i = 1; i < rows.length; i++) {
+						const row = rows[i];
+						const companyName = row.cells[2].textContent.toLowerCase(); // Şirket ismi sütunu
+
+						// Şirket ismi filtre metni ile eşleşiyorsa satırı göster, değilse gizle
+						if (companyName.includes(filterText)) {
+							row.style.display = ''; // Göster
+						} else {
+							row.style.display = 'none'; // Gizle
+						}
+					}
+				});
+			});
+		</script>
 	</head>
 	<body>
 		<h1>
 			Son Hakediş Raporları
 			<!-- <%= userId %> -->
 		</h1>
+		<input type="text" id="filterInput" placeholder="Şirket İsmi Girin" />
+		<br>
 		<table border="1">
 			<tr>
 				<th>No</th>

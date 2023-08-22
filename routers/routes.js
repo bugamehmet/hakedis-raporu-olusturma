@@ -131,7 +131,7 @@ router.get('/userHome/:userId', (req, res) => {
 	const userId = req.session.userId;
 	const query = 'SELECT * FROM haz_hakedis_2 WHERE kullanici_id=?';
 	connection.query(query, userId, (err, data) => {
-		if (err) throw err;
+		//if (err) throw err;
 		res.render('userHome', { data });
 	});
 });
