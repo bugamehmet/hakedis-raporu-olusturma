@@ -55,7 +55,7 @@
 			}
 
 			button {
-				font: 1.2rem sans-serif;
+				font: 0.95rem sans-serif;
 				border-radius: 0.25rem;
 				cursor: pointer;
 				padding: 0.3rem 1.95rem;
@@ -191,7 +191,7 @@
 		<main>
 			<div class="full-width">
 				<form action="/hakedis-kapagi" method="post">
-					<button type="submit">Hakediş Kapağı</button>
+					<button type="submit">Hakediş Kapağı Oluştur</button>
 					<br /><br />
 					<select name="sirket_id" class="custom-select">
 						<% if (data && data.length > 0) { %>
@@ -206,7 +206,7 @@
 				</form>
 
 				<form action="/hakedis-raporu" method="post">
-					<button type="submit">Hakediş Raporu</button>
+					<button type="submit">Hakediş Raporu Oluştur</button>
 					<br /><br />
 					<select name="sirket_id" class="custom-select">
 						<option value="" disabled selected>Bir şirket seçin</option>
@@ -261,7 +261,7 @@
 				</form>
 
 				<form action="/yapilan-isler" method="post">
-					<button type="submit">Yapılan İşler Listesi</button>
+					<button type="submit">Yapılan İşler Listesi Oluştur</button>
 					<br /><br />
 					<select name="sirket_id" class="custom-select">
 						<option value="" disabled selected>Bir şirket seçin</option>
