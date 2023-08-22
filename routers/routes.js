@@ -5,6 +5,7 @@ const { yilx, gunx, ayx } = require('../utils/date');
 const { inserthakedisKapagi, inserthakedisRaporu, insertYapilanisler } = require('../utils/insert');
 const {
 	infoPDF,
+	showPDF,
 	hakediskapagiPDF,
 	hakedisraporuPDF,
 	yapilanislerPDF,
@@ -149,6 +150,11 @@ router.get('/userinfo', checkUserRole('user'), (req, res) => {
 		if (err) throw err;
 		res.render('userinfo', { userId, data });
 	});
+});
+router.get('/showPDF/:no/:s_id', (req, res) => {
+	const no = req.params.no;
+	const s_id = req.params.s_id;
+	showPDF(res, no, s_id);
 });
 router.get('/downloadPDF/:no/:s_id', (req, res) => {
 	const no = req.params.no;

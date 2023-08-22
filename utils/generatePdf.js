@@ -676,6 +676,240 @@ function yapilanislerPDF(res, useridInfo, hakedis_tutari_2, sirket_id) {
 		});
 	}
 }
+function showPDF(res, no, s_id) {
+	let query = 'select * from haz_hakedis_2 where no=? and s_id=?';
+	let params = [no, s_id];
+	connection.query(query, params, (err, results) => {
+		if (err) {
+			console.log('Veritabanı hatası:', err);
+			res.status(500).send('Veritabanı hatası');
+			return;
+		}
+		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'assets/fonts/Roboto.ttf' });
+		progressFrame();
+		progressHeader();
+		progressMiddle();
+		progressFooter();
+		function progressFrame() {
+			const frameX = 15; // Çerçevenin sol kenarının X koordinatı
+			const frameY = 30; // Çerçevenin üst kenarının Y koordinatı
+			const frameWidth = 570; // Çerçevenin genişliği
+			const frameHeight = 750; // Çerçevenin yüksekliği
+			const frameThickness = 1.3; // Çerçevenin kalınlığı piksel cinsinden
+
+			const drawRect = (x, y, width, height, color) => {
+				doc.rect(x, y, width, height).fill(color);
+			};
+
+			drawRect(frameX, frameY, frameWidth, frameThickness, '#000000'); // Üst çerçeve
+			drawRect(
+				frameX,
+				frameY + frameHeight - frameThickness,
+				frameWidth,
+				frameThickness,
+				'#000000'
+			); // Alt çerçeve
+			drawRect(
+				frameX,
+				frameY + frameThickness,
+				frameThickness,
+				frameHeight - 2 * frameThickness,
+				'#000000'
+			); // Sol çerçeve
+			drawRect(
+				frameX + frameWidth - frameThickness,
+				frameY + frameThickness,
+				frameThickness,
+				frameHeight - 2 * frameThickness,
+				'#000000'
+			); // Sağ çerçeve
+		}
+		function progressRow(doc, heigth) {
+			doc.lineJoin('miter').rect(16.9, heigth, 566.3, 20).stroke();
+			return doc;
+		}
+		function progressRow2(doc, height) {
+			doc.lineJoin('miter').rect(55, height, 528, 20).stroke();
+			return doc;
+		}
+		function para(number, fractionDigits = 2) {
+			const formattedNumber = parseFloat(number).toFixed(fractionDigits);
+			return formattedNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₺';
+		}
+		function progressHeader() {
+			progressRow(doc, 65);
+			progressRow(doc, 85);
+			progressRow(doc, 105);
+			progressRow(doc, 130);
+			progressRow(doc, 150);
+			progressRow(doc, 170);
+			progressRow(doc, 190);
+
+			doc
+				.font('assets/fonts/Roboto-Bold.ttf')
+				.text('HAKEDİŞ RAPORU', 65, 10, { align: 'center' })
+				.fontSize('9')
+				.text(`${results[0].isin_adi}`, 25, 40, { align: 'left' })
+
+				.font('assets/fonts/Roboto-Bold.ttf')
+				.text(`${para(results[0].A_soz_tutari)}`, 455, 70, { align: 'left' })
+				.text('C', 25, 110)
+				.text('Toplam Tutar ( A + B )', 45, 110)
+				.text(`${para(results[0].C_toplam)}`, 455, 110, { align: 'left' })
+				.text(`${para(results[0].D_onceki_toplam)}`, 455, 135, { align: 'left' })
+				.text(`${para(results[0].E_hakedis_tutari)}`, 455, 155, { align: 'left' })
+				.text(`${para(results[0].F_kdv_20)}`, 455, 175, { align: 'left' })
+				.text('G', 25, 195)
+				.text('Tahakkuk Tutarı', 45, 195)
+				.text(`${para(results[0].G_tahakkuk_tutari)}`, 455, 195, { align: 'left' })
+				.font('assets/fonts/Roboto.ttf')
+				.fontSize('9')
+				.text('Sayfa No :', 452, 35)
+				.text('1', 562, 35)
+				.text('Hakediş No :', 452, 50)
+				.text(`${results[0].no}`, 562, 50, { width: '100' })
+				.fontSize('9')
+				.text('A', 25, 70)
+				.text('Sözleşme Fiyatları ile Yapılan Hizmet Tutarı', 45, 70)
+				.text('B', 25, 90)
+				.text('Fiyat Farkı Tutarı', 45, 90)
+				.text(`${para(results[0].B_fiyat_farki)}`, 455, 90, { align: 'left' })
+				.text('D', 25, 135)
+				.text('Bir Önceki Hakedişin Toplam Tutarı', 45, 135)
+				.text('E', 25, 155)
+				.text('Bu Hakedişin Tutarı', 45, 155)
+				.text('F', 25, 175)
+				.text('KDV ( E x %20 )', 45, 175);
+
+			doc // SOL DİK
+				.lineCap('butt')
+				.moveTo(40, 65)
+				.lineTo(40, 210)
+				.lineCap('butt') // SAĞ DİK
+				.moveTo(445, 30)
+				.lineTo(445, 450)
+				.stroke();
+		}
+		function progressMiddle() {
+			progressRow2(doc, 210);
+			progressRow2(doc, 230);
+			progressRow2(doc, 250);
+			progressRow2(doc, 270);
+			progressRow2(doc, 290);
+			progressRow2(doc, 310);
+			progressRow2(doc, 330);
+			progressRow2(doc, 350);
+			progressRow2(doc, 370);
+			progressRow2(doc, 390); // YENİ KESİNTİ
+
+			doc
+				.save() // Dökümanın mevcut durumunu kaydet
+				.translate(30, 370) // Başlangıç noktasını ayarla
+				.rotate(-90, { origin: [0, 0] }) // Metni belirli bir açıyla döndür
+				.font('assets/fonts/Roboto-Bold.ttf')
+				.fontSize('9')
+				.text('KESİNTİLER VE MAHPUSLAR', 0, 0)
+				.restore() // Dökümanı önceki durumuna geri getir
+
+				.font('assets/fonts/Roboto-Bold.ttf')
+				.fontSize('9')
+				.text(`${para(results[0].c_kdv_tev)}`, 455, 255, { align: 'left' })
+				.text(`${para(results[0].i_para_cezasi)}`, 455, 375, { align: 'left' })
+				.text(`${para(results[0].h_fiyat_farki)}`, 455, 355, { align: 'left' })
+
+				.font('assets/fonts/Roboto.ttf')
+				.fontSize('9')
+				.text('a) Gelir/ Kurumlar Vergisi ( E x % .. )', 60, 215)
+				.text(`${para(results[0].kullanilmayan)}`, 455, 215, { align: 'left' })
+				.text('b) Damga Vergisi ( E - g x % ..)0,00825', 60, 235)
+				.text(`${para(results[0].kullanilmayan)}`, 455, 235, { align: 'left' })
+				.text('c) KDV Tevfikatı (7/10)', 60, 255)
+				.text('d) Sosyal Sigortalar Kurumu Kesintisi', 60, 275)
+				.text(`${para(results[0].kullanilmayan)}`, 455, 275, { align: 'left' })
+				.text('e) İdare Makinesi Kiraları', 60, 295)
+				.text(`${para(results[0].kullanilmayan)}`, 455, 295, { align: 'left' })
+				.text('f) Gecikme Cezası', 60, 315)
+				.text(`${para(results[0].kullanilmayan)}`, 455, 315, { align: 'left' })
+				.text('g) Avans Mahsubu', 60, 335)
+				.text(`${para(results[0].kullanilmayan)}`, 455, 335, { align: 'left' })
+				.text('h) Bu Hakedişle Ödenen Fiyat Farkı Teminat Kesintisi (%6)', 60, 355)
+				.text(
+					'ı) İdari Para Cezası ( Ekteki 07/02/2023 Tarihli Tutanakta Belirtldiği Üzere )',
+					60,
+					375
+				)
+				.text('k) Kesintiler', 60, 395)
+				.text(`${para(results[0].k_kesintiler)}`, 455, 395, { align: 'left' });
+
+			doc // SOL DİK
+				.lineCap('butt')
+				.moveTo(55, 230)
+				.lineTo(55, 390)
+				.stroke();
+		}
+		function progressFooter() {
+			progressRow(doc, 410);
+			progressRow(doc, 430);
+
+			doc // SOL DİK
+				.lineWidth('1')
+				.lineCap('butt')
+				.moveTo(40, 410)
+				.lineTo(40, 450)
+				.stroke();
+			doc
+				.lineWidth('1.5')
+				.lineCap('butt')
+				.moveTo(15, 525)
+				.lineTo(585, 525)
+				.stroke()
+
+				.font('assets/fonts/Roboto-Bold.ttf')
+				.fontSize('10')
+				.text('YÜKLENİCİ', 275, 455, { underline: true })
+				.text('KONTROL TEŞKİLATI', 260, 540, { underline: true, align: 'left' })
+				.text('ŞUBE MÜDÜRÜ', 50, 650, { underline: true, align: 'left' })
+				.text('DAİRE BAŞKANI', 460, 650, { underline: true, align: 'left' })
+				.text('GENEL MÜDÜR YARDIMCISI', 235, 710, { underline: true, align: 'left' })
+
+				.fontSize('9')
+				.text('H', 25, 415)
+				.text('Kesintiler ve Mahpuslar Toplamı', 45, 415)
+				.text(`${para(results[0].H_kesintiler)}`, 455, 415, { align: 'rigth' })
+				.text('I', 25, 435)
+				.text('Yükleniciye Ödenecek Tutar ( G - H )', 45, 435)
+				.text(`${para(results[0].I_odenecek_tutar)}`, 455, 435, { align: 'left' })
+
+				.font('assets/fonts/Roboto.ttf')
+				.fontSize('8')
+				.text('|dismakamtarih1|', 270, 480)
+				.text('|dismakamunvanad1|', 265, 510)
+				.text('|makamtarih6|', 50, 560)
+				.text('|makam6|', 55, 590)
+				.text('|makamtarih5|', 270, 565)
+				.text('|makam5|', 275, 595)
+				.text('|makamtarih4|', 460, 565)
+				.text('|makam4|', 470, 595)
+				.text('|makamtarih3|', 55, 675)
+				.text('|makamtarih2|', 470, 675)
+				.text('|makamtarih1|', 260, 735)
+				.font('assets/fonts/Roboto-Bold.ttf')
+				.text('|makam3|', 60, 705)
+				.text('|makam2|', 475, 705)
+				.text('|makam1|', 265, 765);
+		}
+
+		doc.pipe(fs.createWriteStream('/Users/mehmet/hakedissaski/pdf/view.pdf'));
+		doc.pipe(res);
+		console.log('Hakediş raporu-2 başarıyla oluşturuldu');
+		/*res.setHeader('Content-Type', 'application/pdf');
+		res.setHeader(
+			'Content-Disposition',
+			`attachment; filename=${results[0].isin_adi}_hakedis_raporu.pdf`
+		);*/
+		doc.end();
+	});
+}
 function infoPDF(res, no, s_id) {
 	let query = 'select * from haz_hakedis_2 where no=? and s_id=?';
 	let params = [no, s_id];
@@ -898,6 +1132,7 @@ function infoPDF(res, no, s_id) {
 				.text('|makam2|', 475, 705)
 				.text('|makam1|', 265, 765);
 		}
+
 		doc.pipe(res);
 		console.log('Hakediş raporu-2 başarıyla oluşturuldu');
 		res.setHeader('Content-Type', 'application/pdf');
@@ -908,4 +1143,4 @@ function infoPDF(res, no, s_id) {
 		doc.end();
 	});
 }
-module.exports = {hakediskapagiPDF, hakedisraporuPDF, yapilanislerPDF, infoPDF};
+module.exports = {hakediskapagiPDF, hakedisraporuPDF, yapilanislerPDF,showPDF, infoPDF};
