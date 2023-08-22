@@ -4,164 +4,220 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<style>
-      body {
-  margin: 0;
-  background-color: hsl(0, 0%, 98%);
-  color: #333;
-}
-main {
-  margin: 0 auto;
-  padding: 4rem 0;
-  width: 90%;
-  max-width: 60rem;
-}
-h2{
-  margin-left: 10px;
-  margin-top: 2px;
-  color: rgb(46, 48, 120);
-}
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+			body {
+				margin: 0;
+				background-color: hsl(0, 0%, 98%);
+				color: #333;
+			}
+			main {
+				margin: 0 auto;
+				padding: 4rem 0;
+				width: 90%;
+				max-width: 60rem;
+			}
+			h2 {
+				margin-left: 10px;
+				margin-top: 2px;
+				color: rgb(46, 48, 120);
+			}
 
-.login-1{
-  box-sizing: border-box;
-  padding: 2rem;
-  border-radius: 1rem;
-  background-color: hsl(0, 0%, 100%);
-  border: 4px solid rgb(46, 48, 120);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-}
+			.login-1 {
+				box-sizing: border-box;
+				padding: 2rem;
+				border-radius: 1rem;
+				background-color: hsl(0, 0%, 100%);
+				border: 4px solid rgb(46, 48, 120);
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 2rem;
+			}
 
-.full-width {
-  display: flex;
-  gap: 10px;
-  grid-column: span 2;
-  padding: 1rem;
-}
+			.full-width {
+				display: flex;
+				gap: 10px;
+				grid-column: span 2;
+				padding: 1rem;
+			}
 
-input[type="text"],
-input[type="email"]
-{
-  font: 1rem  sans-serif;
-  display: block;
-  box-sizing: border-box;
-  border-radius: 10px;
-  width: 100%;
-  padding: 0.2rem 0.75rem;
-}
+			input[type='text'],
+			input[type='email'] {
+				font: 1rem sans-serif;
+				display: block;
+				box-sizing: border-box;
+				border-radius: 10px;
+				width: 100%;
+				padding: 0.2rem 0.75rem;
+			}
 
-button {
-  font: 1.2rem sans-serif;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  padding: 0.3rem 1.95rem;
-  border: none;
-  border-radius: 10px;
-  background-color:rgb(46, 48, 120);
-  color: #fff;
-}
-button[type="submit"] {
-  background-color: rgb(46, 48, 120);
-  color: white;
-}
-button[type="submit"]:hover {
-  background-color: rgb(106, 109, 206);
-}
-input:focus {
-  outline-color:rgb(46, 48, 120) ;
-  box-shadow: 0 0 0 4px hsl(213, 90%, 70%);
-}
-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 4px black;
-}
-.custom-select {
-  font: 1rem sans-serif;
-  display: block;
-  box-sizing: border-box;
-  border-radius: 10px;
-  width: 100%;
-  padding: 0.2rem 0.75rem;
-  background-color: white;
-  border: 2px solid rgb(46, 48, 120);
-  color: #333;
-  cursor: pointer;
-  appearance: none; /* Bazı tarayıcılarda varsayılan oku kaldırır */
-  background-image: url("path_to_custom_arrow_icon.png");
-  background-repeat: no-repeat;
-  background-position: right center;
-}
+			button {
+				font: 1.2rem sans-serif;
+				border-radius: 0.25rem;
+				cursor: pointer;
+				padding: 0.3rem 1.95rem;
+				border: none;
+				border-radius: 10px;
+				background-color: rgb(46, 48, 120);
+				color: #fff;
+			}
+			button[type='submit'] {
+				background-color: rgb(46, 48, 120);
+				color: white;
+			}
+			button[type='submit']:hover {
+				background-color: rgb(106, 109, 206);
+			}
+			input:focus {
+				outline-color: rgb(46, 48, 120);
+				box-shadow: 0 0 0 4px hsl(213, 90%, 70%);
+			}
+			button:focus {
+				outline: none;
+				box-shadow: 0 0 0 4px black;
+			}
+			.custom-select {
+				font: 1rem sans-serif;
+				display: block;
+				box-sizing: border-box;
+				border-radius: 10px;
+				width: 100%;
+				padding: 0.2rem 0.75rem;
+				background-color: white;
+				border: 2px solid rgb(46, 48, 120);
+				color: #333;
+				cursor: pointer;
+				appearance: none; /* Bazı tarayıcılarda varsayılan oku kaldırır */
+				background-image: url('path_to_custom_arrow_icon.png');
+				background-repeat: no-repeat;
+				background-position: right center;
+			}
 
-.custom-select:focus {
-  outline-color: rgb(46, 48, 120);
-  box-shadow: 0 0 0 4px hsl(213, 90%, 70%);
-}
+			.custom-select:focus {
+				outline-color: rgb(46, 48, 120);
+				box-shadow: 0 0 0 4px hsl(213, 90%, 70%);
+			}
 
-.custom-select::-ms-expand {
-  display: none;
-}
-    </style>
+			.custom-select::-ms-expand {
+				display: none;
+			}
+			header {
+				background-color: rgb(46, 48, 120);
+				color: #fff; /* Bağlantılar için metin rengi */
+				padding: 1px 0; /* Üst ve alt için bir miktar dolgu ekleyin */
+				position: relative; /* Pozisyonu ayarla */
+			}
+
+			nav {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				max-width: 95%;
+				margin: 0 auto;
+				padding: 0 20px;
+			}
+
+			nav img {
+				width: 60px;
+				padding: 10px;
+			}
+
+			nav ul {
+				list-style: none;
+				display: flex;
+				align-items: center;
+				margin-right: auto; /* Sağı otomatik olarak itin */
+			}
+
+			nav ul li {
+				margin-right: 20px;
+			}
+
+			nav ul li:last-child {
+				margin-right: 0;
+			}
+
+			#logout {
+				margin-left: 20px; /* Başlangıçta bir boşluk bırakın */
+				transition: margin-left 0.3s ease; /* Hareketi yumuşatın */
+			}
+
+			/* Ekran daraldığında stil değişiklikleri */
+			@media screen and (max-width: 768px) {
+				nav {
+					flex-direction: column; /* Öğeleri sütun haline getirin */
+					align-items: flex-start; /* Sol üst köşeye hizalayın */
+					padding: 0; /* Eksik dolgu */
+				}
+
+				nav ul {
+					margin-top: 10px; /* Üstte boşluk ekleyin */
+					margin-right: 0; /* Sağı otomatik olarak itin */
+				}
+
+				nav ul li {
+					margin-right: 0; /* Sağ boşluğu kaldırın */
+					margin-bottom: 10px; /* Altta boşluk ekleyin */
+				}
+
+				#logout {
+					margin-left: 0; /* Ekran daraldıkça sola doğru hareket ettirin */
+				}
+			}
+		</style>
 		<title>HAKEDİS Bilgileri</title>
 	</head>
 	<body>
+		<header>
+			<nav>
+				<ul>
+					<img src="/assets/gorseller/mlogo.png" alt="" />
+					<li>
+						<form action="/userinfo" method="get">
+							<button id="info" type="submit">Geçmiş Hakedişler</button>
+						</form>
+					</li>
+					<li>
+						<form action="/logout" method="get">
+							<button id="logout" type="submit">Çıkış Yap</button>
+						</form>
+					</li>
+				</ul>
+			</nav>
+		</header>
 		<main>
-			<div class="full-width">
-				<form action="/userinfo" method="get">
-					<button id="info" type="submit">Geçmiş Hakedişler</button>
-				</form>
-				<br />
-				<form action="/logout" method="get">
-					<button id="info" type="submit">Çıkış Yap</button>
-				</form>
-			</div>
-			</form>
 			<div class="full-width">
 				<form action="/hakedis-kapagi" method="post">
 					<button type="submit">Hakediş Kapağı</button>
-					<br/><br/>
+					<br /><br />
 					<select name="sirket_id" class="custom-select">
-							<% if (data && data.length > 0) { %>
-									<option value="" disabled selected>Bir şirket seçin</option>
-									<% 
-											const uniqueCompanies = [];
-											data.forEach(item => {
-													if (!uniqueCompanies.includes(item.s_id)) {
-															uniqueCompanies.push(item.s_id);
-									%>
-									<option value="<%= item.s_id %>"><%= item.isin_adi %></option>
-									<% 
-													}
-											});
-									%>
-							<% } else { %>
-									<option value="" disabled selected>Veri Yok</option>
-							<% } %>
-					</select> 
-			</form>
-			
-			
+						<% if (data && data.length > 0) { %>
+						<option value="" disabled selected>Bir şirket seçin</option>
+						<% const uniqueCompanies = []; data.forEach(item => { if
+						(!uniqueCompanies.includes(item.s_id)) { uniqueCompanies.push(item.s_id); %>
+						<option value="<%= item.s_id %>"><%= item.isin_adi %></option>
+						<% } }); %> <% } else { %>
+						<option value="" disabled selected>Veri Yok</option>
+						<% } %>
+					</select>
+				</form>
 
 				<form action="/hakedis-raporu" method="post">
 					<button type="submit">Hakediş Raporu</button>
-					<br/><br/>
+					<br /><br />
 					<select name="sirket_id" class="custom-select">
-        <option value="" disabled selected>Bir şirket seçin</option>
-        <% 
-            const uniqueCompaniess = [];
-            if (data && data.length > 0) {
-                data.forEach(item => {
-                    if (!uniqueCompaniess.includes(item.s_id)) {
-                        uniqueCompaniess.push(item.s_id);
-        %>
-        <option value="<%= item.s_id %>"><%= item.isin_adi %></option>
-        <% 
-                    }
-                });
-            } else { %>
-            <option value="" disabled selected>Veri Yok</option>
-        <% } %>
-					</select> 
-						<br>
+						<option value="" disabled selected>Bir şirket seçin</option>
+						<% const uniqueCompaniess = []; if (data && data.length > 0) { data.forEach(item => { if
+						(!uniqueCompaniess.includes(item.s_id)) { uniqueCompaniess.push(item.s_id); %>
+						<option value="<%= item.s_id %>"><%= item.isin_adi %></option>
+						<% } }); } else { %>
+						<option value="" disabled selected>Veri Yok</option>
+						<% } %>
+					</select>
+					<br />
 					<input
 						type="text"
 						id="hakedis_tutari"
@@ -206,24 +262,16 @@ button:focus {
 
 				<form action="/yapilan-isler" method="post">
 					<button type="submit">Yapılan İşler Listesi</button>
-					<br/><br/>
+					<br /><br />
 					<select name="sirket_id" class="custom-select">
-        <option value="" disabled selected>Bir şirket seçin</option>
-        <% 
-            const uniqueCompaniesss = [];
-            if (data && data.length > 0) {
-                data.forEach(item => {
-                    if (!uniqueCompaniesss.includes(item.s_id)) {
-                        uniqueCompaniesss.push(item.s_id);
-        %>
-        <option value="<%= item.s_id %>"><%= item.isin_adi %></option>
-        <% 
-                    }
-                });
-            } else { %>
-            <option value="" disabled selected>Veri Yok</option>
-        <% } %>
-    </select> 
+						<option value="" disabled selected>Bir şirket seçin</option>
+						<% const uniqueCompaniesss = []; if (data && data.length > 0) { data.forEach(item => {
+						if (!uniqueCompaniesss.includes(item.s_id)) { uniqueCompaniesss.push(item.s_id); %>
+						<option value="<%= item.s_id %>"><%= item.isin_adi %></option>
+						<% } }); } else { %>
+						<option value="" disabled selected>Veri Yok</option>
+						<% } %>
+					</select>
 					<br />
 					<input
 						type="text"

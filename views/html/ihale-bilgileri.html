@@ -7,17 +7,26 @@
 		<title>HAKEDİS Bilgileri</title>
 	</head>
 	<body>
+		<header>
+			<nav>
+				<ul>
+					<img src="/assets/gorseller/mlogo.png" alt="">
+					<li>
+						<form action="/info" method="get">
+							<button id="info" type="submit">Geçmiş Hakedişler</button>
+						</form>
+					</li>
+					<li>
+						<form action="/logout" method="get">
+							<button id="logout" type="submit">Çıkış Yap</button>
+						</form>
+					</li>
+				</ul>
+			</nav>
+		</header>
 		<main>
 			<div class="full-width">
 				<h2>İhale Bilgileri Giriniz</h2>
-				<br />
-				<form action="/info" method="get">
-					<button id="info" type="submit">Geçmiş Hakedişler</button>
-				</form>
-				<br />
-				<form action="/logout" method="get">
-					<button id="logout" type="submit">Çıkış Yap</button>
-				</form>
 			</div>
 			<form class="login-1" action="/ihale-bilgileri" method="post">
 				<div>

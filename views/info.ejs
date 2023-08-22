@@ -3,6 +3,11 @@
 	<head>
 		<title>Veri Listesi</title>
 		<style>
+						* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
 			body {
 				font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
 					Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -41,7 +46,6 @@
 				padding: 10px;
 				font-style: italic;
 			}
-
 			#filterInput {
 				margin-left: 10%;
 				display: flex;
@@ -51,6 +55,94 @@
 				border: 2px solid rgb(46, 48, 120);
 				border-radius: 4px;
 				box-sizing: border-box;
+			}
+			button {
+				font: 1.2rem sans-serif;
+				border-radius: 0.25rem;
+				cursor: pointer;
+				padding: 0.3rem 1.95rem;
+				border: none;
+				border-radius: 10px;
+				background-color: rgb(46, 48, 120);
+				color: #fff;
+			}
+			button[type='submit'] {
+				background-color: rgb(46, 48, 120);
+				color: white;
+			}
+			button[type='submit']:hover {
+				background-color: rgb(106, 109, 206);
+			}
+			input:focus {
+				outline-color: rgb(46, 48, 120);
+				box-shadow: 0 0 0 4px hsl(213, 90%, 70%);
+			}
+			button:focus {
+				outline: none;
+				box-shadow: 0 0 0 4px black;
+			}
+			header {
+				background-color: rgb(46, 48, 120);
+				color: #fff; /* Bağlantılar için metin rengi */
+				padding: 1px 0; /* Üst ve alt için bir miktar dolgu ekleyin */
+				position: relative; /* Pozisyonu ayarla */
+			}
+
+			nav {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				max-width: 95%;
+				margin: 0 auto;
+				padding: 0 20px;
+			}
+
+			nav img {
+				width: 60px;
+				padding: 10px;
+			}
+
+			nav ul {
+				list-style: none;
+				display: flex;
+				align-items: center;
+				margin-right: auto; /* Sağı otomatik olarak itin */
+			}
+
+			nav ul li {
+				margin-right: 20px;
+			}
+
+			nav ul li:last-child {
+				margin-right: 0;
+			}
+
+			#logout {
+				margin-left: 20px; /* Başlangıçta bir boşluk bırakın */
+				transition: margin-left 0.3s ease; /* Hareketi yumuşatın */
+			}
+
+			/* Ekran daraldığında stil değişiklikleri */
+			@media screen and (max-width: 768px) {
+				nav {
+					flex-direction: column; /* Öğeleri sütun haline getirin */
+					align-items: flex-start; /* Sol üst köşeye hizalayın */
+					padding: 0; /* Eksik dolgu */
+				}
+
+				nav ul {
+					margin-top: 10px; /* Üstte boşluk ekleyin */
+					margin-right: 0; /* Sağı otomatik olarak itin */
+				}
+
+				nav ul li {
+					margin-right: 0; /* Sağ boşluğu kaldırın */
+					margin-bottom: 10px; /* Altta boşluk ekleyin */
+				}
+
+				#logout {
+					margin-left: 0; /* Ekran daraldıkça sola doğru hareket ettirin */
+				}
 			}
 		</style>
 		<script>
@@ -84,6 +176,18 @@
 		</script>
 	</head>
 	<body>
+		<header>
+			<nav>
+				<ul>
+					<img src="/assets/gorseller/mlogo.png" alt="" />
+					<li>
+						<form action="/logout" method="get">
+							<button id="logout" type="submit">Çıkış Yap</button>
+						</form>
+					</li>
+				</ul>
+			</nav>
+		</header>
 		<h1>
 			Son Hakediş Raporları
 			<!-- <%= userId %> -->

@@ -1,3 +1,8 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 body {
   margin: 0;
   background-color: hsl(0, 0%, 98%);
@@ -69,5 +74,74 @@ button:focus {
   outline: none;
   box-shadow: 0 0 0 4px black;
 }
+/* navigation bar */
+header {
+  background-color: rgb(46, 48, 120);
+  color: #fff; /* Bağlantılar için metin rengi */
+  padding: 1px 0; /* Üst ve alt için bir miktar dolgu ekleyin */
+  position: relative; /* Pozisyonu ayarla */
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 95%;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+nav img {
+  width: 60px;
+  padding: 10px;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  margin-right: auto; /* Sağı otomatik olarak itin */
+}
+
+nav ul li {
+  margin-right: 20px;
+}
+
+nav ul li:last-child {
+  margin-right: 0;
+}
+
+#logout {
+  margin-left: 20px; /* Başlangıçta bir boşluk bırakın */
+  transition: margin-left 0.3s ease; /* Hareketi yumuşatın */
+}
+
+/* Ekran daraldığında stil değişiklikleri */
+@media screen and (max-width: 768px) {
+  nav {
+    flex-direction: column; /* Öğeleri sütun haline getirin */
+    align-items: flex-start; /* Sol üst köşeye hizalayın */
+    padding: 0; /* Eksik dolgu */
+  }
+
+  nav ul {
+    margin-top: 10px; /* Üstte boşluk ekleyin */
+    margin-right: 0; /* Sağı otomatik olarak itin */
+  }
+
+  nav ul li {
+    margin-right: 0; /* Sağ boşluğu kaldırın */
+    margin-bottom: 10px; /* Altta boşluk ekleyin */
+  }
+
+  #logout {
+    margin-left: 0; /* Ekran daraldıkça sola doğru hareket ettirin */
+  }
+}
+
+
+
+
+
 
   
