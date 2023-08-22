@@ -25,19 +25,27 @@ router.post('/', (req, res) => {
 	let query = 'select * from userTable where username = ? and password = ?';
 	let params = [username, password];
 	connection.query(query, params, (err, results) => {
-		const userId = results[0].userId;
-		req.session.userId = userId;
-		const role = results[0].role;
-		req.session.role = role;
-
-		if (results.length > 0 && role == 'admin') {
-			res.redirect(`/ihale-bilgileri/${userId}`);
-		} else if (results.length > 0 && role == 'user') {
-			res.redirect(`/userHome/${userId}`);
-		} else {
+		if (err) {
+			console.error(err, 'hata');
 			res.redirect('/');
-		}
-		res.end();
+			return;
+	} else if (results.length > 0) {
+			const userId = results[0].userId;
+			req.session.userId = userId;
+			const role = results[0].role;
+			req.session.role = role;
+			if (role == 'admin') {
+					res.redirect(`/ihale-bilgileri/${userId}`);
+			} else if (role == 'user') {
+					res.redirect(`/userHome/${userId}`);
+			} else {
+					res.redirect('/');
+			}
+	} else {
+			console.log('Sonuç bulunamadı');
+			res.redirect('/');
+	}
+	res.end();
 	});
 });
 router.get('/register', (req, res) => {
