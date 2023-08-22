@@ -1,5 +1,6 @@
 const connection = require('../db');
 const PDFDocument = require('pdfkit');
+const fs = require('fs')
 const { yilx, gunx, ayx } = require('./date');
 const para = require('./para');
 
