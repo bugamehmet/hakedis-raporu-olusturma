@@ -130,15 +130,15 @@ router.post('/ihale-bilgileri', async (req, res) => {
 router.get('/userHome/:userId', (req, res) => {
 	const userId = req.session.userId;
 	const query = 'SELECT * FROM haz_hakedis_2 WHERE kullanici_id=?';
-	connection.query(query, userId, (err, data) => {
-		//if (err) throw err;
+	connection.query(query, [userId], (err, data) => {
+		if (err) throw err;
 		res.render('userHome', { data });
 	});
 });
 router.get('/info', checkUserRole('admin'), (req, res) => {
 	const userId = req.session.userId;
 	const query = 'SELECT * FROM haz_hakedis_2 WHERE kullanici_id=? order by isin_adi desc';
-	connection.query(query, userId, (err, data) => {
+	connection.query(query, [userId], (err, data) => {
 		if (err) throw err;
 		res.render('info', { userId, data });
 	});
@@ -146,7 +146,7 @@ router.get('/info', checkUserRole('admin'), (req, res) => {
 router.get('/userinfo', checkUserRole('user'), (req, res) => {
 	const userId = req.session.userId;
 	const query = 'SELECT * FROM haz_hakedis_2 WHERE kullanici_id=? order by isin_adi desc';
-	connection.query(query, userId, (err, data) => {
+	connection.query(query, [userId], (err, data) => {
 		if (err) throw err;
 		res.render('userinfo', { userId, data });
 	});
