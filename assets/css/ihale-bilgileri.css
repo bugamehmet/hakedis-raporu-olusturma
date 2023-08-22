@@ -10,7 +10,7 @@ body {
 }
 main {
   margin: 0 auto;
-  padding: 4rem 0;
+  padding: 1rem 0;
   width: 90%;
   max-width: 60rem;
 }
@@ -41,7 +41,7 @@ h2{
 input[type="text"],
 input[type="email"]
 {
-  font: 1rem  sans-serif;
+  font: 0.85rem  sans-serif;
   display: block;
   box-sizing: border-box;
   border-radius: 10px;
