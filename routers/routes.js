@@ -5,10 +5,12 @@ const { yilx, gunx, ayx } = require('../utils/date');
 const { inserthakedisKapagi, inserthakedisRaporu, insertYapilanisler } = require('../utils/insert');
 const {
 	infoPDF,
-	showPDF,
+	showkapakPDF,
+	showraporPDF,
 	hakediskapagiPDF,
 	hakedisraporuPDF,
 	yapilanislerPDF,
+	showyapilanislerPDF
 } = require('../utils/generatePdf');
 const deleteHakedis = require('../utils/deleteHakedis');
 const path = require('path');
@@ -164,7 +166,7 @@ router.get('/userinfo', checkUserRole('user'), (req, res) => {
 router.get('/showPDF/:no/:s_id', (req, res) => {
 	const no = req.params.no;
 	const s_id = req.params.s_id;
-	showPDF(res, no, s_id);
+	showyapilanislerPDF(res, no, s_id);
 });
 router.get('/downloadPDF/:no/:s_id', (req, res) => {
 	const no = req.params.no;
@@ -272,5 +274,6 @@ router.post('/yapilan-isler', (req, res) => {
 		res.end();
 	});
 });
+
 
 module.exports = router;

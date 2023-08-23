@@ -1,11 +1,12 @@
 const connection = require('../db');
 const PDFDocument = require('pdfkit');
-const fs = require('fs')
+const fs = require('fs');
 const { yilx, gunx, ayx } = require('./date');
 const para = require('./para');
 
-function hakediskapagiPDF(res, useridInfo, sirket_id) {
-	const query = 'SELECT * FROM hakedis_raporu WHERE kullanici_id = ? AND s_id = ? ORDER BY h_id DESC LIMIT 1';
+async function hakediskapagiPDF(res, useridInfo, sirket_id) {
+	const query =
+		'SELECT * FROM hakedis_raporu WHERE kullanici_id = ? AND s_id = ? ORDER BY h_id DESC LIMIT 1';
 	const params = [useridInfo, sirket_id];
 	connection.query(query, params, (error, results) => {
 		if (error) {
@@ -181,11 +182,23 @@ function hakediskapagiPDF(res, useridInfo, sirket_id) {
 		doc.pipe(res);
 		console.log('Hakediş raporu başarıyla oluşturuldu');
 		res.setHeader('Content-Type', 'application/pdf');
-		res.setHeader('Content-Disposition', `attachment; filename=${results[0].is_adi}_hakedis_kapagi.pdf`);
+		res.setHeader(
+			'Content-Disposition',
+			`attachment; filename=${results[0].is_adi}_hakedis_kapagi.pdf`
+		);
 		doc.end();
 	});
 }
-function hakedisraporuPDF(res, useridInfo, gecikme, fark, var_yok, hakedis_tutari, kesinti, sirket_id) {
+async function hakedisraporuPDF(
+	res,
+	useridInfo,
+	gecikme,
+	fark,
+	var_yok,
+	hakedis_tutari,
+	kesinti,
+	sirket_id
+) {
 	const query = 'select * from hakedis_2 where kullanici_id = ? AND s_id=? order by h_id_2 desc';
 	const params = [useridInfo, sirket_id];
 	connection.query(query, params, (error, results) => {
@@ -463,11 +476,14 @@ function hakedisraporuPDF(res, useridInfo, gecikme, fark, var_yok, hakedis_tutar
 		doc.pipe(res);
 		console.log('Hakediş raporu-2 başarıyla oluşturuldu');
 		res.setHeader('Content-Type', 'application/pdf');
-		res.setHeader('Content-Disposition', `attachment; filename=${results[0].isin_adi}_hakedis_raporu.pdf`);
+		res.setHeader(
+			'Content-Disposition',
+			`attachment; filename=${results[0].isin_adi}_hakedis_raporu.pdf`
+		);
 		doc.end();
 	});
 }
-function yapilanislerPDF(res, useridInfo, hakedis_tutari_2, sirket_id) {
+async function yapilanislerPDF(res, useridInfo, hakedis_tutari_2, sirket_id) {
 	const query = 'select * from hakedis_3 where kullanici_id=? AND s_id=? order by h_id_3 desc';
 	const params = [useridInfo, sirket_id];
 	connection.query(query, params, (error, results) => {
@@ -672,12 +688,339 @@ function yapilanislerPDF(res, useridInfo, hakedis_tutari_2, sirket_id) {
 			doc.pipe(res);
 			console.log('Hakediş raporu-3 başarıyla oluşturuldu');
 			res.setHeader('Content-Type', 'application/pdf');
-			res.setHeader('Content-Disposition', `attachment; filename=${results[0].isin_adi}_yapilan_isler_listesi.pdf`);
+			res.setHeader(
+				'Content-Disposition',
+				`attachment; filename=${results[0].isin_adi}_yapilan_isler_listesi.pdf`
+			);
 			doc.end();
 		});
 	}
 }
-function showPDF(res, no, s_id) {
+function showyapilanislerPDF(res, no, s_id) {
+	const sql = 'select * from asil_hakedis_3 where no=? AND s_id=? order by a_h_id_3 desc';
+	const params = [no, s_id];
+	connection.query(sql, params, (error, results) => {
+		if (error) {
+			console.log('Veritabanı hatası:', error);
+			res.status(500).send('Veritabanı hatası');
+			return;
+		}
+		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'assets/fonts/Roboto.ttf' });
+		doc.page.dictionary.data.Rotate = 90;
+
+		generateFrame();
+		header();
+		Information();
+		footer();
+		function rowInformation(heigth) {
+			doc.lineJoin('miter').rect(-128, heigth, 805.5, 11).stroke();
+		}
+		function lineInformation(x1, y1, x2, y2) {
+			doc.lineCap('butt').moveTo(y1, x1).lineTo(y2, x2).stroke();
+		}
+		function generateFrame() {
+			const frameX = 15; // Çerçevenin sol kenarının X koordinatı
+			const frameY = 20; // Çerçevenin üst kenarının Y koordinatı
+			const frameWidth = 450; // Çerçevenin genişliği 50
+			const frameHeight = 810; // Çerçevenin yüksekliği
+			const frameThickness = 2; // Çerçevenin kalınlığı piksel cinsinden
+
+			const drawRect = (x, y, width, height, color) => {
+				doc.rect(x, y, width, height).fill(color);
+			};
+
+			drawRect(frameX, frameY, frameWidth, frameThickness, '#000000'); // Üst çerçeve
+			drawRect(
+				frameX,
+				frameY + frameHeight - frameThickness,
+				frameWidth,
+				frameThickness,
+				'#000000'
+			); // Alt çerçeve
+			drawRect(
+				frameX,
+				frameY + frameThickness,
+				frameThickness,
+				frameHeight - 2 * frameThickness,
+				'#000000'
+			); // Sol çerçeve
+			drawRect(
+				frameX + frameWidth - frameThickness,
+				frameY + frameThickness,
+				frameThickness,
+				frameHeight - 2 * frameThickness,
+				'#000000'
+			); // Sağ çerçeve
+		}
+		function header() {
+			doc
+				.lineCap('butt')
+				.moveTo(40, 830)
+				.lineTo(40, 20)
+				.moveTo(55, 830)
+				.lineTo(55, 20)
+				.moveTo(95, 830)
+				.lineTo(95, 20)
+				.moveTo(65, 500)
+				.lineTo(65, 20)
+				.moveTo(40, 200)
+				.lineTo(55, 200)
+				.moveTo(55, 810) // sıra no R
+				.lineTo(95, 810)
+				.moveTo(55, 500) // işin tanımı R
+				.lineTo(95, 500)
+				.moveTo(55, 415) // sözleşme bedeli R
+				.lineTo(95, 415)
+				.moveTo(55, 355) //Gerçekleşen toplam imalat R
+				.lineTo(95, 355)
+				.moveTo(55, 280) //toplam İmalat Tutarı R
+				.lineTo(95, 280)
+				.moveTo(55, 215) //Önceki Hakediş Toplam İmalat R
+				.lineTo(95, 215)
+				.moveTo(55, 150) //önceki hakediş toplam imalat tutarı R
+				.lineTo(95, 150)
+				.moveTo(55, 100) // bu hakediş imalat R
+				.lineTo(95, 100)
+				.stroke()
+				.rotate(-90, { origin: [350, 350] })
+				.font('assets/fonts/Roboto-Bold.ttf')
+				.fontSize('6')
+				.text(`${results[0].isin_adi}`, -125, 45)
+				.text('A', 240, 57)
+				.text('B', 315, 57)
+				.text('C=(AxB)', 365, 57)
+				.text('D', 445, 57)
+				.text('E=(AxD)', 505, 57)
+				.text('F=(B-D)', 565, 57, { width: 100 })
+				.text('G=(AxF)', 615, 57)
+				.fontSize('8')
+				.text('YAPILAN İŞLER LİSTESİ', 230, 20)
+				.font('assets/fonts/Roboto.ttf')
+				.fontSize('7')
+				.text('(Teklif Birim Fiyatlı Hizmet İçin)', 225, 30)
+				.fontSize('6')
+				.text('Sayfa No: 3', 507, 44)
+				.text('Hakediş No:', 575, 44)
+				.text(`${results[0].no}`, 612, 44)
+				.text('Sıra No', -125, 67, { width: 15, align: 'left' })
+				.text('İşin Tanımı', 33, 72)
+				.text('Sözleşme Bedeli', 220, 72)
+				.text('Gerçekleşen Toplam İmalat', 300, 69, { width: 40, align: 'center' })
+				.text('Toplam İmalat Tutarı', 360, 69, { width: 40, align: 'center' })
+				.text('Önceki Hakediş Toplam İmalat', 425, 69, { width: 50, align: 'center' })
+				.text('Önceki Hakediş Toplam İmalat Tutarı', 490, 69, { width: 50, align: 'center' })
+				.text('Bu Hakediş İmalat', 557, 69, { width: 40, align: 'center' })
+				.text('Bu Hakediş Tutarı', 615, 72, { width: 100 });
+		}
+		function Information() {
+			let x = 0;
+			results.reverse().forEach((e) => {
+				rowInformation(95 + x);
+				lineInformation(93 + x, -110, 106 + x, -110);
+				lineInformation(93 + x, 200, 106 + x, 200);
+				lineInformation(93 + x, 285, 106 + x, 285);
+				lineInformation(93 + x, 345, 106 + x, 345);
+				lineInformation(93 + x, 420, 106 + x, 420);
+				lineInformation(93 + x, 485, 106 + x, 485);
+				lineInformation(93 + x, 550, 106 + x, 550);
+				lineInformation(93 + x, 600, 106 + x, 600);
+				doc
+					.text(`${e.no}`, -125, 97 + x)
+					.text(`${e.isin_adi}`, -107, 97 + x)
+					.text(`${para(e.sozlesme_bedeli)}`, 220, 97 + x)
+					.text(`${e.Bas - 1}`, 300, 97 + x)
+					.text(`${para(e.Cas)}`, 360, 97 + x)
+					.text(`${e.Das - 1}`, 425, 97 + x)
+					.text(`${para(e.Eas)}`, 490, 97 + x)
+					.text(`${e.Fas}`, 557, 97 + x, { width: 100 })
+					.text(`${para(e.Gas)}`, 615, 97 + x);
+				x = x + 11;
+			});
+		}
+		function footer() {
+			doc
+				.font('assets/fonts/Roboto.ttf')
+				.fontSize('8')
+				.text('|dismakamunvanad1|', 240, 420)
+
+				.text('|makamtarih6|', -70, 490)
+				.text('|makam6|', -65, 520)
+				.text('|makamtarih5|', 70, 490)
+				.text('|makam5|', 75, 520)
+				.text('|makamtarih4|', 255, 490)
+				.text('|makam4|', 260, 520)
+				.text('|makamtarih3|', 395, 490)
+				.text('|makam3|', 400, 520)
+				.text('|makamtarih2|', 520, 490, { width: 100 })
+				.text('|makam2|', 525, 520)
+				.font('assets/fonts/Roboto-Bold.ttf')
+				.text('|dismakamtarih1|', 245, 390);
+		}
+
+		doc.pipe(res);
+		doc.pipe(fs.createWriteStream('/Users/mehmet/hakedissaski/pdf/yapilan.pdf'));
+		console.log('Hakediş raporu-3 başarıyla oluşturuldu');
+		doc.end();
+	});
+}
+
+function showkapakPDF(res, no, s_id) {
+	const query = 'SELECT * FROM hakedis_raporu WHERE no = ? AND s_id = ? ORDER BY h_id DESC LIMIT 1';
+	const params = [no, s_id];
+	connection.query(query, params, (error, results) => {
+		if (error) {
+			console.log('Veritabanı hatası:', error);
+			res.status(500).send('Veritabanı hatası');
+			return;
+		}
+		let tarih = `${gunx()}.${ayx()}.${yilx()}`;
+		const doc = new PDFDocument({ size: 'A4', margin: 30, font: 'assets/fonts/Roboto.ttf' });
+
+		reportFrame();
+		reportHeader();
+		reportInformation();
+		reportTable();
+		reportFooter();
+
+		function reportFrame() {
+			const frameX = 15; // Çerçevenin sol kenarının X koordinatı
+			const frameY = 30; // Çerçevenin üst kenarının Y koordinatı
+			const frameWidth = 570; // Çerçevenin genişliği
+			const frameHeight = 750; // Çerçevenin yüksekliği
+			const frameThickness = 2; // Çerçevenin kalınlığı piksel cinsinden
+
+			const drawRect = (x, y, width, height, color) => {
+				doc.rect(x, y, width, height).fill(color);
+			};
+
+			drawRect(frameX, frameY, frameWidth, frameThickness, '#000000'); // Üst çerçeve
+			drawRect(
+				frameX,
+				frameY + frameHeight - frameThickness,
+				frameWidth,
+				frameThickness,
+				'#000000'
+			); // Alt çerçeve
+			drawRect(
+				frameX,
+				frameY + frameThickness,
+				frameThickness,
+				frameHeight - 2 * frameThickness,
+				'#000000'
+			); // Sol çerçeve
+			drawRect(
+				frameX + frameWidth - frameThickness,
+				frameY + frameThickness,
+				frameThickness,
+				frameHeight - 2 * frameThickness,
+				'#000000'
+			); // Sağ çerçeve
+		}
+		function rowReport(doc, heigth) {
+			doc.lineJoin('miter').rect(30, heigth, 550, 85).stroke();
+			return doc;
+		}
+		function reportHeader() {
+			const logoLeft = 'assets/gorseller/logo_left.png';
+			const logoRight = 'assets/gorseller/logo_right.png';
+			doc
+				.image(logoLeft, 20, 50, { width: 60, height: 80 })
+				.image(logoRight, 500, 50, { width: 60, height: 80 })
+				.fontSize(12)
+				.text('T.C', 100, 30, { align: 'center' })
+				.text('SAMSUN BÜYÜK ŞEHİR BELEDİYESİ', 100, 50, { align: 'center' })
+				.text('SAMSUN SU VE KANALİZASYON GENEL MÜDÜRLÜĞÜ', 100, 70, { align: 'center' })
+				.text('BİLGİ İŞLEM DAİRESİ BAŞKANLIĞI', 100, 90, { align: 'center' })
+				.fontSize(16)
+				.text('Hakediş Raporu', 100, 150, { align: 'center' })
+				.moveDown();
+		}
+		function reportInformation() {
+			doc
+				.fontSize(12)
+				.text(`Tarihi: ${tarih}`, 100, 180, { align: 'center' })
+				.text(`No su: ${results[0].no}`, 100, 200, { align: 'center' })
+				.text(`Uygulama Yılı: ${results[0].uygulama_yili}`, 100, 220, { align: 'center' })
+				.text('Yapılan işin / Hizmetin Adı :', 35, 270)
+				.text(`${results[0].is_adi}`, 275, 270, { align: 'left' })
+				.text('Yapılan İsin / Hizmetin Etüd / Proje No su :', 35, 330)
+				.text(`${results[0].proje_no}`, 275, 330, { align: 'left' })
+				.text('Yüklenicinin Adi / Ticari Unvanı :', 35, 370)
+				.text(`${results[0].yuklenici_adi}`, 275, 370, { align: 'left' })
+				.text('Sözleşme Bedeli :', 35, 420)
+				.text(`${para(results[0].sozlesme_bedeli)}`, 275, 420, { align: 'left' })
+				.text('İhale Tarihi :', 35, 440)
+				.text(`${results[0].ihale_tarihi}`, 275, 440, { align: 'left' })
+				.text('Kayıt no :', 35, 460)
+				.text(`${results[0].kayit_no}`, 275, 460, { align: 'left' })
+				.text('Sözleşme Tarihi :', 35, 480)
+				.text(`${results[0].sozlesme_tarih}`, 275, 480, { align: 'left' })
+				.text('İşyeri Teslim Tarihi :', 35, 500)
+				.text(`${results[0].isyeri_teslim_tarihi}`, 275, 500, { align: 'left' })
+				.text('Sözleşmeye Göre İşin Süresi :', 35, 520)
+				.text(`${results[0].isin_suresi}`, 275, 520, { align: 'left' })
+				.text('Sözleşmeye Göre İş Bitim Tarihi :', 35, 540)
+				.text(`${results[0].is_bitim_tarihi}`, 275, 540, { align: 'left' })
+				.moveDown();
+		}
+		function reportTable() {
+			doc
+				.lineCap('butt')
+				.moveTo(135, 580)
+				.lineTo(135, 665)
+				.moveTo(290, 580)
+				.lineTo(290, 665)
+				.moveTo(600, 580)
+				.lineTo(600, 665)
+				.moveTo(405, 580)
+				.lineTo(405, 665)
+				.moveTo(30, 615)
+				.lineTo(580, 615)
+				.stroke();
+
+			rowReport(doc, 580);
+
+			doc
+				.text('Sözleşme Bedeli', 35, 590)
+				.text(`${para(results[0].sozlesme_bedeli)}`, 40, 630, { align: 'left' })
+				.text('Sözleşme Artış', 175, 580)
+				.text('Onayının Tarihi / No su', 155, 592)
+				.text('Ek Sözleşme Bedeli', 295, 590)
+				.text('Toplam Sözleşme Bedeli', 435, 580)
+				.text(`${para(results[0].sozlesme_bedeli)}`, 435, 630, { align: 'left' });
+		}
+		function reportFooter() {
+			doc
+				.lineCap('butt')
+				.moveTo(175, 670)
+				.lineTo(175, 755)
+				.moveTo(290, 670)
+				.lineTo(290, 755)
+				.moveTo(600, 670)
+				.lineTo(600, 755)
+				.moveTo(385, 670)
+				.lineTo(385, 755)
+				.moveTo(30, 700)
+				.lineTo(580, 700)
+				.stroke();
+
+			rowReport(doc, 670);
+
+			doc
+				.text('Süre uzatım kararı Tarih', 35, 675)
+				.text('Sayı', 205, 675)
+				.text('Verilen Süre', 305, 675)
+				.text('İş Bitim Tarihi', 435, 675);
+		}
+
+		doc.pipe(res);
+		doc.pipe(fs.createWriteStream('/Users/mehmet/hakedissaski/pdf/kapak.pdf'));
+		console.log('Hakediş raporu başarıyla oluşturuldu');
+		doc.end();
+	});
+}
+
+function showraporPDF(res, no, s_id) {
 	let query = 'select * from haz_hakedis_2 where no=? and s_id=?';
 	let params = [no, s_id];
 	connection.query(query, params, (err, results) => {
@@ -691,6 +1034,7 @@ function showPDF(res, no, s_id) {
 		progressHeader();
 		progressMiddle();
 		progressFooter();
+
 		function progressFrame() {
 			const frameX = 15; // Çerçevenin sol kenarının X koordinatı
 			const frameY = 30; // Çerçevenin üst kenarının Y koordinatı
@@ -911,6 +1255,7 @@ function showPDF(res, no, s_id) {
 		doc.end();
 	});
 }
+
 function infoPDF(res, no, s_id) {
 	let query = 'select * from haz_hakedis_2 where no=? and s_id=?';
 	let params = [no, s_id];
@@ -1144,4 +1489,12 @@ function infoPDF(res, no, s_id) {
 		doc.end();
 	});
 }
-module.exports = {hakediskapagiPDF, hakedisraporuPDF, yapilanislerPDF,showPDF, infoPDF};
+module.exports = {
+	hakediskapagiPDF,
+	hakedisraporuPDF,
+	yapilanislerPDF,
+	showraporPDF,
+	infoPDF,
+	showkapakPDF,
+	showyapilanislerPDF
+};
