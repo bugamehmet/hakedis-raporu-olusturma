@@ -60,6 +60,8 @@ router.get('/logout', (req, res) => {
 	});
 });
 router.post('/register', (req, res) => {
+	let userId = req.session.userId;
+	
 	let username = req.body.username;
 	let password = req.body.password;
 	let kurum_id = req.body.kurum_id;
@@ -75,10 +77,10 @@ router.post('/register', (req, res) => {
 	connection.query(query, params, (err, results) => {
 		if (err) {
 			console.log('Kayıt olma hatası:', err);
-			res.redirect('/');
+			res.redirect(`/ihale-bilgileri/${userId}`)
 		} else {
 			console.log('Kayıt olma Başarılı');
-			res.redirect('/');
+			res.redirect(`/ihale-bilgileri/${userId}`)
 			//const userId = results.insertId;
 			//res.redirect('/ihale-bilgileri/' + userId);
 		}
