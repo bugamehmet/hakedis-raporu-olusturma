@@ -7,10 +7,11 @@ const {
 	infoPDF,
 	showkapakPDF,
 	showraporPDF,
+	showyapilanislerPDF,
+	birlesmisPDF,
 	hakediskapagiPDF,
 	hakedisraporuPDF,
 	yapilanislerPDF,
-	showyapilanislerPDF
 } = require('../utils/generatePdf');
 const deleteHakedis = require('../utils/deleteHakedis');
 const path = require('path');
@@ -166,7 +167,7 @@ router.get('/userinfo', checkUserRole('user'), (req, res) => {
 router.get('/showPDF/:no/:s_id', (req, res) => {
 	const no = req.params.no;
 	const s_id = req.params.s_id;
-	showyapilanislerPDF(res, no, s_id);
+	birlesmisPDF(res, no, s_id);
 });
 router.get('/downloadPDF/:no/:s_id', (req, res) => {
 	const no = req.params.no;
