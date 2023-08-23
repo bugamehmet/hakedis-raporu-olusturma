@@ -1273,15 +1273,15 @@ async function birlesmisPDF(res, no, s_id){
       return res.status(500).send('Birleştirme hatası oluştu');
     }
     console.log('PDF dosyaları başarıyla birleştirildi.');
+
 		fs.readFile(mergedPdfPath, (err, data) => {
       if (err) {
         console.error(err);
         return res.status(500).send('PDF dosyası okuma hatası');
       }
       res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'attachment; filename=birlesmis.pdf');
-
-      res.send(data);
+      //res.setHeader('Content-Disposition', 'attachment; filename=birlesmis.pdf');
+			res.send(data);
     });
 });
 }
