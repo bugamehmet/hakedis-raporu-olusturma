@@ -4,10 +4,7 @@ const checkUserRole = require('../middlewares/role');
 const { yilx, gunx, ayx } = require('../utils/date');
 const { inserthakedisKapagi, inserthakedisRaporu, insertYapilanisler } = require('../utils/insert');
 const {
-	infoPDF,
-	showkapakPDF,
-	showraporPDF,
-	showyapilanislerPDF,
+	downloadinfoPDF,
 	birlesmisPDF,
 	hakediskapagiPDF,
 	hakedisraporuPDF,
@@ -172,7 +169,7 @@ router.get('/showPDF/:no/:s_id', (req, res) => {
 router.get('/downloadPDF/:no/:s_id', (req, res) => {
 	const no = req.params.no;
 	const s_id = req.params.s_id;
-	infoPDF(res, no, s_id);
+	downloadinfoPDF(res, no, s_id);
 });
 router.get('/deletehakedis/:kullanici_id/:s_id/:no', (req, res) => {
 	const k_id = req.params.kullanici_id;
