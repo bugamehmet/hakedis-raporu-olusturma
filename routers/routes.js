@@ -247,7 +247,7 @@ router.get('/info', checkUserRole('admin'), (req, res) => {
 	const query = 'SELECT * FROM haz_hakedis_2 WHERE kullanici_id=? order by isin_adi desc';
 	connection.query(query, [userId], (err, data) => {
 		if (err) throw err;
-		res.render('info', { userId, data, message: 'dasdasdasd'  });
+		res.render('info', { userId, data });
 	});
 });
 router.get('/userinfo', checkUserRole('user'), (req, res) => {
