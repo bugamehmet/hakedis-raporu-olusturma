@@ -51,9 +51,6 @@ router.post('/', (req, res) => {
 		res.end();
 	});
 });
-router.get('/register', (req, res) => {
-	res.sendFile(path.join(__dirname, '../views/html/register.html'));
-});
 router.get('/logout', (req, res) => {
 	req.session.destroy((err) => {
 		if (err) {
@@ -62,68 +59,22 @@ router.get('/logout', (req, res) => {
 		res.redirect('/');
 	});
 });
-router.post('/register', (req, res) => {
-	let userId = req.session.userId;
-
-	let username = req.body.username;
-	let password = req.body.password;
-	let kurum_id = req.body.kurum_id;
-	let isim = req.body.isim;
-	let soyisim = req.body.soyisim;
-	let eposta = req.body.eposta;
-	let telefon = req.body.telefon;
-	let adres = req.body.adres;
-
-	let username_kullaniliyor_mu = 'select username from userTable where username=?';
-	let username_params = [username];
-	connection.query(username_kullaniliyor_mu, username_params, (err, results) => {
-		if (err) {
-			throw err;
-		}
-		if (results.length > 0) {
-			console.log('BU USERNAME KULLANILIYOR');
-			res.redirect(`/ihale-bilgileri/${userId}`);
-		} else {
-			let eposta_kullaniliyor_mu = 'select eposta from userTable where eposta=?';
-			let eposta_params = [eposta];
-			connection.query(eposta_kullaniliyor_mu, eposta_params, (err, results) => {
-				if (err) {
-					throw err;
-				}
-				if (results.length > 0) {
-					console.log('BU eposta KULLANILIYOR');
-					res.redirect(`/ihale-bilgileri/${userId}`);
-				} else {
-					let telefon_kullaniliyor_mu = 'select telefon from userTable where telefon=?';
-					let telefon_params = [telefon];
-					connection.query(telefon_kullaniliyor_mu, telefon_params, (err, results) => {
-						if (err) {
-							throw err;
-						}
-						if (results.length > 0) {
-							console.log('BU telefon KULLANILIYOR');
-							res.redirect(`/ihale-bilgileri/${userId}`);
-						} else {
-							let query =
-								'INSERT INTO userTable (username, password, userId, isim, soyisim, eposta, telefon, adres) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-							let params = [username, password, kurum_id, isim, soyisim, eposta, telefon, adres];
-							connection.query(query, params, (err, results) => {
-								if (err) {
-									console.log('Kayıt olma hatası:', err);
-									res.redirect(`/ihale-bilgileri/${userId}`);
-								} else {
-									console.log('Kayıt olma Başarılı');
-									res.redirect(`/ihale-bilgileri/${userId}`);
-									//const userId = results.insertId;
-									//res.redirect('/ihale-bilgileri/' + userId);
-								}
-								res.end();
-							});
-						}
-					});
-				}
-			});
-		}
+router.get('/showPDF/:no/:s_id', (req, res) => {
+	const no = req.params.no;
+	const s_id = req.params.s_id;
+	birlesmisPDF(res, no, s_id);
+});
+router.get('/downloadPDF/:no/:s_id', (req, res) => {
+	const no = req.params.no;
+	const s_id = req.params.s_id;
+	downloadinfoPDF(res, no, s_id);
+});
+router.get('/info', checkUserRole('admin'), (req, res) => {
+	const userId = req.session.userId;
+	const query = 'SELECT * FROM haz_hakedis_2 WHERE kullanici_id=? order by isin_adi desc';
+	connection.query(query, [userId], (err, data) => {
+		if (err) throw err;
+		res.render('info', { userId, data });
 	});
 });
 router.get('/ihale-bilgileri/:userId', (req, res) => {
@@ -188,91 +139,70 @@ router.post('/ihale-bilgileri', async (req, res) => {
 		}
 	});
 });
-router.get('/userHome/:userId', (req, res) => {
-	const userId = req.session.userId;
-	const query = 'SELECT * FROM haz_hakedis_2 WHERE kullanici_id=?';
-	connection.query(query, [userId], (err, data) => {
-		if (err) throw err;
-		res.render('userHome', { data });
-	});
+router.get('/register', (req, res) => {
+	res.sendFile(path.join(__dirname, '../views/html/register.html'));
 });
-router.get('/pdf-olustur/:userId', (req,res)=>{
-	const useridInfo = req.params.userId;
-	const gecikme = req.session.gecikme;
-	const fiyat_farki = req.session.fiyat_farki;
-	const var_yok = req.session.var_yok;
-	const hakedis_tutari = req.session.hakedis_tutari;
-	const kesinti = req.session.kesinti;
-	const sirket_id = req.session.sirket_id;
+router.post('/register', (req, res) => {
+	let userId = req.session.userId;
 
-	userbirlesmisPDF(res,
-		useridInfo,
-		gecikme,
-		fiyat_farki,
-		var_yok,
-		hakedis_tutari,
-		kesinti,
-		sirket_id)
-		req.session.sirket_id = null;
-})
-router.post('/pdf-olustur', (req, res)=>{
-	const userId = req.session.userId;
-	const gecikme = req.body.gecikme;
-	const fiyat_farki = req.body.fiyat_farki;
-	const var_yok = req.body.var_yok;
-	const hakedis_tutari = req.body.hakedis_tutari;
-	const kesinti = req.body.kesinti;
-	const sirket_id = req.body.sirket_id;
-	req.session.gecikme = gecikme;
-	req.session.kesinti = kesinti;
-	req.session.hakedis_tutari = hakedis_tutari;
-	req.session.var_yok = var_yok;
-	req.session.fiyat_farki = fiyat_farki;
-	req.session.sirket_id = sirket_id;
+	let username = req.body.username;
+	let password = req.body.password;
+	let kurum_id = req.body.kurum_id;
+	let isim = req.body.isim;
+	let soyisim = req.body.soyisim;
+	let eposta = req.body.eposta;
+	let telefon = req.body.telefon;
+	let adres = req.body.adres;
 
-	let query = 'select kullanici_id from hakedis_2 where kullanici_id=?';
-	let params = [userId];
-	connection.query(query, params, (err, results) => {
-		if (results.length > 0) {
-			const userId = results[0].kullanici_id;
-			res.redirect(`/pdf-olustur/${userId}`);
-		} else {
-			console.log(err);
+	let username_kullaniliyor_mu = 'select username from userTable where username=?';
+	let username_params = [username];
+	connection.query(username_kullaniliyor_mu, username_params, (err, results) => {
+		if (err) {
+			throw err;
 		}
-		res.end();
+		if (results.length > 0) {
+			console.log('BU USERNAME KULLANILIYOR');
+			res.redirect(`/ihale-bilgileri/${userId}`);
+		} else {
+			let eposta_kullaniliyor_mu = 'select eposta from userTable where eposta=?';
+			let eposta_params = [eposta];
+			connection.query(eposta_kullaniliyor_mu, eposta_params, (err, results) => {
+				if (err) {
+					throw err;
+				}
+				if (results.length > 0) {
+					console.log('BU eposta KULLANILIYOR');
+					res.redirect(`/ihale-bilgileri/${userId}`);
+				} else {
+					let telefon_kullaniliyor_mu = 'select telefon from userTable where telefon=?';
+					let telefon_params = [telefon];
+					connection.query(telefon_kullaniliyor_mu, telefon_params, (err, results) => {
+						if (err) {
+							throw err;
+						}
+						if (results.length > 0) {
+							console.log('BU telefon KULLANILIYOR');
+							res.redirect(`/ihale-bilgileri/${userId}`);
+						} else {
+							let query =
+								'INSERT INTO userTable (username, password, userId, isim, soyisim, eposta, telefon, adres) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+							let params = [username, password, kurum_id, isim, soyisim, eposta, telefon, adres];
+							connection.query(query, params, (err, results) => {
+								if (err) {
+									console.log('Kayıt olma hatası:', err);
+									res.redirect(`/ihale-bilgileri/${userId}`);
+								} else {
+									console.log('Kayıt olma Başarılı');
+									res.redirect(`/ihale-bilgileri/${userId}`);
+								}
+								res.end();
+							});
+						}
+					});
+				}
+			});
+		}
 	});
-})
-router.get('/info', checkUserRole('admin'), (req, res) => {
-	const userId = req.session.userId;
-	const query = 'SELECT * FROM haz_hakedis_2 WHERE kullanici_id=? order by isin_adi desc';
-	connection.query(query, [userId], (err, data) => {
-		if (err) throw err;
-		res.render('info', { userId, data });
-	});
-});
-router.get('/userinfo', checkUserRole('user'), (req, res) => {
-	const userId = req.session.userId;
-	const query = 'SELECT * FROM haz_hakedis_2 WHERE kullanici_id=? order by isin_adi desc';
-	connection.query(query, [userId], (err, data) => {
-		if (err) throw err;
-		res.render('userinfo', { userId, data });
-	});
-});
-router.get('/showPDF/:no/:s_id', (req, res) => {
-	const no = req.params.no;
-	const s_id = req.params.s_id;
-	birlesmisPDF(res, no, s_id);
-});
-router.get('/downloadPDF/:no/:s_id', (req, res) => {
-	const no = req.params.no;
-	const s_id = req.params.s_id;
-	downloadinfoPDF(res, no, s_id);
-});
-router.get('/deletehakedis/:kullanici_id/:s_id/:no', (req, res) => {
-	const k_id = req.params.kullanici_id;
-	const s_id = req.params.s_id;
-	const no = req.params.no;
-	deleteHakedis(res, k_id, s_id, no);
 });
 router.get('/hakedis-kapagi/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
@@ -369,6 +299,76 @@ router.post('/yapilan-isler', (req, res) => {
 		res.end();
 	});
 });
+router.get('/userinfo', checkUserRole('user'), (req, res) => {
+	const userId = req.session.userId;
+	const query = 'SELECT * FROM haz_hakedis_2 WHERE kullanici_id=? order by isin_adi desc';
+	connection.query(query, [userId], (err, data) => {
+		if (err) throw err;
+		res.render('userinfo', { userId, data });
+	});
+});
+router.get('/userHome/:userId', (req, res) => {
+	const userId = req.session.userId;
+	const query = 'SELECT * FROM haz_hakedis_2 WHERE kullanici_id=?';
+	connection.query(query, [userId], (err, data) => {
+		if (err) throw err;
+		res.render('userHome', { data });
+	});
+});
+router.get('/pdf-olustur/:userId', (req,res)=>{
+	const useridInfo = req.params.userId;
+	const gecikme = req.session.gecikme;
+	const fiyat_farki = req.session.fiyat_farki;
+	const var_yok = req.session.var_yok;
+	const hakedis_tutari = req.session.hakedis_tutari;
+	const kesinti = req.session.kesinti;
+	const sirket_id = req.session.sirket_id;
+
+	userbirlesmisPDF(res,
+		useridInfo,
+		gecikme,
+		fiyat_farki,
+		var_yok,
+		hakedis_tutari,
+		kesinti,
+		sirket_id)
+		req.session.sirket_id = null;
+})
+router.post('/pdf-olustur', (req, res)=>{
+	const userId = req.session.userId;
+	const gecikme = req.body.gecikme;
+	const fiyat_farki = req.body.fiyat_farki;
+	const var_yok = req.body.var_yok;
+	const hakedis_tutari = req.body.hakedis_tutari;
+	const kesinti = req.body.kesinti;
+	const sirket_id = req.body.sirket_id;
+	req.session.gecikme = gecikme;
+	req.session.kesinti = kesinti;
+	req.session.hakedis_tutari = hakedis_tutari;
+	req.session.var_yok = var_yok;
+	req.session.fiyat_farki = fiyat_farki;
+	req.session.sirket_id = sirket_id;
+
+	let query = 'select kullanici_id from hakedis_2 where kullanici_id=?';
+	let params = [userId];
+	connection.query(query, params, (err, results) => {
+		if (results.length > 0) {
+			const userId = results[0].kullanici_id;
+			res.redirect(`/pdf-olustur/${userId}`);
+		} else {
+			console.log(err);
+		}
+		res.end();
+	});
+})
+
+/*router.get('/deletehakedis/:kullanici_id/:s_id/:no', (req, res) => {
+	const k_id = req.params.kullanici_id;
+	const s_id = req.params.s_id;
+	const no = req.params.no;
+	deleteHakedis(res, k_id, s_id, no);
+});*/
+
 
 
 module.exports = router;
