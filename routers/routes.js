@@ -9,14 +9,14 @@ const {
 	hakediskapagiPDF,
 	hakedisraporuPDF,
 	yapilanislerPDF,
-	userbirlesmisPDF
+	userbirlesmisPDF,
 } = require('../utils/generatePdf');
 //const deleteHakedis = require('../utils/deleteHakedis');
 const path = require('path');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-	res.render('login', {message : req.flash('message')} )
+	res.render('login', { message: req.flash('message') });
 	//res.sendFile(path.join(__dirname, '../views/html/login.html'));
 });
 router.post('/', (req, res) => {
@@ -41,11 +41,11 @@ router.post('/', (req, res) => {
 			} else if (role == 'user') {
 				res.redirect(`/userHome/${userId}`);
 			} else {
-				req.flash('message', 'Henüz Rol Atanmamış')
+				req.flash('message', 'Henüz Rol Atanmamış');
 				res.redirect('/');
 			}
 		} else {
-			req.flash('message', 'Kullanıcı Bulunamadı')
+			req.flash('message', 'Kullanıcı Bulunamadı');
 			res.redirect('/');
 		}
 		res.end();
@@ -87,7 +87,7 @@ router.get('/deletehakedis/:kullanici_id/:s_id/:no', (req, res) => {
 */
 
 router.get('/ihale-bilgileri/:userId', (req, res) => {
-	res.render('ihale-bilgileri', {message : req.flash('message')} )
+	res.render('ihale-bilgileri', { message: req.flash('message') });
 	//res.sendFile(path.join(__dirname, '../views/html/ihale-bilgileri.html'));
 });
 router.post('/ihale-bilgileri', async (req, res) => {
@@ -115,7 +115,7 @@ router.post('/ihale-bilgileri', async (req, res) => {
 		}
 		if (results.length > 0) {
 			console.log('bu sirket id kullanılıyor');
-			req.flash('message', 'şirket id kullanılıyor')
+			req.flash('message', ['HATA!', 'Şirket İd Kullanılıyor']);
 			res.redirect(`/ihale-bilgileri/${userId}`);
 		} else {
 			try {
@@ -135,18 +135,18 @@ router.post('/ihale-bilgileri', async (req, res) => {
 					isin_suresi,
 					is_bitim_tarihi
 				);
-				
+
 				await inserthakedisRaporu(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi);
 
 				await insertYapilanisler(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi);
 
 				console.log('Veriler başarıyla eklendi');
-				req.flash('message', 'veriler başarıyla eklendi')
+				req.flash('message', ['BAŞARILI !', 'Veriler Başarıyla Eklendi']);
 				res.redirect(`/ihale-bilgileri/${userId}`);
 			} catch (error) {
 				console.log('Veriler eklenirken bir hata oluştu');
 				console.log(error);
-				req.flash('message', 'eklenirken bir hata oluştu')
+				req.flash('message', ['HATA!', 'Veriler Eklenirken Hata Oluştu']);
 				res.redirect(`/ihale-bilgileri/${userId}`);
 			}
 		}
@@ -154,7 +154,7 @@ router.post('/ihale-bilgileri', async (req, res) => {
 });
 router.get('/register', (req, res) => {
 	//res.sendFile(path.join(__dirname, '../views/html/register.html'));
-	res.render('register', {message : req.flash('message')} )
+	res.render('register', { message: req.flash('message') });
 });
 router.post('/register', (req, res) => {
 	let userId = req.session.userId;
@@ -176,7 +176,7 @@ router.post('/register', (req, res) => {
 		}
 		if (results.length > 0) {
 			console.log('BU USERNAME KULLANILIYOR');
-			req.flash('message', 'Bu Kullanıcı Adı Kayıtlı')
+			req.flash('message', ['HATA !', 'Bu Kullanıcı Adı Kayıtlı']);
 			res.redirect(`/register`);
 		} else {
 			let eposta_kullaniliyor_mu = 'select eposta from userTable where eposta=?';
@@ -187,7 +187,7 @@ router.post('/register', (req, res) => {
 				}
 				if (results.length > 0) {
 					console.log('BU eposta KULLANILIYOR');
-					req.flash('message', 'Eposta Zaten Kayıtlı')
+					req.flash('message', ['HATA !', 'Eposta Zaten Kayıtlı']);
 					res.redirect(`/register`);
 				} else {
 					let telefon_kullaniliyor_mu = 'select telefon from userTable where telefon=?';
@@ -198,7 +198,7 @@ router.post('/register', (req, res) => {
 						}
 						if (results.length > 0) {
 							console.log('BU telefon KULLANILIYOR');
-							req.flash('message', 'Telefon Numarası Kayıtlı')
+							req.flash('message', ['HATA !', 'Telefon Numarası Kayıtlı']);
 							res.redirect(`/register`);
 						} else {
 							let query =
@@ -207,10 +207,12 @@ router.post('/register', (req, res) => {
 							connection.query(query, params, (err, results) => {
 								if (err) {
 									console.log('Kayıt olma hatası:', err);
-									res.redirect(`/ihale-bilgileri/${userId}`);
+									req.flash('message', ['HATA !', 'Kaydedilirken Bir Hata Oluştu']);
+									res.redirect(`/register`);
 								} else {
 									console.log('Kayıt olma Başarılı');
-									res.redirect(`/ihale-bilgileri/${userId}`);
+									req.flash('message', ['BAŞARILI !', 'Kullanıcı Başarıyla Kaydedildi']);
+									res.redirect(`/register`);
 								}
 								res.end();
 							});
@@ -332,7 +334,7 @@ router.get('/userHome/:userId', (req, res) => {
 		res.render('userHome', { data });
 	});
 });
-router.get('/pdf-olustur/:userId', (req,res)=>{
+router.get('/pdf-olustur/:userId', (req, res) => {
 	const useridInfo = req.params.userId;
 	const gecikme = req.session.gecikme;
 	const fiyat_farki = req.session.fiyat_farki;
@@ -341,17 +343,19 @@ router.get('/pdf-olustur/:userId', (req,res)=>{
 	const kesinti = req.session.kesinti;
 	const sirket_id = req.session.sirket_id;
 
-	userbirlesmisPDF(res,
+	userbirlesmisPDF(
+		res,
 		useridInfo,
 		gecikme,
 		fiyat_farki,
 		var_yok,
 		hakedis_tutari,
 		kesinti,
-		sirket_id)
-		req.session.sirket_id = null;
-})
-router.post('/pdf-olustur', (req, res)=>{
+		sirket_id
+	);
+	req.session.sirket_id = null;
+});
+router.post('/pdf-olustur', (req, res) => {
 	const userId = req.session.userId;
 	const gecikme = req.body.gecikme;
 	const fiyat_farki = req.body.fiyat_farki;
@@ -377,8 +381,6 @@ router.post('/pdf-olustur', (req, res)=>{
 		}
 		res.end();
 	});
-})
-
-
+});
 
 module.exports = router;
