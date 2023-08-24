@@ -9,10 +9,10 @@ const {
 	hakediskapagiPDF,
 	hakedisraporuPDF,
 	yapilanislerPDF,
+	userbirlesmisPDF
 } = require('../utils/generatePdf');
 const deleteHakedis = require('../utils/deleteHakedis');
 const path = require('path');
-const { goTo } = require('pdfkit');
 
 const router = express.Router();
 
@@ -124,7 +124,6 @@ router.post('/register', (req, res) => {
 		}
 	});
 });
-
 router.get('/ihale-bilgileri/:userId', (req, res) => {
 	res.sendFile(path.join(__dirname, '../views/html/ihale-bilgileri.html'));
 });
@@ -322,5 +321,56 @@ router.post('/yapilan-isler', (req, res) => {
 		res.end();
 	});
 });
+
+router.get('/pdf-olustur/:userId', (req,res)=>{
+	const useridInfo = req.params.userId;
+	const gecikme = req.session.gecikme;
+	const fiyat_farki = req.session.fiyat_farki;
+	const var_yok = req.session.var_yok;
+	const hakedis_tutari = req.session.hakedis_tutari;
+	const kesinti = req.session.kesinti;
+	const sirket_id = req.session.sirket_id;
+
+	userbirlesmisPDF(res,
+		useridInfo,
+		gecikme,
+		fiyat_farki,
+		var_yok,
+		hakedis_tutari,
+		kesinti,
+		sirket_id)
+		req.session.sirket_id = null;
+})
+
+router.post('/pdf-olustur', (req, res)=>{
+	const userId = req.session.userId;
+	const gecikme = req.body.gecikme;
+	const fiyat_farki = req.body.fiyat_farki;
+	const var_yok = req.body.var_yok;
+	const hakedis_tutari = req.body.hakedis_tutari;
+	const kesinti = req.body.kesinti;
+	const sirket_id = req.body.sirket_id;
+	req.session.gecikme = gecikme;
+	req.session.kesinti = kesinti;
+	req.session.hakedis_tutari = hakedis_tutari;
+	req.session.var_yok = var_yok;
+	req.session.fiyat_farki = fiyat_farki;
+	req.session.sirket_id = sirket_id;
+
+	let query = 'select kullanici_id from hakedis_2 where kullanici_id=?';
+	let params = [userId];
+	connection.query(query, params, (err, results) => {
+		if (results.length > 0) {
+			const userId = results[0].kullanici_id;
+			res.redirect(`/pdf-olustur/${userId}`);
+		} else {
+			console.log(err);
+		}
+		res.end();
+	});
+
+
+
+})
 
 module.exports = router;
