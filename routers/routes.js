@@ -11,7 +11,7 @@ const {
 	yapilanislerPDF,
 	userbirlesmisPDF
 } = require('../utils/generatePdf');
-const deleteHakedis = require('../utils/deleteHakedis');
+//const deleteHakedis = require('../utils/deleteHakedis');
 const path = require('path');
 const router = express.Router();
 
@@ -41,11 +41,11 @@ router.post('/', (req, res) => {
 			} else if (role == 'user') {
 				res.redirect(`/userHome/${userId}`);
 			} else {
-				req.flash('message', 'Henüz rol atanmamış üyelik')
+				req.flash('message', 'Henüz Rol Atanmamış')
 				res.redirect('/');
 			}
 		} else {
-			req.flash('message', 'Kullanıcı bulunamadı')
+			req.flash('message', 'Kullanıcı Bulunamadı')
 			res.redirect('/');
 		}
 		res.end();
@@ -77,6 +77,15 @@ router.get('/info', checkUserRole('admin'), (req, res) => {
 		res.render('info', { userId, data });
 	});
 });
+/* ------ DELETE HAKEDİS KULLANILMIYOR-----------
+router.get('/deletehakedis/:kullanici_id/:s_id/:no', (req, res) => {
+	const k_id = req.params.kullanici_id;
+	const s_id = req.params.s_id;
+	const no = req.params.no;
+	deleteHakedis(res, k_id, s_id, no);
+});
+*/
+
 router.get('/ihale-bilgileri/:userId', (req, res) => {
 	res.sendFile(path.join(__dirname, '../views/html/ihale-bilgileri.html'));
 });
@@ -124,7 +133,7 @@ router.post('/ihale-bilgileri', async (req, res) => {
 					isin_suresi,
 					is_bitim_tarihi
 				);
-
+				
 				await inserthakedisRaporu(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi);
 
 				await insertYapilanisler(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi);
@@ -361,13 +370,6 @@ router.post('/pdf-olustur', (req, res)=>{
 		res.end();
 	});
 })
-
-/*router.get('/deletehakedis/:kullanici_id/:s_id/:no', (req, res) => {
-	const k_id = req.params.kullanici_id;
-	const s_id = req.params.s_id;
-	const no = req.params.no;
-	deleteHakedis(res, k_id, s_id, no);
-});*/
 
 
 
