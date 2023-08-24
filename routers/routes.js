@@ -12,6 +12,7 @@ const {
 } = require('../utils/generatePdf');
 const deleteHakedis = require('../utils/deleteHakedis');
 const path = require('path');
+const { goTo } = require('pdfkit');
 
 const router = express.Router();
 
@@ -29,23 +30,23 @@ router.post('/', (req, res) => {
 			console.error(err, 'hata');
 			res.redirect('/');
 			return;
-	} else if (results.length > 0) {
+		} else if (results.length > 0) {
 			const userId = results[0].userId;
 			req.session.userId = userId;
 			const role = results[0].role;
 			req.session.role = role;
 			if (role == 'admin') {
-					res.redirect(`/ihale-bilgileri/${userId}`);
+				res.redirect(`/ihale-bilgileri/${userId}`);
 			} else if (role == 'user') {
-					res.redirect(`/userHome/${userId}`);
+				res.redirect(`/userHome/${userId}`);
 			} else {
-					res.redirect('/');
+				res.redirect('/');
 			}
-	} else {
+		} else {
 			console.log('Sonuç bulunamadı');
 			res.redirect('/');
-	}
-	res.end();
+		}
+		res.end();
 	});
 });
 router.get('/register', (req, res) => {
@@ -61,7 +62,7 @@ router.get('/logout', (req, res) => {
 });
 router.post('/register', (req, res) => {
 	let userId = req.session.userId;
-	
+
 	let username = req.body.username;
 	let password = req.body.password;
 	let kurum_id = req.body.kurum_id;
@@ -71,22 +72,59 @@ router.post('/register', (req, res) => {
 	let telefon = req.body.telefon;
 	let adres = req.body.adres;
 
-	let query =
-		'INSERT INTO userTable (username, password, userId, isim, soyisim, eposta, telefon, adres) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-	let params = [username, password, kurum_id, isim, soyisim, eposta, telefon, adres];
-	connection.query(query, params, (err, results) => {
+	let username_kullaniliyor_mu = 'select username from userTable where username=?';
+	let username_params = [username];
+	connection.query(username_kullaniliyor_mu, username_params, (err, results) => {
 		if (err) {
-			console.log('Kayıt olma hatası:', err);
-			res.redirect(`/ihale-bilgileri/${userId}`)
-		} else {
-			console.log('Kayıt olma Başarılı');
-			res.redirect(`/ihale-bilgileri/${userId}`)
-			//const userId = results.insertId;
-			//res.redirect('/ihale-bilgileri/' + userId);
+			throw err;
 		}
-		res.end();
+		if (results.length > 0) {
+			console.log('BU USERNAME KULLANILIYOR');
+			res.redirect(`/ihale-bilgileri/${userId}`);
+		} else {
+			let eposta_kullaniliyor_mu = 'select eposta from userTable where eposta=?';
+			let eposta_params = [eposta];
+			connection.query(eposta_kullaniliyor_mu, eposta_params, (err, results) => {
+				if (err) {
+					throw err;
+				}
+				if (results.length > 0) {
+					console.log('BU eposta KULLANILIYOR');
+					res.redirect(`/ihale-bilgileri/${userId}`);
+				} else {
+					let telefon_kullaniliyor_mu = 'select telefon from userTable where telefon=?';
+					let telefon_params = [telefon];
+					connection.query(telefon_kullaniliyor_mu, telefon_params, (err, results) => {
+						if (err) {
+							throw err;
+						}
+						if (results.length > 0) {
+							console.log('BU telefon KULLANILIYOR');
+							res.redirect(`/ihale-bilgileri/${userId}`);
+						} else {
+							let query =
+								'INSERT INTO userTable (username, password, userId, isim, soyisim, eposta, telefon, adres) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+							let params = [username, password, kurum_id, isim, soyisim, eposta, telefon, adres];
+							connection.query(query, params, (err, results) => {
+								if (err) {
+									console.log('Kayıt olma hatası:', err);
+									res.redirect(`/ihale-bilgileri/${userId}`);
+								} else {
+									console.log('Kayıt olma Başarılı');
+									res.redirect(`/ihale-bilgileri/${userId}`);
+									//const userId = results.insertId;
+									//res.redirect('/ihale-bilgileri/' + userId);
+								}
+								res.end();
+							});
+						}
+					});
+				}
+			});
+		}
 	});
 });
+
 router.get('/ihale-bilgileri/:userId', (req, res) => {
 	res.sendFile(path.join(__dirname, '../views/html/ihale-bilgileri.html'));
 });
@@ -107,15 +145,16 @@ router.post('/ihale-bilgileri', async (req, res) => {
 	let is_bitim_tarihi = req.body.is_bitim_tarihi;
 	let sirket_id = req.body.sirket_id;
 
-	let query ='select s_id from hakedis_raporu where s_id=?'
-	let params = [sirket_id]
-	connection.query(query, params, async (err, results)=>{
-		if(err){throw(err)}
-		if(results.length >0){
-			console.log('bu sirket id kullanılıyor')
-			res.redirect(`/ihale-bilgileri/${userId}`);
+	let query = 'select s_id from hakedis_raporu where s_id=?';
+	let params = [sirket_id];
+	connection.query(query, params, async (err, results) => {
+		if (err) {
+			throw err;
 		}
-		else{
+		if (results.length > 0) {
+			console.log('bu sirket id kullanılıyor');
+			res.redirect(`/ihale-bilgileri/${userId}`);
+		} else {
 			try {
 				await inserthakedisKapagi(
 					userId,
@@ -133,11 +172,11 @@ router.post('/ihale-bilgileri', async (req, res) => {
 					isin_suresi,
 					is_bitim_tarihi
 				);
-		
+
 				await inserthakedisRaporu(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi);
-		
+
 				await insertYapilanisler(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi);
-		
+
 				console.log('Veriler başarıyla eklendi');
 				res.redirect(`/ihale-bilgileri/${userId}`);
 			} catch (error) {
@@ -146,9 +185,7 @@ router.post('/ihale-bilgileri', async (req, res) => {
 				res.redirect(`/ihale-bilgileri/${userId}`);
 			}
 		}
-	})
-
-	
+	});
 });
 router.get('/userHome/:userId', (req, res) => {
 	const userId = req.session.userId;
@@ -285,6 +322,5 @@ router.post('/yapilan-isler', (req, res) => {
 		res.end();
 	});
 });
-
 
 module.exports = router;
