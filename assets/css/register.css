@@ -1,3 +1,8 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 body {
   font-family: Arial, sans-serif;
   background-color: #f2f2f2;
@@ -51,6 +56,42 @@ button {
 button:hover {
   background-color:rgb(106, 109, 206);
 }
+header {
+  background-color: rgb(46, 48, 120);
+  color: #fff; /* Bağlantılar için metin rengi */
+  padding: 1px 0; /* Üst ve alt için bir miktar dolgu ekleyin */
+  position: relative; /* Pozisyonu ayarla */
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 95%;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+nav img {
+  width: 60px;
+  padding: 10px;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  margin-right: auto; /* Sağı otomatik olarak itin */
+}
+
+nav ul li {
+  margin-right: 20px;
+}
+
+nav ul li:last-child {
+  margin-right: 0;
+}
+
 .message {
 	width: 95%;
   padding: 1%;

@@ -12,7 +12,6 @@ const {
 	userbirlesmisPDF,
 } = require('../utils/generatePdf');
 //const deleteHakedis = require('../utils/deleteHakedis');
-const path = require('path');
 const router = express.Router();
 
 router.get('/', (req, res) => {
@@ -28,7 +27,7 @@ router.post('/', (req, res) => {
 	connection.query(query, params, (err, results) => {
 		if (err) {
 			console.error(err, 'hata');
-			//req.flash('message', 'VERİ TABANI HATASI')
+			req.flash('message', 'VERİ TABANI HATASI')
 			res.redirect('/');
 			return;
 		} else if (results.length > 0) {
@@ -37,15 +36,16 @@ router.post('/', (req, res) => {
 			const role = results[0].role;
 			req.session.role = role;
 			if (role == 'admin') {
+				req.flash('message', [`${results[0].isim}`, 'Hoşgeldiniz']);
 				res.redirect(`/ihale-bilgileri/${userId}`);
 			} else if (role == 'user') {
 				res.redirect(`/userHome/${userId}`);
 			} else {
-				req.flash('message', 'Henüz Rol Atanmamış');
+				req.flash('message', ['HATA !', 'Henüz Rol Atanmamış']);
 				res.redirect('/');
 			}
 		} else {
-			req.flash('message', 'Kullanıcı Bulunamadı');
+			req.flash('message', ['HATA !', 'Kullanıcı Bulunamadı']);
 			res.redirect('/');
 		}
 		res.end();
@@ -77,6 +77,7 @@ router.get('/info', checkUserRole('admin'), (req, res) => {
 		res.render('info', { userId, data });
 	});
 });
+
 /* ------ DELETE HAKEDİS KULLANILMIYOR-----------
 router.get('/deletehakedis/:kullanici_id/:s_id/:no', (req, res) => {
 	const k_id = req.params.kullanici_id;

@@ -5,6 +5,18 @@
   <link rel="stylesheet" type="text/css" href="/assets/css/register.css">
 </head>
 <body>
+  <header>
+    <nav>
+      <ul>
+        <img src="/assets/gorseller/mlogo.png" alt="" />
+        <li>
+          <form action="/logout" method="get">
+            <button id="logout" type="submit">Çıkış Yap</button>
+          </form>
+        </li>
+      </ul>
+    </nav>
+  </header>
   <div class="register-container">
     <h1>Kayıt Ol</h1>
     <% if (message && message.length > 0) { %>
