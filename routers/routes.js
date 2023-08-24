@@ -87,7 +87,8 @@ router.get('/deletehakedis/:kullanici_id/:s_id/:no', (req, res) => {
 */
 
 router.get('/ihale-bilgileri/:userId', (req, res) => {
-	res.sendFile(path.join(__dirname, '../views/html/ihale-bilgileri.html'));
+	res.render('ihale-bilgileri', {message : req.flash('message')} )
+	//res.sendFile(path.join(__dirname, '../views/html/ihale-bilgileri.html'));
 });
 router.post('/ihale-bilgileri', async (req, res) => {
 	const userId = req.session.userId;
@@ -114,6 +115,7 @@ router.post('/ihale-bilgileri', async (req, res) => {
 		}
 		if (results.length > 0) {
 			console.log('bu sirket id kullanılıyor');
+			req.flash('message', 'şirket id kullanılıyor')
 			res.redirect(`/ihale-bilgileri/${userId}`);
 		} else {
 			try {
@@ -139,17 +141,20 @@ router.post('/ihale-bilgileri', async (req, res) => {
 				await insertYapilanisler(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi);
 
 				console.log('Veriler başarıyla eklendi');
+				req.flash('message', 'veriler başarıyla eklendi')
 				res.redirect(`/ihale-bilgileri/${userId}`);
 			} catch (error) {
 				console.log('Veriler eklenirken bir hata oluştu');
 				console.log(error);
+				req.flash('message', 'eklenirken bir hata oluştu')
 				res.redirect(`/ihale-bilgileri/${userId}`);
 			}
 		}
 	});
 });
 router.get('/register', (req, res) => {
-	res.sendFile(path.join(__dirname, '../views/html/register.html'));
+	//res.sendFile(path.join(__dirname, '../views/html/register.html'));
+	res.render('register', {message : req.flash('message')} )
 });
 router.post('/register', (req, res) => {
 	let userId = req.session.userId;
@@ -171,7 +176,8 @@ router.post('/register', (req, res) => {
 		}
 		if (results.length > 0) {
 			console.log('BU USERNAME KULLANILIYOR');
-			res.redirect(`/ihale-bilgileri/${userId}`);
+			req.flash('message', 'Bu Kullanıcı Adı Kayıtlı')
+			res.redirect(`/register`);
 		} else {
 			let eposta_kullaniliyor_mu = 'select eposta from userTable where eposta=?';
 			let eposta_params = [eposta];
@@ -181,7 +187,8 @@ router.post('/register', (req, res) => {
 				}
 				if (results.length > 0) {
 					console.log('BU eposta KULLANILIYOR');
-					res.redirect(`/ihale-bilgileri/${userId}`);
+					req.flash('message', 'Eposta Zaten Kayıtlı')
+					res.redirect(`/register`);
 				} else {
 					let telefon_kullaniliyor_mu = 'select telefon from userTable where telefon=?';
 					let telefon_params = [telefon];
@@ -191,7 +198,8 @@ router.post('/register', (req, res) => {
 						}
 						if (results.length > 0) {
 							console.log('BU telefon KULLANILIYOR');
-							res.redirect(`/ihale-bilgileri/${userId}`);
+							req.flash('message', 'Telefon Numarası Kayıtlı')
+							res.redirect(`/register`);
 						} else {
 							let query =
 								'INSERT INTO userTable (username, password, userId, isim, soyisim, eposta, telefon, adres) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';

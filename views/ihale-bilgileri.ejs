@@ -33,6 +33,11 @@
 			<div class="full-width">
 				<h2>İhale Bilgileri Giriniz</h2>
 			</div>
+			<% if (message && message.length > 0) { %>
+				<div class="message">
+					<div class="message-x"><strong>HATA! </strong><%= message[0] %></div>
+				</div>
+				<% } %>
 			<form class="login-1" action="/ihale-bilgileri" method="post">
 				<div>
 					<input type="text" id="sirket_id" name="sirket_id" placeholder="SİRKET İD" required />

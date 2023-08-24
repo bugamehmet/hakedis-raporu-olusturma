@@ -7,8 +7,13 @@
 <body>
   <div class="register-container">
     <h1>Kayıt Ol</h1>
+    <% if (message && message.length > 0) { %>
+			<div class="message">
+				<div class="message-x"><strong>HATA! </strong><%= message[0] %></div>
+			</div>
+			<% } %>
     <form action="/register" class="input-field"method="POST">
-      <input type="text" name="username" class="input-field" placeholder="Username" required/>
+      <input type="text" name="username" class="input-field" placeholder="Kullanıcı Adı" required/>
       <input type="password" name="password" class="input-field" placeholder="Şifre" required>
       <input type="text" name="kurum_id" class="input-field" placeholder="Kurum İd" required/>
       <input type="text" name ="isim" class="input-field" placeholder="İsim" required>
