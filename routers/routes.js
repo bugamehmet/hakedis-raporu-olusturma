@@ -107,35 +107,48 @@ router.post('/ihale-bilgileri', async (req, res) => {
 	let is_bitim_tarihi = req.body.is_bitim_tarihi;
 	let sirket_id = req.body.sirket_id;
 
-	try {
-		await inserthakedisKapagi(
-			userId,
-			sirket_id,
-			uygulama_yili,
-			tarih,
-			is_adi,
-			proje_no,
-			yuklenici_adi,
-			sozlesme_bedeli,
-			ihale_tarihi,
-			kayit_no,
-			sozlesme_tarih,
-			isyeri_teslim_tarihi,
-			isin_suresi,
-			is_bitim_tarihi
-		);
+	let query ='select s_id from hakedis_raporu where s_id=?'
+	let params = [sirket_id]
+	connection.query(query, params, async (err, results)=>{
+		if(err){throw(err)}
+		if(results.length >0){
+			console.log('bu sirket id kullanılıyor')
+			res.redirect(`/ihale-bilgileri/${userId}`);
+		}
+		else{
+			try {
+				await inserthakedisKapagi(
+					userId,
+					sirket_id,
+					uygulama_yili,
+					tarih,
+					is_adi,
+					proje_no,
+					yuklenici_adi,
+					sozlesme_bedeli,
+					ihale_tarihi,
+					kayit_no,
+					sozlesme_tarih,
+					isyeri_teslim_tarihi,
+					isin_suresi,
+					is_bitim_tarihi
+				);
+		
+				await inserthakedisRaporu(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi);
+		
+				await insertYapilanisler(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi);
+		
+				console.log('Veriler başarıyla eklendi');
+				res.redirect(`/ihale-bilgileri/${userId}`);
+			} catch (error) {
+				console.log('Veriler eklenirken bir hata oluştu');
+				console.log(error);
+				res.redirect(`/ihale-bilgileri/${userId}`);
+			}
+		}
+	})
 
-		await inserthakedisRaporu(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi);
-
-		await insertYapilanisler(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi);
-
-		console.log('Veriler başarıyla eklendi');
-		res.redirect(`/ihale-bilgileri/${userId}`);
-	} catch (error) {
-		console.log('Veriler eklenirken bir hata oluştu');
-		console.log(error);
-		res.redirect(`/ihale-bilgileri/${userId}`);
-	}
+	
 });
 router.get('/userHome/:userId', (req, res) => {
 	const userId = req.session.userId;
