@@ -13,6 +13,7 @@ const logConfiguration = {
 		new winston.transports.File({ level: 'info', filename: 'logs/info.log' }),
 	],
 	format: winston.format.combine(
+		winston.format.json(),
 		winston.format.colorize({ all: false }),
 		winston.format.label({ label: 'KAYITLAR --> ' }),
 		winston.format.timestamp({ format: 'MMM-DD-YYYY HH:mm:ss' }),

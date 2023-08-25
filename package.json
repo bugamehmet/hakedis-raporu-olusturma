@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "connect-flash": "^0.1.1",
+    "dotenv": "^16.3.1",
     "easy-pdf-merge": "^0.2.6",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
@@ -8,6 +9,7 @@
     "mysql": "^2.18.1",
     "node": "^20.3.1",
     "pdfkit": "^0.13.0",
+    "twilio": "^4.16.0",
     "winston": "^3.10.0"
   },
   "devDependencies": {

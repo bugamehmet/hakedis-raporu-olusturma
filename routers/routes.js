@@ -1,9 +1,6 @@
 const express = require('express');
 const connection = require('../db');
 const checkUserRole = require('../middlewares/role');
-//const logger = require('../middlewares/logger')
-const { logger } = require('../middlewares/logger'); // "logger" dosyanızın yolunu düzenlemelisiniz
-
 const { yilx, gunx, ayx } = require('../utils/date');
 const { inserthakedisKapagi, inserthakedisRaporu, insertYapilanisler } = require('../utils/insert');
 const {
@@ -14,6 +11,7 @@ const {
 	yapilanislerPDF,
 	userbirlesmisPDF,
 } = require('../utils/generatePdf');
+const sendSMSMiddleware = require('../middlewares/sendsms')
 //const deleteHakedis = require('../utils/deleteHakedis');
 const router = express.Router();
 
@@ -206,12 +204,12 @@ router.post('/register', (req, res) => {
 								'INSERT INTO userTable (username, password, userId, isim, soyisim, eposta, telefon, adres) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
 							let params = [username, password, kurum_id, isim, soyisim, eposta, telefon, adres];
 							connection.query(query, params, (err, results) => {
-								if (err) {
-									console.log('Kayıt olma hatası:', err);
+								if (err) {									console.log('Kayıt olma hatası:', err);
 									req.flash('message', ['HATA !', 'Kaydedilirken Bir Hata Oluştu']);
 									res.redirect(`/register`);
 								} else {
 									req.flash('message', ['BAŞARILI !', 'Kullanıcı Başarıyla Kaydedildi']);
+									sendSMSMiddleware(username, password);
 									res.redirect(`/register`);
 								}
 								res.end();
