@@ -480,3 +480,9 @@ LOG SEVİYESİ : info : KAYITLAR --> : İŞLEM ZAMANI : Aug-25-2023 15:19:04:  [
 LOG SEVİYESİ : info : KAYITLAR --> : İŞLEM ZAMANI : Aug-25-2023 15:19:13:  [POST] URL : /register -- Kullanıcı: memo
 LOG SEVİYESİ : info : KAYITLAR --> : İŞLEM ZAMANI : Aug-25-2023 15:19:13:  [GET] URL : /register -- Kullanıcı: memo
 LOG SEVİYESİ : info : KAYITLAR --> : İŞLEM ZAMANI : Aug-25-2023 15:19:19:  [GET] URL : /info? -- Kullanıcı: memo
+LOG SEVİYESİ : info : KAYITLAR --> : İŞLEM ZAMANI : Aug-25-2023 16:00:49:  [GET] URL : /logout? -- Kullanıcı: BİLİNMEYEN KULLANICI
+LOG SEVİYESİ : info : KAYITLAR --> : İŞLEM ZAMANI : Aug-25-2023 16:00:49:  [GET] URL : / -- Kullanıcı: BİLİNMEYEN KULLANICI
+LOG SEVİYESİ : info : KAYITLAR --> : İŞLEM ZAMANI : Aug-25-2023 16:00:53:  [POST] URL : / -- Kullanıcı: BİLİNMEYEN KULLANICI
+LOG SEVİYESİ : info : KAYITLAR --> : İŞLEM ZAMANI : Aug-25-2023 16:00:53:  [GET] URL : /ihale-bilgileri/1 -- Kullanıcı: memo
+LOG SEVİYESİ : info : KAYITLAR --> : İŞLEM ZAMANI : Aug-25-2023 16:00:55:  [GET] URL : /logout? -- Kullanıcı: memo
+LOG SEVİYESİ : info : KAYITLAR --> : İŞLEM ZAMANI : Aug-25-2023 16:00:55:  [GET] URL : / -- Kullanıcı: BİLİNMEYEN KULLANICI
