@@ -1,29 +1,36 @@
-// middleware/loggerMiddleware.js
 const winston = require('winston');
+
+const colors = {
+	info: 'green',
+	error: 'red',
+};
+
+winston.addColors(colors);
 
 const logConfiguration = {
 	transports: [
 		new winston.transports.File({ level: 'error', filename: 'logs/error.log' }),
 		new winston.transports.File({ level: 'info', filename: 'logs/info.log' }),
-		new winston.transports.File({ level: 'login', filename: 'logs/login.log' }),
-		new winston.transports.File({ level: 'register', filename: 'logs/register.log' }),
 	],
 	format: winston.format.combine(
-		winston.format.label({ label: 'Label' }),
+		winston.format.colorize({ all: false }),
+		winston.format.label({ label: 'KAYITLAR --> ' }),
 		winston.format.timestamp({ format: 'MMM-DD-YYYY HH:mm:ss' }),
 		winston.format.printf(
-			(info) => `${info.level}: ${info.label}: ${[info.timestamp]}: ${info.message}`
+			(info) =>
+				`LOG SEVİYESİ : ${info.level} : ${info.label}: İŞLEM ZAMANI : ${[info.timestamp]}:  ${
+					info.message
+				}`
 		)
 	),
 };
 
 const logger = winston.createLogger(logConfiguration);
 
-// Loglama işlemini gerçekleştiren bir middleware
 const loggerMiddleware = (req, res, next) => {
-	// Loglama işlemi burada yapılır
-	logger.info(`[${req.method}] ${req.url}`);
-	next(); // Diğer middleware'e veya route'a geç
+	const kullanici = req.session.isim || 'BİLİNMEYEN KULLANICI';
+	logger.info(`[${req.method}] URL : ${req.url} -- Kullanıcı: ${kullanici}`);
+	next();
 };
 
 module.exports = loggerMiddleware;

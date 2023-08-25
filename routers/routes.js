@@ -1,7 +1,9 @@
 const express = require('express');
 const connection = require('../db');
 const checkUserRole = require('../middlewares/role');
-const winston = require('winston')
+//const logger = require('../middlewares/logger')
+const { logger } = require('../middlewares/logger'); // "logger" dosyanızın yolunu düzenlemelisiniz
+
 const { yilx, gunx, ayx } = require('../utils/date');
 const { inserthakedisKapagi, inserthakedisRaporu, insertYapilanisler } = require('../utils/insert');
 const {
@@ -17,6 +19,7 @@ const router = express.Router();
 
 
 router.get('/', (req, res) => {
+
 	res.render('login', { message: req.flash('message') });
 	//res.sendFile(path.join(__dirname, '../views/html/login.html'));
 });
@@ -33,6 +36,8 @@ router.post('/', (req, res) => {
 			res.redirect('/');
 			return;
 		} else if (results.length > 0) {
+			const isim = results[0].isim;
+			req.session.isim = isim;
 			const userId = results[0].userId;
 			req.session.userId = userId;
 			const role = results[0].role;
@@ -75,7 +80,8 @@ router.get('/info', checkUserRole('admin'), (req, res) => {
 	const userId = req.session.userId;
 	const query = 'SELECT * FROM haz_hakedis_2 WHERE kullanici_id=? order by isin_adi desc';
 	connection.query(query, [userId], (err, data) => {
-		if (err) throw err;
+		if (err) {throw err;
+	}
 		res.render('info', { userId, data });
 	});
 });
@@ -117,7 +123,6 @@ router.post('/ihale-bilgileri', async (req, res) => {
 			throw err;
 		}
 		if (results.length > 0) {
-			console.log('bu sirket id kullanılıyor');
 			req.flash('message', ['HATA!', 'Şirket İd Kullanılıyor']);
 			res.redirect(`/ihale-bilgileri/${userId}`);
 		} else {
@@ -143,11 +148,9 @@ router.post('/ihale-bilgileri', async (req, res) => {
 
 				await insertYapilanisler(userId, sirket_id, is_adi, sozlesme_bedeli, isin_suresi);
 
-				console.log('Veriler başarıyla eklendi');
 				req.flash('message', ['BAŞARILI !', 'Veriler Başarıyla Eklendi']);
 				res.redirect(`/ihale-bilgileri/${userId}`);
 			} catch (error) {
-				console.log('Veriler eklenirken bir hata oluştu');
 				console.log(error);
 				req.flash('message', ['HATA!', 'Veriler Eklenirken Hata Oluştu']);
 				res.redirect(`/ihale-bilgileri/${userId}`);
@@ -160,8 +163,6 @@ router.get('/register', (req, res) => {
 	res.render('register', { message: req.flash('message') });
 });
 router.post('/register', (req, res) => {
-	let userId = req.session.userId;
-
 	let username = req.body.username;
 	let password = req.body.password;
 	let kurum_id = req.body.kurum_id;
@@ -178,7 +179,6 @@ router.post('/register', (req, res) => {
 			throw err;
 		}
 		if (results.length > 0) {
-			console.log('BU USERNAME KULLANILIYOR');
 			req.flash('message', ['HATA !', 'Bu Kullanıcı Adı Kayıtlı']);
 			res.redirect(`/register`);
 		} else {
@@ -189,7 +189,6 @@ router.post('/register', (req, res) => {
 					throw err;
 				}
 				if (results.length > 0) {
-					console.log('BU eposta KULLANILIYOR');
 					req.flash('message', ['HATA !', 'Eposta Zaten Kayıtlı']);
 					res.redirect(`/register`);
 				} else {
@@ -200,7 +199,6 @@ router.post('/register', (req, res) => {
 							throw err;
 						}
 						if (results.length > 0) {
-							console.log('BU telefon KULLANILIYOR');
 							req.flash('message', ['HATA !', 'Telefon Numarası Kayıtlı']);
 							res.redirect(`/register`);
 						} else {
@@ -213,7 +211,6 @@ router.post('/register', (req, res) => {
 									req.flash('message', ['HATA !', 'Kaydedilirken Bir Hata Oluştu']);
 									res.redirect(`/register`);
 								} else {
-									console.log('Kayıt olma Başarılı');
 									req.flash('message', ['BAŞARILI !', 'Kullanıcı Başarıyla Kaydedildi']);
 									res.redirect(`/register`);
 								}
