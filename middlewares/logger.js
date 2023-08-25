@@ -5,7 +5,7 @@ const colors = {
 	error: 'red',
 };
 
-winston.addColors(colors);
+//winston.addColors(colors);
 
 const logConfiguration = {
 	transports: [
@@ -14,7 +14,7 @@ const logConfiguration = {
 	],
 	format: winston.format.combine(
 		winston.format.json(),
-		winston.format.colorize({ all: false }),
+		//winston.format.colorize({ all: false }),
 		winston.format.label({ label: 'KAYITLAR --> ' }),
 		winston.format.timestamp({ format: 'MMM-DD-YYYY HH:mm:ss' }),
 		winston.format.printf(

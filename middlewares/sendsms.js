@@ -5,7 +5,9 @@ require('dotenv').config();
 
 async function sendSMSMiddleware(id,sifre) {
 
-  const mesaj = `Üyeliğiniz Oluşturuldu Kullanıcı Adı = ${id}    Şifre : ${sifre}`
+  const mesaj = `Üyeliğiniz Oluşturuldu Kullanıcı Adı = ${id}    Şifre : ${sifre}`;
+
+  const client = new twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
 
   try {
     const message = await client.messages.create({
@@ -19,5 +21,7 @@ async function sendSMSMiddleware(id,sifre) {
     console.error('SMS gönderme hatası:', error.message);
   }
 }
+  
+
 
 module.exports = sendSMSMiddleware;
