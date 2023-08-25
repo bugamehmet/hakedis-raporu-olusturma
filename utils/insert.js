@@ -1,3 +1,6 @@
+
+// BİLGİLERİ VERTABANINA KAYDEDİYORUZ 
+
 const connection = require('../db');
 
 function inserthakedisKapagi(

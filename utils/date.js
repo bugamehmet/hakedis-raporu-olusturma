@@ -1,3 +1,6 @@
+
+// PDFLERDE  TARİHİ AYARLAMAK İÇİN
+
 let date = new Date();
 let gun = date.getDate();
 let ay = date.getMonth() + 1;
