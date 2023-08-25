@@ -1,0 +1,32 @@
+{"level":"error","message":""}
+{"level":"error","message":""}
+{"level":"error","message":"er"}
+{"level":"error","message":"eroo"}
+{"level":"error","message":"eroor"}
+{"level":"error","message":"eroor"}
+{"level":"error","message":"eroor"}
+{"level":"error","message":"eroor"}
+{"level":"error","message":"eroor"}
+{"level":"error","message":"eroor"}
+{"level":"error","message":"eroor"}
+{"level":"error","message":"eroor"}
+{"level":"error","message":"eroor"}
+{"level":"error","message":"eroor"}
+{"level":"error","message":"eroor"}
+{"level":"error","message":"eroor"}
+undefined
+undefined
+undefined
+undefined
+undefined
+error: Label: Aug-25-2023 09:25:50: Hello, Winston logger, some info!
+error: Label: Aug-25-2023 09:25:56: Hello, Winston logger, some info!
+error: Label: Aug-25-2023 09:28:02: Hello, Winston logger, some info!
+error: Label: Aug-25-2023 09:28:22: Hello, Winston logger, some info!
+error: Label: Aug-25-2023 09:28:24: Hello, Winston logger, some info!
+error: Label: Aug-25-2023 09:29:04: Hello, Winston logger, some info!
+error: Label: Aug-25-2023 09:29:15: Hello, Winston logger, some info!
+error: Label: Aug-25-2023 09:29:22: Hello, Winston logger, some info!
+error: Label: Aug-25-2023 09:29:37: Hello, Winston logger, some info!
+error: Label: Aug-25-2023 09:30:52: Hello, Winston logger, some info!
+error: Label: Aug-25-2023 09:30:55: Hello, Winston logger, some info!

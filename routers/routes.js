@@ -1,6 +1,7 @@
 const express = require('express');
 const connection = require('../db');
 const checkUserRole = require('../middlewares/role');
+const winston = require('winston')
 const { yilx, gunx, ayx } = require('../utils/date');
 const { inserthakedisKapagi, inserthakedisRaporu, insertYapilanisler } = require('../utils/insert');
 const {
@@ -13,6 +14,7 @@ const {
 } = require('../utils/generatePdf');
 //const deleteHakedis = require('../utils/deleteHakedis');
 const router = express.Router();
+
 
 router.get('/', (req, res) => {
 	res.render('login', { message: req.flash('message') });

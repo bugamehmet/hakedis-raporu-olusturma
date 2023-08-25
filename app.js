@@ -1,6 +1,8 @@
 const express = require('express');
 const session = require('express-session');
-var flash = require('connect-flash');
+const flash = require('connect-flash');
+const winston = require('winston');
+const loggerMiddleware = require('./middlewares/logger');
 const app = express();
 app.set('view engine', 'ejs');
 app.use('/assets', express.static('assets'));
@@ -14,9 +16,13 @@ app.use(
 	})
 );
 
+
+app.use(loggerMiddleware);
 app.use(flash({ unsafe: true }));
 
 const router = require('./routers/routes');
+
+
 
 app.use('/', router);
 
