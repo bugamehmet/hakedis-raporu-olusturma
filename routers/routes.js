@@ -17,7 +17,6 @@ const router = express.Router(); // Express Router'ı oluşturur
 
 // Ana sayfa için GET isteği işleyicisi
 router.get('/', (req, res) => {
-
 	res.render('login', { message: req.flash('message') });
 	//res.sendFile(path.join(__dirname, '../views/html/login.html'));
 });

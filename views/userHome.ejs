@@ -190,15 +190,14 @@
 		<main>
 			<div class="full-width">
 				<form action="/pdf-olustur" method="post">
-					<button type="submit">Hakediş Oluştur</button>
-					<br /><br />
+					<br />
 					<select name="sirket_id" class="custom-select">
 						<option value="" disabled selected>Bir şirket seçin</option>
 						<% const uniqueCompaniessx = []; if (data && data.length > 0) { data.forEach(item => {
 						if (!uniqueCompaniessx.includes(item.s_id)) { uniqueCompaniessx.push(item.s_id); %>
 						<option value="<%= item.s_id %>"><%= item.isin_adi %></option>
 						<% } }); } else { %>
-						<option value="" disabled selected>Veri Yok</option>
+						<option value="" disabled selected>Şirket Bulunamadı</option>
 						<% } %>
 					</select>
 					<br />
@@ -242,6 +241,8 @@
 					<br />
 					<input type="radio" name="var_yok" value="var" checked /> Var
 					<input type="radio" name="var_yok" value="yok" /> Yok
+					<br><br>
+					<button type="submit">Hakediş Oluştur</button>
 				</form>
 			</div>
 		</main>
